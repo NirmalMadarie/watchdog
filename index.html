@@ -8114,6 +8114,57 @@ CONV_HOOK.inp.push((text,src)=>{
  }
  return false;
 });
+/* =====================================================================
+   V12 CORE — KEEP: Live Search-koppeling voor productzoeken (RC6, aanvulling na testen)
+   De bestaande demo-productflow (DemoProvider, Requirements Gate, WATCHDOG Match) is VOLLEDIG ongewijzigd en
+   heeft nog steeds voorrang: dit is alleen een aanvullend pad voor categorieën die de demo niet kent (bijv.
+   kleding), zodat die niet meer stilzwijgend in een generiek "Dat kan ik in deze demo nog niet beantwoorden"
+   verdwijnen als er wél een echte backend/sleutel is ingesteld. Zonder backend gebeurt hier niets — het bestaande
+   gedrag blijft dan exact zoals het was. */
+/* Bouwt een eerlijke lijst "genoemde eisen" uit de bestaande NLU (hergebruik van CATS/parseField — geen tweede
+   eisen-systeem). Voor elke eis: alleen "bevestigd" wanneer de LIVE bron dat zelf structureel aanlevert
+   (attributes.price voor budget, attributes.brand voor merk). Alle andere eisen: altijd "niet bevestigd op de
+   pagina" — nooit afgeleid uit titel/omschrijving, precies zoals bij PDOK/RDW hierboven. */
+function srcBuildReqs(text){
+ let P=null;try{P=nluParse(text)}catch(e){}
+ const reqs=[];
+ if(P&&P.budget&&P.budget.max)reqs.push({k:'budget',label:'Maximaal '+E(P.budget.max),check:a=>a&&a.price!=null?(a.price<=P.budget.max?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E(a.price):null});
+ if(P&&P.cat&&CATS[P.cat]&&P.hard)Object.keys(P.hard).forEach(k=>{
+  const f=(CATS[P.cat].fields||[]).find(x=>x.k===k);if(!f)return;
+  const disp=(f.disp||f.txt||(v=>String(v)))(P.hard[k]);
+  if(f.attr==='brand')reqs.push({k:'brand',label:(f.lbl||k)+': '+disp,check:a=>a&&a.brand?(String(a.brand).toLowerCase().indexOf(String(disp).toLowerCase())>=0?'ok':'nok'):'unknown',val:a=>a&&a.brand?a.brand:null});
+  else reqs.push({k:k,label:(f.lbl||k)+': '+disp,check:()=>'unknown',val:()=>null});
+ });
+ return {cat:P&&P.cat,reqs:reqs};
+}
+function srcReqRowsHTML(reqs,attrs){
+ return reqs.map(r=>{const st=r.check(attrs);const v=r.val(attrs);
+  if(st==='ok')return `<li>${I('check')}${esc(r.label)} — bevestigd${v?' ('+esc(v)+')':''}</li>`;
+  if(st==='nok')return `<li>${I('x')}${esc(r.label)} — NIET bevestigd${v?' (pagina toont '+esc(v)+')':''}</li>`;
+  return `<li class="note">${esc(r.label)} — niet bevestigd op deze pagina</li>`;
+ }).join('');
+}
+CONV_HOOK.inp.push((text,src)=>{
+ if(!/\bzoek(en)?\b/i.test(text))return false;
+ if(!LiveSearchProvider.backendUrl)return false; /* geen backend ingesteld: laat de bestaande demo-flow met rust (nog steeds duidelijk als DEMO gelabeld) */
+ if(!CONV||CONV.stage==='confirm'||CONV.stage==='results')convNew(null,text);
+ CONV.stage='route';convUser(text,src);
+ const R=srcBuildReqs(text);
+ convSay('Ik zoek dit live op (geen demo-data) en controleer per resultaat welke eisen echt bevestigd zijn.',null,{mute:true});
+ LiveSearchProvider.search(text,{}).then(r=>{
+  if(r.status==='offline'){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'offline',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Live Search is niet beschikbaar.')}</p>`)},{mute:true});return}
+  if(r.status==='error'||!r.results||!r.results.length){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'error',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Geen resultaten gevonden.')}</p>`)},{mute:true});return}
+  /* Sorteer op écht bevestigde eisen (nooit op gegokte) — eerlijke WATCHDOG-achtige rangschikking zonder verzonnen score. */
+  const scored=r.results.map(it=>{const ok=R.reqs.filter(q=>q.check(it.attributes)==='ok').length;return {it:it,ok:ok}}).sort((a,b)=>b.ok-a.ok);
+  const rows='<div class="list">'+scored.slice(0,6).map(({it})=>{
+   const a=it.attributes||{};
+   const priceLine=a.price!=null?`<b>${esc(E(a.price))}</b>${a.availability?' · '+esc(a.availability):''}`:'<small class="note">Prijs niet bevestigd op deze pagina</small>';
+   return `<div class="row" style="display:block;padding:10px 0"><b>${esc(it.title||'')}</b><br>${priceLine}${R.reqs.length?`<ul class="sbo-p" style="margin:4px 0 0">${srcReqRowsHTML(R.reqs,a)}</ul>`:''}<a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Open bij ${esc(it.source||'bron')}</a></div>`;
+  }).join('')+'</div>';
+  convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'live',r.source,null,r.fetchedAt,rows,r.results.length+' resultaten · eisen alleen "bevestigd" als de bron dat echt aangeeft')},{mute:true});
+ }).catch(()=>{convSay('Er ging iets mis bij het live zoeken.',null,{mute:true})});
+ return true;
+});
 function fmtRdwDate(yyyymmdd){const s=String(yyyymmdd);if(s.length!==8)return s;return s.slice(6,8)+'-'+s.slice(4,6)+'-'+s.slice(0,4)}
 ACT['src-bag']=id=>{
  sheet('BAG-details',`<p class="note">Wordt opgehaald bij PDOK/BAG…</p>`);
