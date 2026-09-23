@@ -7929,9 +7929,14 @@ V.situatie=function(){
    en algemene Live Search vereisen resp. een werkende OData-koppeling en een betaalde/sleutel-API; zie backend/.
    ===================================================================== */
 const SRC_TIMEOUT_MS=9000;
-async function srcFetch(url,opt){
+/* Render's gratis laag laat de backend "inslapen" na inactiviteit; de eerste aanroep daarna kan tot ~50s duren
+   voordat hij weer wakker is. PDOK/RDW hebben dit probleem niet (geen eigen backend, altijd meteen actief), dus
+   die houden de korte, responsieve timeout. Alleen Live Search (die via de eigen backend loopt) krijgt bewust
+   een langere timeout, anders faalt precies de eerste, "koude" zoekopdracht van een gebruiker onterecht. */
+const SRC_BACKEND_TIMEOUT_MS=58000;
+async function srcFetch(url,opt,timeoutMs){
  const ctl=(typeof AbortController!=='undefined')?new AbortController():null;
- const tm=ctl?setTimeout(()=>ctl.abort(),SRC_TIMEOUT_MS):null;
+ const tm=ctl?setTimeout(()=>ctl.abort(),timeoutMs||SRC_TIMEOUT_MS):null;
  try{
   const r=await fetch(url,Object.assign({signal:ctl&&ctl.signal},opt||{}));
   if(!r.ok)return {ok:false,status:r.status,error:'HTTP '+r.status};
@@ -8023,13 +8028,13 @@ const LiveSearchProvider={
  backendUrl:(typeof window!=='undefined'&&window.WATCHDOG_BACKEND_URL)||null,
  async health(){
   if(!this.backendUrl)return {backend:'not-configured'};
-  const r=await srcFetch(this.backendUrl.replace(/\/$/,'')+'/api/health');
+  const r=await srcFetch(this.backendUrl.replace(/\/$/,'')+'/api/health',null,SRC_BACKEND_TIMEOUT_MS);
   return r.ok?r.data:{backend:'unreachable',error:r.error};
  },
  async search(query,requirements){
   if(!this.backendUrl)return {status:'offline',reason:'not-configured',source:this.sourceName,fetchedAt:srcNow(),
    message:'Live Search is nog niet aangesloten. Er is geen backend/sleutel geconfigureerd; WATCHDOG verzint geen resultaten.',results:[]};
-  const r=await srcFetch(this.backendUrl.replace(/\/$/,'')+'/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:query,requirements:requirements||{}})});
+  const r=await srcFetch(this.backendUrl.replace(/\/$/,'')+'/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:query,requirements:requirements||{}})},SRC_BACKEND_TIMEOUT_MS);
   if(!r.ok)return {status:'error',source:this.sourceName,fetchedAt:srcNow(),error:r.error,results:[]};
   const j=r.data||{};
   return {status:j.ok?'live':(j.sourceType==='not-configured'?'offline':'error'),reason:j.sourceType==='not-configured'?'not-configured':undefined,source:j.source||this.sourceName,sourceType:j.sourceType,isLive:!!j.isLive,fetchedAt:j.fetchedAt||srcNow(),results:j.results||[],error:j.error};
@@ -8150,7 +8155,7 @@ CONV_HOOK.inp.push((text,src)=>{
  if(!CONV||CONV.stage==='confirm'||CONV.stage==='results')convNew(null,text);
  CONV.stage='route';convUser(text,src);
  const R=srcBuildReqs(text);
- convSay('Ik zoek dit live op (geen demo-data) en controleer per resultaat welke eisen echt bevestigd zijn.',null,{mute:true});
+ convSay('Ik zoek dit live op (geen demo-data). Als de zoekserver even heeft geslapen kan dit de eerste keer tot ongeveer een minuut duren — ik controleer daarna per resultaat welke eisen echt bevestigd zijn.',null,{mute:true});
  LiveSearchProvider.search(text,{}).then(r=>{
   if(r.status==='offline'){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'offline',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Live Search is niet beschikbaar.')}</p>`)},{mute:true});return}
   if(r.status==='error'||!r.results||!r.results.length){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'error',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Geen resultaten gevonden.')}</p>`)},{mute:true});return}
