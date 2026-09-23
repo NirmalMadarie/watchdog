@@ -1069,7 +1069,7 @@ body[data-gs=alert] .gd-btn .gd-face{transform:scale(1.06)}
    Laat dit op null staan als je (nog) geen backend hebt: Live Search rapporteert dan eerlijk "niet
    geconfigureerd" en de rest van WATCHDOG (inclusief PDOK-adressen en RDW-kentekens) blijft gewoon werken.
    ZET HIER NOOIT EEN API-SLEUTEL OF ANDER GEHEIM — alleen de eigen backend-URL, die is niet geheim. */
-window.WATCHDOG_BACKEND_URL = null;
+if(typeof window.WATCHDOG_BACKEND_URL==='undefined')window.WATCHDOG_BACKEND_URL = "https://watchdog-backend-eh9k.onrender.com";
 /* V12 CORE — KEEP: DEBUG-vlag en diagnose. Zet DEBUG op true, of open de pagina met ?debug=1 (bv. .../WATCHDOG-V12.2.html?debug=1)
    om belangrijke stappen naar de console EN in een klein logvenster bovenaan te zien. Normale gebruikers: DEBUG=false, geen output. */
 const DEBUG=false;
