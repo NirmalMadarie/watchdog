@@ -746,9 +746,33 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--pu);outline-offs
 .sb-hero{padding:14px}
 .sb-hero .msg{margin-bottom:12px}
 .sbg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kz{display:flex;flex-direction:column;gap:18px;margin-top:6px}
+.kz-sec{display:flex;flex-direction:column;gap:8px}
+.kz-h{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 2px}
+.kz-l{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden}
+.kz-r{display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left;background:none;border:0;border-top:1px solid var(--line);width:100%;font:inherit;color:inherit;cursor:pointer;transition:background .12s}
+.kz-r:first-child{border-top:0}
+.kz-r:active,.kz-r:hover{background:var(--soft)}
+.kz-r:focus-visible{outline:2px solid var(--pu);outline-offset:-2px}
+.kz-i{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--kbg);color:var(--kc)}
+.kz-i .i{width:20px;height:20px}
+.kz-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.kz-t b{font-size:15px;line-height:1.25;color:var(--ink);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.kz-t small{font-size:12.5px;line-height:1.35;color:var(--mut)}
+.kz-live{font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:99px;background:var(--em-bg);color:var(--em-d)}
+.kz-c{flex:none;color:var(--mut);font-size:20px;line-height:1}
+.kz-how{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;font-size:12.5px;color:var(--mut);margin:2px 2px 0}
+.kz-how b{color:var(--ink);font-weight:600}
+.kz-how i{font-style:normal;color:var(--line)}
 .sbt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r2);padding:12px 6px;min-height:92px;text-align:center;transition:transform .12s,background .12s}
 .sbt:active{transform:scale(.97);background:var(--pu-bg)}
 .sbt-i{width:38px;height:38px;border-radius:12px;background:#fff;color:var(--pu-d);display:grid;place-items:center;box-shadow:var(--sh)}.sbt-i svg.i{width:21px;height:21px}
+.sbt{position:relative;--tc1:#C4B5FD;--tc2:#6D28D9;background:linear-gradient(165deg,color-mix(in srgb,var(--tc1) 22%,#fff) 0%,#fff 78%);border-color:color-mix(in srgb,var(--tc1) 45%,#fff);box-shadow:0 2px 10px -6px var(--tc2)}
+.sbt:active{background:color-mix(in srgb,var(--tc1) 30%,#fff)}
+.sbt .sbt-i{width:48px;height:48px;border-radius:16px;color:#fff;background:linear-gradient(140deg,var(--tc1),var(--tc2));box-shadow:0 8px 16px -8px var(--tc2),inset 0 1px 0 rgba(255,255,255,.35)}
+.sbt .sbt-i .ti{width:26px;height:26px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.12))}
+.sbt b{color:var(--ink)}
+.sbt-live{font-style:normal;font-size:9px;font-weight:800;letter-spacing:.07em;color:var(--em-d);display:inline-flex;align-items:center;gap:4px;margin-top:-4px}.sbt-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--em);box-shadow:0 0 0 3px var(--em-bg)}
 .sbt b{font-size:12.5px;line-height:1.2}
 .how{display:flex;flex-wrap:wrap;gap:8px}.how span{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border-radius:99px;padding:6px 12px 6px 6px;font-size:12.5px;font-weight:700}
 .how i{width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-style:normal;font-size:11px}
@@ -1286,7 +1310,10 @@ const findingStatus=id=>(S.fstat[id]&&S.fstat[id].s)||'open';
 const LAB={energy:'ENERGIE',telecom:'TELECOM',insurance:'VERZEKERING',subs:'ABONNEMENTEN',auto:'AUTO',home:'WONEN',benefits:'GET',savings:'SPAREN',job:'WERK',contract:'CONTRACT',scam:'SCAM',life:'LEVEN',budget:'BUDGET',goal:'DOEL',housing:'WONEN',deal:'DEALS',travel:'REIZEN',ticket:'TICKETS'};
 /* Alle bevindingen (afgeleid van profiel + actieve Watches) */
 function computeFindings(){
- const p=S.profile,out=[],add=(w,f)=>{if(wOn(w))out.push(Object.assign({w:w,monthly:0,once:0,steps:[]},f))};
+/* Testfase (leeg begin): bevindingen die op fictief aanbod of verzonnen bedragen rusten, tonen we niet.
+   Wat overblijft rekent alleen met je eigen invoer (abonnementen, doelen, buffer, contracten) of is een duidelijke vuistregel. */
+const DEMO_FINDINGS={energy_switch:1,telecom_sim:1,ins_car:1,ins_other:1,ins_health:1,sav_rate:1,job_bench:1,ben_isde:1,ben_kgb:1,ben_kid:1,ben_work:1,ben_tax:1};
+ const p=S.profile,out=[],add=(w,f)=>{if(wOn(w)&&!(LEEG()&&DEMO_FINDINGS[f.id]))out.push(Object.assign({w:w,monthly:0,once:0,steps:[]},f))};
  const T0=totalsBase();
  // GET
  if(p.kids>0){
@@ -1631,7 +1658,7 @@ function dealState(x){const hit=x.cur<=x.max;return {hit:hit,gap:x.cur-x.max}}
 /* LEGACY CANDIDATE — DO NOT EXTEND: dealMini Geen verwijzingen gevonden in de code (dependency-scan V12.1); niet automatisch verwijderd. */
 function dealMini(x){
  const st=dealState(x);
- return `<button class="dl ${st.hit?'hit':''}" data-a="go" data-arg="deals"><span class="pc-k">${st.hit?'DOEL BEREIKT':'WATCHDOG VOLGT'} <span class="demo-tag">DEMO</span></span><b>${esc(x.t)}</b><span class="pc-t" style="margin-top:6px"><span>${st.hit?`<span class="act-m" style="color:var(--em-d)">${E(x.cur)}<small>${E(-st.gap)} onder jouw limiet</small></span>`:`<span class="act-m" style="color:var(--ink)">${E(x.cur)}<small>Nog ${E(st.gap)} te gaan · doel ${E(x.max)}</small></span>`}</span>${spark(x.hist,x.max,st.hit?'#10B981':'#F97316')}</span></button>`;
+ return `<button class="dl ${st.hit?'hit':''}" data-a="go" data-arg="deals"><span class="pc-k">${st.hit?'DOEL BEREIKT':'WATCHDOG VOLGT'} ${x.live?'<span class="demo-tag" style="background:#E2F4EC;color:#0E7A54">LIVE</span>':'<span class="demo-tag">DEMO</span>'}</span><b>${esc(x.t)}</b><span class="pc-t" style="margin-top:6px"><span>${st.hit?`<span class="act-m" style="color:var(--em-d)">${E(x.cur)}<small>${E(-st.gap)} onder jouw limiet</small></span>`:`<span class="act-m" style="color:var(--ink)">${E(x.cur)}<small>Nog ${E(st.gap)} te gaan · doel ${E(x.max)}</small></span>`}</span>${spark(x.hist,x.max,st.hit?'#10B981':'#F97316')}</span></button>`;
 }
 function heroCopy(H,gr,name){
  switch(H.k){
@@ -2148,9 +2175,15 @@ function priceCard(kind,x){
  <div class="pc-t"><b>${dr?`${E(dr)} gezakt`:'Prijsverloop'}</b>${spark(x.hist,x.max,col)}</div>
  ${hit&&x.active?`<button class="btn or" data-a="pc-view" data-arg="${kind}:${x.id}">Bekijk deal →</button>`:''}
  <div class="pc-a"><button class="btn sm ghost" data-a="pc-edit" data-arg="${kind}:${x.id}">Aanpassen</button><button class="btn sm ghost" data-a="pc-toggle" data-arg="${kind}:${x.id}">${x.active?'Pauzeer':'Activeer'}</button><button class="btn sm ghost" data-a="pc-alert" data-arg="${kind}:${x.id}" aria-pressed="${x.alert!==false}">${x.alert===false?'Alert uit':'Alert aan'}</button><button class="btn sm ghost dng" data-a="pc-del" data-arg="${kind}:${x.id}">Verwijder</button></div>
- <small class="fine">${x.cat?`<span class="tag">${esc(x.cat)}</span> `:''}Demo-prijs · fictieve winkel, geen live koppeling</small></div>`;
+ <small class="fine">${x.cat?`<span class="tag">${esc(x.cat)}</span> `:''}${x.live?`Live prijs via Google Shopping${x.shop?' · '+esc(x.shop):''} · gecontroleerd ${new Date(x.checked||Date.now()).toLocaleString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${x.url?` · <a class="link" href="${esc(x.url)}" target="_blank" rel="noopener">bekijk</a>`:''}`:'Demo-prijs · fictieve winkel, geen live koppeling'}</small></div>`;
 }
 function priceModule(kind){
+ if(LEEG()&&kind!=='deal')return `<div class="card">${empty(kind==='travel'?'Reisprijzen bewaken komt later':'Ticketprijzen bewaken komt later','Er is nog geen betrouwbare prijsbron gekoppeld. WATCHDOG verzint geen prijzen.')}</div>`;
+ if(LEEG()){const c=PL[kind],L=S[c.k].filter(dealFil);
+  return `<div class="pcs">${L.length?L.map(x=>priceCard(kind,x)).join(''):`<div class="card">${empty('Nog niets bewaakt','Voeg hieronder je eerste product toe.')}</div>`}${L.some(x=>x.live)?`<button class="btn ghost" data-a="pc-check">Prijzen nu controleren</button>`:''}</div>
+  <div class="card"><h3>Nieuw product bewaken</h3><label class="f"><span>Welk product? Hoe preciezer, hoe beter</span><input id="pn-t-${kind}" type="text" placeholder="Bijv. Philips Airfryer XXL HD9285" maxlength="80"></label>
+  <label class="f"><span>${c.lbl}</span><input id="pn-x-${kind}" type="number" inputmode="decimal" placeholder="Bijv. 150"></label>
+  <button class="btn or" data-a="pc-add" data-arg="${kind}">Bewaak deze prijs</button><small class="fine">WATCHDOG zoekt de laagste actuele prijs op bij Nederlandse winkels (Google Shopping) en controleert die opnieuw als je de app opent, maximaal twee keer per dag.</small></div>`}
  const c=PL[kind],L=S[c.k].filter(dealFil);
  const extra=kind==='travel'?`<div class="grid2"><label class="f"><span>Personen</span><input id="pn-q-${kind}" type="number" inputmode="numeric" value="4" min="1"></label><label class="f"><span>Periode</span><input id="pn-m-${kind}" type="text" value="Zomer 2027" maxlength="30"></label></div>`:kind==='ticket'?`<label class="f"><span>Aantal tickets</span><input id="pn-q-${kind}" type="number" inputmode="numeric" value="2" min="1"></label>`:'';
  return `<div class="pcs">${L.length?L.map(x=>priceCard(kind,x)).join(''):`<div class="card">${empty('Nog niets bewaakt','Voeg hieronder je eerste '+c.what+' toe.')}</div>`}<button class="btn ghost" data-a="pc-sim" data-arg="${kind}">Simuleer prijsupdate (demo)</button></div>
@@ -2158,17 +2191,53 @@ function priceModule(kind){
  <label class="f"><span>${c.lbl}</span><input id="pn-x-${kind}" type="number" inputmode="decimal" placeholder="Bijv. 1500"></label><label class="f"><span>Categorie</span><select id="pn-c-${kind}">${DCATS.map(d=>`<option${(kind==='travel'&&d==='Reizen')||(kind==='ticket'&&d==='Evenementen')?' selected':''}>${d}</option>`).join('')}</select></label>${extra}
  <button class="btn or" data-a="pc-add" data-arg="${kind}">Bewaak deze prijs</button><small class="fine">${demoTag('Demo')} Er wordt een fictieve prijs gegenereerd.</small></div>`;
 }
-ACT['pc-view']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1];if(!x)return;const prev=x.hist[x.hist.length-2],dr=prev>x.cur?prev-x.cur:0;
+ACT['pc-view']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1];if(!x)return;if(x.live){sheet('Deal bekijken',`<h4>${esc(x.t)}</h4><p><b>${E(x.cur)}</b> bij ${esc(x.shop||'een winkel')}, ${E(Math.max(0,x.max-x.cur))} onder jouw limiet van ${E(x.max)}.</p>${x.bt?`<p class="note">Gevonden product: ${esc(x.bt)}. Controleer of dit precies het product is dat je zoekt.</p>`:''}${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">Bekijk bij de winkel</a>`:''}<button class="btn ghost" data-a="close">Sluiten</button>`);return}const prev=x.hist[x.hist.length-2],dr=prev>x.cur?prev-x.cur:0;
  sheet('Deal bekijken',`<div class="fs-top"><span class="ico lg" style="--c:#B94E08;--bg:#FFF0E4">${I(PL[k]&&k==='travel'?'plane':k==='ticket'?'ticket':'cart')}</span><div><h4>${esc(x.t)}</h4>${pill('Doel bereikt','em')}</div></div><div class="big-amt" style="--c:var(--em-d)">${E(x.cur)}<small>${E(x.max-x.cur)} onder jouw limiet van ${E(x.max)}${dr?` · ${E(dr)} gezakt`:''}</small></div>${spark(x.hist,x.max,'#10B981')}<p class="note">${demoTag('Demo')} In deze prototypefase is er geen koppeling met een winkel. Zo zou je hier doorklikken naar de aanbieder.</p><div class="sh-act"><button class="btn" data-a="close">Sluiten</button><button class="btn ghost" data-a="pc-edit" data-arg="${a}">Doel verlagen</button></div>`)};
 const plist=(kind,id)=>{const L=S[PL[kind].k];return [L,L.find(x=>x.id===id)]};
 ACT['pc-sim']=k=>demoPriceDrop(k);
+/* ---------- Echte prijsbewaking (testfase): live prijs via de backend, opnieuw gecontroleerd bij openen van de app ---------- */
+function livePick(results,query){
+ const stop={voor:1,met:1,een:1,the:1,and:1,van:1,zonder:1},words=String(query).toLowerCase().split(/[^a-z0-9à-ÿ]+/).filter(w=>w.length>=3&&!stop[w]);
+ const priced=(results||[]).filter(r=>r.attributes&&r.attributes.price!=null&&r.attributes.price>0);
+ const need=Math.max(1,Math.ceil(words.length*.6)),must=words.filter(w=>/\d/.test(w)),match=priced.filter(r=>{const t=String(r.title||'').toLowerCase();return must.every(w=>t.indexOf(w)>=0)&&words.filter(w=>t.indexOf(w)>=0).length>=need});
+ const pool=(match.length?match:priced).slice(0,12);if(!pool.length)return null;
+ return pool.reduce((a,b)=>b.attributes.price<a.attributes.price?b:a);
+}
+function liveDealCheck(x){
+ return LiveSearchProvider.search(x.q||x.t,{}).then(r=>{
+  if(r.status!=='live'||!r.results)return false;const best=livePick(r.results,x.q||x.t);if(!best)return false;
+  const prev=x.cur,np=Math.round(best.attributes.price*100)/100;
+  x.cur=np;x.hist=(x.hist||[]).concat([np]).slice(-30);x.checked=Date.now();x.url=best.url;x.shop=best.source;x.bt=best.title;
+  if(x.alert!==false&&x.active&&np<=x.max&&prev>x.max){logAct({kind:'price',demo:false,title:`${x.t}: onder je limiet`,text:`Nu ${E(np)} bij ${best.source||'een winkel'} (limiet ${E(x.max)})`});toast(`${x.t} is nu ${E(np)}: onder je limiet!`,false,true)}
+  return true;
+ }).catch(()=>false);
+}
+function liveDealRefresh(force){
+ if(!LEEG()||!LIVE_PRODUCTS())return;
+ const due=S.deals.filter(x=>x.live&&x.active&&(force||Date.now()-(x.checked||0)>12*3600e3)).slice(0,force?5:3);
+ if(!due.length){if(force)toast('Alle prijzen zijn net gecontroleerd.');return}
+ let chain=Promise.resolve();due.forEach(x=>{chain=chain.then(()=>liveDealCheck(x))});
+ chain.then(()=>{save();if(route[0]==='watch'||route[0]==='deals')refresh();if(force)toast('Prijzen gecontroleerd',true)});
+}
+ACT['pc-check']=()=>{toast('Prijzen worden gecontroleerd…');liveDealRefresh(true)};
 ACT['pc-add']=k=>{
+ if(LEEG()&&k==='deal'&&LIVE_PRODUCTS()){
+  const t=$('#pn-t-'+k).value.trim(),mx=N($('#pn-x-'+k).value);if(!t||mx<=0){toast('Vul een product en een maximumprijs in');return}
+  const btn=document.querySelector('[data-a="pc-add"]');if(btn){btn.disabled=true;btn.textContent='Prijs opzoeken…'}
+  const x={id:uid('i'),t:t,q:t,max:mx,cur:0,hist:[],active:true,live:true,alert:true,cat:'Product'};
+  liveDealCheck(x).then(ok=>{
+   if(btn){btn.disabled=false;btn.textContent='Bewaak deze prijs'}
+   if(!ok){toast('Ik vond geen prijs voor dit product. Probeer een preciezere omschrijving.');return}
+   snapshot();S.deals.unshift(x);ensureWatch('deal');save();refresh();toast(`${t} wordt bewaakt. Nu ${E(x.cur)}${x.shop?' bij '+x.shop:''}.`,true);
+  });
+  return;
+ }
  const t=$('#pn-t-'+k).value.trim(),mx=N($('#pn-x-'+k).value),q=$('#pn-q-'+k),m=$('#pn-m-'+k);
  if(!t||mx<=0){toast('Vul een omschrijving en een maximumprijs in');return}
  const ex={cat:($('#pn-c-'+k)||{}).value||'Overig',alert:true};if(q)ex.qty=Math.max(1,Math.round(N(q.value)||1));if(m)ex.meta=m.value.trim();
  snapshot();S[PL[k].k].unshift(demoItem(t,mx,ex));save();refresh();toast(`${t} wordt bewaakt`,true);
 };
-ACT['pc-edit']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1];if(!x)return;sheet('Limiet aanpassen',`<p><b>${esc(x.t)}</b> · nu ${E(x.cur)} (demo)</p><label class="f"><span>${PL[k].lbl}</span><input id="pe-x" type="number" inputmode="decimal" value="${x.max}"></label><button class="btn" data-a="pc-edit-ok" data-arg="${a}">Opslaan</button>`)};
+ACT['pc-edit']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1];if(!x)return;sheet('Limiet aanpassen',`<p><b>${esc(x.t)}</b> · nu ${E(x.cur)}${x.live?'':' (demo)'}</p><label class="f"><span>${PL[k].lbl}</span><input id="pe-x" type="number" inputmode="decimal" value="${x.max}"></label><button class="btn" data-a="pc-edit-ok" data-arg="${a}">Opslaan</button>`)};
 ACT['pc-edit-ok']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1],v=N($('#pe-x').value);if(!x||v<=0){toast('Vul een geldige limiet in');return}snapshot();x.max=v;save();closeSheet();refresh();toast('Limiet aangepast',true)};
 ACT['pc-toggle']=a=>{const [k,id]=a.split(':'),x=plist(k,id)[1];if(!x)return;x.active=!x.active;save();refresh();toast(x.active?'Bewaking actief':'Bewaking gepauzeerd')};
 ACT['pc-del']=a=>{const [k,id]=a.split(':'),p=plist(k,id);if(!p[1])return;snapshot();S[PL[k].k]=p[0].filter(x=>x.id!==id);save();refresh();toast('Verwijderd',true)};
@@ -2228,7 +2297,7 @@ AFTER.subs=()=>{const r=$('#subTot');if(r)r.innerHTML=subTotals()};
 MOD.subs=()=>`<div class="card"><h3>Mijn abonnementen</h3><div id="subTot">${subTotals()}</div>${S.subs.length?S.subs.map((s,i)=>`<div class="sub ${s.off?'off':''}"><div class="sub-h"><b>${esc(s.n)}</b>${s.off?pill('Opgezegd','gr'):s.use==='nooit'?pill('Ongebruikt','am'):''}<label class="mini">€<input type="number" inputmode="decimal" step="0.01" value="${s.cost}" data-b="subs.${i}.cost" data-t="n" data-after="subs" aria-label="Kosten ${esc(s.n)}"></label></div>
  <div class="seg" role="group" aria-label="Gebruik">${['vaak','soms','nooit'].map(u=>`<button class="${s.use===u?'on':''}" data-a="sub-use" data-arg="${i}:${u}">${u==='vaak'?'Vaak gebruikt':u==='soms'?'Soms':'Nooit'}</button>`).join('')}</div>
  <div class="pc-a"><button class="btn sm ghost" data-a="sub-off" data-arg="${i}">${s.off?'Zet terug':'Zeg op (demo)'}</button><button class="btn sm ghost dng" data-a="sub-del" data-arg="${i}">Verwijder</button></div></div>`).join(''):empty('Geen abonnementen','Voeg ze hieronder toe.')}
- <small class="fine">Opzeggen is een demo: er wordt niets echt opgezegd.</small></div>
+ <small class="fine">${LEEG()?'WATCHDOG zegt niets voor je op. Markeer hier wat je zelf hebt opgezegd.':'Opzeggen is een demo: er wordt niets echt opgezegd.'}</small></div>
  <div class="card"><h3>Abonnement toevoegen</h3><div class="grid2"><label class="f"><span>Naam</span><input id="sn-n" type="text" maxlength="30"></label><label class="f"><span>Kosten / mnd (€)</span><input id="sn-c" type="number" inputmode="decimal" step="0.01"></label></div><button class="btn bl" data-a="sub-add">Toevoegen</button></div>`;
 ACT['sub-use']=a=>{const [i,u]=a.split(':');S.subs[+i].use=u;S.subs[+i].chk=true;save();checkGame(false);refresh()};
 ACT['sub-off']=i=>{
@@ -2284,7 +2353,15 @@ ACT['life-toggle']=id=>{const st=S.life[id]||(S.life[id]={on:false,done:{}});st.
 ACT['life-item']=(a,el)=>{const [id,i]=a.split(':'),st=S.life[id];st.done=st.done||{};st.done[i]=el.checked;save();refresh()};
 
 /* ---- vergelijken: energie / telecom / verzekering ---- */
+/* Testfase: geen fictieve aanbieders. Energie vergelijkt met de live marktprijs, telecom zoekt live, verzekering is een rekenhulp. */
+function compareModuleLive(kind){
+ if(kind==='energy')return `<div class="card"><h3>Vergelijk je energietarief</h3><p class="note">WATCHDOG vergelijkt jouw tarief per kWh en m³ met de dynamische energieprijs van vandaag (bron: EnergyZero). Er worden geen fictieve aanbieders getoond.</p><button class="btn" data-a="sb-go" data-arg="energie">Vergelijk met vandaag</button></div>`;
+ if(kind==='telecom')return `<div class="card"><h3>Zoek een goedkoper abonnement</h3><p class="note">Zoek live naar sim-only, internet of een bundel. Tik op de knop of typ in het AI-scherm bijvoorbeeld “zoek sim only 20 GB”.</p><button class="btn" data-a="live-q" data-arg="sim only abonnement">Zoek sim-only</button><button class="btn ghost" data-a="live-q" data-arg="glasvezel internet abonnement">Zoek internet</button></div>`;
+ return `<div class="card"><h3>Verzekeringen</h3><p class="note">WATCHDOG vergelijkt nog geen verzekeraars. Houd je premies bij onder Contracten, zodat je een seintje krijgt vóór de opzegdatum. Vergelijken kan bij een onafhankelijke vergelijker.</p><button class="btn" data-a="go" data-arg="plan">Naar mijn vaste lasten</button></div>`;
+}
+ACT['live-q']=q=>{closeSheet();go('ai');setTimeout(()=>{try{handleUserMessage('zoek '+q,'typ')}catch(e){console.error(e)}},150)};
 function compareModule(kind){
+ if(LEEG())return compareModuleLive(kind);
  const p=S.profile,ce=S.contracts.find(c=>c.id==='c_energy');
  const C={
   energy:{t:'Energiecontract',cur:N(p.energy),fid:'energy_switch',path:'profile.energy',alts:[['VoltaDemo Vast 1 jaar',.8,'Beste keuze'],['ZonDemo Vast 3 jaar',.83,''],['GroenDemo Variabel',.88,'Flexibel']]},
@@ -2322,7 +2399,7 @@ const carIn=(w,k)=>{const c=S.car[w],fin=['price','down','rate','term'].indexOf(
  if(k==='loan')return `<input type="number" inputmode="decimal" step="any" id="loan-${w}" value="${Math.round(pmt(c))}" data-b="car.${w}.loanM" data-t="n" data-after="carLoan" aria-label="Aflossing ${w==='o'?'oud':'nieuw'}">`;
  return `<input type="number" inputmode="decimal" step="any" value="${c[k]}" data-b="car.${w}.${k}" data-t="n" data-after="${fin?'carFin':'car'}" aria-label="${k} ${w==='o'?'oud':'nieuw'}">`};
 MOD.auto=()=>{
- if(!S.car.has)return `<div class="card">${empty('Geen auto in je profiel','Voeg een auto toe om je echte autokosten te zien.')}<button class="btn bl" data-a="car-on">Ik heb een auto (demo-cijfers)</button></div>`;
+ if(!S.car.has)return `<div class="card">${empty('Geen auto in je profiel','Voeg een auto toe om je echte autokosten te zien.')}<button class="btn bl" data-a="car-on">${LEEG()?'Ik heb een auto':'Ik heb een auto (demo-cijfers)'}</button></div>`;
  return `<div class="card"><h3>Oude en nieuwe situatie</h3><p class="note">Vul in wat je nu hebt (oud) en wat je overweegt (nieuw). Alles rekent direct mee.</p>
  <div class="cg cg-h"><span></span><input type="text" value="${esc(S.car.o.name)}" data-b="car.o.name" data-t="s" aria-label="Naam oude auto" maxlength="28"><input type="text" value="${esc(S.car.n.name)}" data-b="car.n.name" data-t="s" aria-label="Naam nieuwe auto" maxlength="28"></div>
  ${CF.map(r=>`<div class="cg"><span>${r[1]}</span>${carIn('o',r[0])}${carIn('n',r[0])}</div>`).join('')}
@@ -2333,17 +2410,42 @@ ACT['car-on']=()=>{S.car.has=true;save();refresh()};
 ACT['car-off']=()=>{snapshot();S.car.has=false;save();refresh();toast('Auto uit je profiel gehaald',true)};
 
 /* ---- overige Watches ---- */
-MOD.benefits=()=>{const p=S.profile;return `<div class="card"><h3>Waarop is dit gebaseerd?</h3><div class="tags"><span>${p.hh}</span><span>${p.kids} ${plural(p.kids,'kind','kinderen')}</span><span>${p.own==='koop'?'koopwoning':'huurwoning'}</span><span>netto ${E(N(p.income)+N(p.extra))}/mnd</span></div><p class="note">Bedragen zijn demo-schattingen. Echte aanspraak hangt af van je situatie en de regels van dat moment.</p><button class="btn ghost" data-a="scan">Pas mijn gegevens aan (Money Scan)</button></div>`};
+/* ---------- Testfase: toeslagen-check met officiële grenzen 2026 (geen verzonnen bedragen) ---------- */
+const TSL2026={bron:'Dienst Toeslagen / Rijksoverheid, grenzen 2026',
+ zorg:{inkAlleen:40857,inkPartner:51142,vermAlleen:146011,vermPartner:184633,maxAlleen:129,maxPartner:246},
+ huur:{vermAlleen:38479,vermPartner:76958,huurgrens:932.93},
+ proef:'https://www.belastingdienst.nl/wps/wcm/connect/nl/toeslagen/content/hulpmiddel-proefberekening-toeslagen'};
+function tcRes(){
+ const t=S.tc||{},bruto=N(t.bruto),partner=t.partner==='ja',verm=N(t.verm),huur=N(t.huur),Z=TSL2026.zorg,H=TSL2026.huur,rows=[];
+ if(bruto<=0)return '<p class="note">Vul je bruto jaarinkomen in (van jou en je toeslagpartner samen). Dat staat op je jaaropgave.</p>';
+ const zi=partner?Z.inkPartner:Z.inkAlleen,zv=partner?Z.vermPartner:Z.vermAlleen,zOk=bruto<=zi&&verm<=zv;
+ rows.push(`<div class="row"><span class="grow"><b>Zorgtoeslag</b><small>${zOk?`Mogelijk recht. Inkomen onder ${E(zi)} en vermogen onder ${E(zv)}. Maximaal ${E(partner?Z.maxPartner:Z.maxAlleen)} per maand; hoe hoger je inkomen, hoe minder.`:bruto>zi?`Waarschijnlijk geen recht: je inkomen ligt boven ${E(zi)}.`:`Waarschijnlijk geen recht: je vermogen ligt boven ${E(zv)}.`}</small></span>${pill(zOk?'Mogelijk':'Nee',zOk?'em':'')}</div>`);
+ if(S.profile.own!=='koop'){const hv=partner?H.vermPartner:H.vermAlleen,hOk=verm<=hv&&huur>0;
+  rows.push(`<div class="row"><span class="grow"><b>Huurtoeslag</b><small>${huur<=0?'Vul je kale huur in.':verm>hv?`Waarschijnlijk geen recht: je vermogen ligt boven ${E(hv)}.`:`Mogelijk recht. Sinds 2026 is er geen maximale huur meer als voorwaarde; de hoogte hangt af van je inkomen en huur. Boven ${E(H.huurgrens)} kale huur telt het deel erboven niet mee.`}</small></span>${pill(hOk?'Mogelijk':'Nee',hOk?'em':'')}</div>`)}
+ if(S.hh.kids.length)rows.push(`<div class="row"><span class="grow"><b>Kindgebonden budget</b><small>Je hebt kinderen. Of je recht hebt hangt af van je inkomen en vermogen. Controleer het met de proefberekening.</small></span>${pill('Check','am')}</div>`);
+ return rows.join('')+`<p class="note">Dit is een eerste check op de officiële grenzen van 2026, geen berekening van je bedrag. Zekerheid krijg je met de <a class="link" href="${TSL2026.proef}" target="_blank" rel="noopener">proefberekening van Dienst Toeslagen</a>.</p>`;
+}
+AFTER.tc=()=>{const r=$('#tcRes');if(r)r.innerHTML=tcRes()};
+ACT['tc-partner']=v=>{S.tc=S.tc||{};S.tc.partner=v;save();refresh()};
+MOD.benefits=()=>{const p=S.profile;if(LEEG()){S.tc=S.tc||{bruto:0,partner:S.hh.adults.length>1?'ja':'nee',verm:N(p.buffer),huur:p.own==='koop'?0:N(p.housing)};const t=S.tc;
+  return `<div class="card"><h3>Toeslagen-check 2026</h3><p class="note">Vul drie bedragen in. WATCHDOG vergelijkt ze met de officiële grenzen van 2026. Er gaat niets van dit toestel af.</p>
+  ${fld('Bruto jaarinkomen, samen (€)','tc.bruto',t.bruto,{after:'tc'})}
+  <div class="f"><span class="lbl">Heb je een toeslagpartner?</span><div class="chips">${[['ja','Ja'],['nee','Nee']].map(o=>`<button class="chip ${t.partner===o[0]?'on':''}" data-a="tc-partner" data-arg="${o[0]}">${o[1]}</button>`).join('')}</div></div>
+  ${fld('Vermogen op 1 januari (spaargeld en beleggingen, €)','tc.verm',t.verm,{after:'tc'})}
+  ${p.own==='koop'?'':fld('Kale huur per maand (€)','tc.huur',t.huur,{after:'tc'})}
+  <div id="tcRes" class="list">${tcRes()}</div><small class="fine">Bron: ${TSL2026.bron}. Controleer altijd bij toeslagen.nl.</small></div>`}
+ return `<div class="card"><h3>Waarop is dit gebaseerd?</h3><div class="tags"><span>${p.hh}</span><span>${p.kids} ${plural(p.kids,'kind','kinderen')}</span><span>${p.own==='koop'?'koopwoning':'huurwoning'}</span><span>netto ${E(N(p.income)+N(p.extra))}/mnd</span></div><p class="note">Bedragen zijn demo-schattingen. Echte aanspraak hangt af van je situatie en de regels van dat moment.</p><button class="btn ghost" data-a="scan">Pas mijn gegevens aan (Money Scan)</button></div>`};
 MOD.savings=()=>{const p=S.profile,best=[['SpaarDemo Vrij',2.6],['ZonSpaar Deposito 1 jr',3.0],['BankDemo Basis',1.2]];
+ if(LEEG())return `<div class="card"><h3>Spaarrente-check</h3><p class="note">Vergelijk je rente met een tarief dat je elders ziet, bijvoorbeeld bij je eigen bank of op een onafhankelijke vergelijker. WATCHDOG toont geen banken.</p><div class="grid2">${fld('Spaartegoed (€)','profile.buffer',p.buffer,{after:'sav'})}${fld('Jouw rente (% per jaar)','profile.rate',p.rate,{after:'sav'})}</div>${fld('Rente elders (% per jaar)','savAlt',S.savAlt||0,{after:'sav'})}<div id="savRes">${savRes()}</div><small class="fine">Rente kan veranderen. Let op voorwaarden zoals opnamebeperkingen. Tot € 100.000 per bank valt spaargeld onder het depositogarantiestelsel.</small></div>`;
  return `<div class="card"><h3>Spaarrente-check</h3><div class="grid2">${fld('Spaartegoed (€)','profile.buffer',p.buffer,{after:'sav'})}${fld('Jouw rente (% per jaar)','profile.rate',p.rate,{after:'sav'})}</div><div id="savRes">${savRes()}</div><small class="fine">${demoTag('Demo-tarieven')} Fictieve spaarrekeningen, geen aanbod.</small></div>`};
-function savRes(){const p=S.profile;return `<div class="res">Nu: <b>${E(N(p.buffer)*N(p.rate)/100)}</b> rente per jaar.</div>${[['SpaarDemo Vrij',2.6],['ZonSpaar Deposito 1 jr',3.0],['BankDemo Basis',1.2]].map(a=>{const x=N(p.buffer)*(a[1]-N(p.rate))/100;return `<div class="alt"><div class="grow"><b>${a[0]}</b><small>${a[1].toString().replace('.',',')}% rente</small></div><div class="alt-p"><b class="${x>=0?'pos':'neg'}">${x>=0?'+':'−'}${E(Math.abs(x))}</b><small>per jaar</small></div></div>`}).join('')}`}
+function savRes(){const p=S.profile;if(LEEG()){const alt=N(S.savAlt);const x=N(p.buffer)*(alt-N(p.rate))/100;return `<div class="res">Nu: <b>${E(N(p.buffer)*N(p.rate)/100)}</b> rente per jaar.</div>${alt>0?`<div class="alt"><div class="grow"><b>Bij ${String(alt).replace('.',',')}% rente</b><small>het tarief dat jij invulde</small></div><div class="alt-p"><b class="${x>=0?'pos':'neg'}">${x>=0?'+':'−'}${E(Math.abs(x))}</b><small>per jaar</small></div></div>`:''}`}return `<div class="res">Nu: <b>${E(N(p.buffer)*N(p.rate)/100)}</b> rente per jaar.</div>${[['SpaarDemo Vrij',2.6],['ZonSpaar Deposito 1 jr',3.0],['BankDemo Basis',1.2]].map(a=>{const x=N(p.buffer)*(a[1]-N(p.rate))/100;return `<div class="alt"><div class="grow"><b>${a[0]}</b><small>${a[1].toString().replace('.',',')}% rente</small></div><div class="alt-p"><b class="${x>=0?'pos':'neg'}">${x>=0?'+':'−'}${E(Math.abs(x))}</b><small>per jaar</small></div></div>`}).join('')}`}
 AFTER.sav=()=>{const r=$('#savRes');if(r)r.innerHTML=savRes()};
 const JOBB=[['Fietsplan of reiskostenvergoeding',300],['Thuiswerkvergoeding',260],['Opleidings- of studiebudget',500],['Collectieve zorgkorting',110],['Pensioenbijdrage werkgever checken',0],['Vakantiegeld en 13e maand controleren',0]];
-MOD.job=()=>{const p=S.profile,rl=ROLES[p.role]||ROLES.ict;return `<div class="card"><h3>Salaris-benchmark</h3>${sel('Sector','profile.role',p.role,Object.keys(ROLES).map(k=>[k,ROLES[k][0]]),{r:1})}<div class="res">Demo-marktindicatie: ongeveer <b>${Math.round(rl[1]*100)}%</b> boven jouw netto inkomen, zo’n <b>${E(N(p.income)*rl[1])}</b> per maand. Alleen een indicatie, geen salarisadvies.</div></div>
+MOD.job=()=>{const p=S.profile,rl=ROLES[p.role]||ROLES.ict;return `<div class="card"><h3>Salaris-benchmark</h3>${LEEG()?`<p class="note">WATCHDOG heeft nog geen betrouwbare salarisbron. Vergelijk je salaris met je cao (vraag je werkgever of vakbond) of met een onafhankelijke salarischeck. Werkgeversregelingen zoals reiskosten, thuiswerkvergoeding en opleidingsbudget staan in je arbeidsvoorwaarden.</p>`:`${sel('Sector','profile.role',p.role,Object.keys(ROLES).map(k=>[k,ROLES[k][0]]),{r:1})}<div class="res">Demo-marktindicatie: ongeveer <b>${Math.round(rl[1]*100)}%</b> boven jouw netto inkomen, zo’n <b>${E(N(p.income)*rl[1])}</b> per maand. Alleen een indicatie, geen salarisadvies.</div>`}</div>
  <div class="card"><h3>Werkgeversvoordelen om te vragen</h3>${JOBB.map((j,i)=>`<label class="chk"><input type="checkbox" ${S.job[i]?'checked':''} data-a="job-ask" data-arg="${i}"><span>${j[0]}${j[1]?` <em class="hint">≈ ${E(j[1])}/jr</em>`:''}</span></label>`).join('')}</div>`};
 ACT['job-ask']=(i,el)=>{S.job[i]=el.checked;save()};
 const LBL={A:0,B:.06,C:.12,D:.2,E:.3,F:.38,G:.45};
-MOD.home=()=>{const p=S.profile,cur=LBL[p.label]||0,sv=Math.max(0,cur-.06)*N(p.energy);return `<div class="card"><h3>Woonlasten</h3><div class="grid2">${fld('Woonlast / mnd (€)','profile.housing',p.housing,{r:1})}${sel('Energielabel','profile.label',p.label,Object.keys(LBL).map(k=>[k,k]),{r:1})}</div>${sel('Woonsituatie','profile.own',p.own,[['koop','Koopwoning'],['huur','Huurwoning']],{r:1})}<div class="res">Woonlast is <b>${Math.round(N(p.housing)/Math.max(1,N(p.income)+N(p.extra))*100)}%</b> van je netto inkomen.<br>Van label ${p.label} naar B: ongeveer <b>${E(sv)}</b> per maand lagere energiekosten${sv>0?' en mogelijk subsidie.':'.'}</div><small class="fine">${demoTag('Demo')} Indicatieve rekenregel.</small></div>`};
+MOD.home=()=>{const p=S.profile,cur=LBL[p.label]||0,sv=Math.max(0,cur-.06)*N(p.energy);return `<div class="card"><h3>Woonlasten</h3><div class="grid2">${fld('Woonlast / mnd (€)','profile.housing',p.housing,{r:1})}${sel('Energielabel','profile.label',p.label,Object.keys(LBL).map(k=>[k,k]),{r:1})}</div>${sel('Woonsituatie','profile.own',p.own,[['koop','Koopwoning'],['huur','Huurwoning']],{r:1})}<div class="res">Woonlast is <b>${Math.round(N(p.housing)/Math.max(1,N(p.income)+N(p.extra))*100)}%</b> van je netto inkomen.<br>Van label ${p.label} naar B: ongeveer <b>${E(sv)}</b> per maand lagere energiekosten${sv>0?' en mogelijk subsidie.':'.'}</div><small class="fine">${LEEG()?'':demoTag('Demo')+' '}Indicatieve rekenregel.</small></div>`};
 function housingRes(){
  const h=S.housing,inc=N(S.profile.income)+N(S.profile.extra),buy=h.type==='koop';
  const maxM=inc*.3,rate=.042/12,ann=buy?N(h.max)*.9*rate/(1-Math.pow(1+rate,-360)):N(h.max),q=ann/Math.max(1,inc);
@@ -2352,7 +2454,7 @@ function housingRes(){
 AFTER.hs=()=>{const r=$('#hsRes');if(r)r.innerHTML=housingRes()};
 MOD.housing=()=>{const h=S.housing;const L=[.92,.97,1.03].map((f,i)=>['Voorbeeldstraat '+(12+i*7)+' (demo)',Math.round(N(h.max)*f/1000)*1000,N(h.rooms)+(i===2?1:0)]);
  return `<div class="card"><h3>Mijn woonwens</h3>${sel('Type','housing.type',h.type,[['koop','Koop'],['huur','Huur']],{r:1})}<div class="grid2">${fld(h.type==='koop'?'Maximale koopprijs (€)':'Maximale huur / mnd (€)','housing.max',h.max,{after:'hs'})}${fld('Kamers','housing.rooms',h.rooms)}</div>${fld('Regio','housing.region',h.region,{t:'s'})}<div id="hsRes">${housingRes()}</div></div>
- <div class="card"><h3>Gevonden in jouw regio ${demoTag('Demo')}</h3>${L.map(x=>`<div class="row"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('house')}</span><span class="grow"><b>${x[0]}</b><small>${esc(h.region)} · ${x[2]} kamers</small></span><b>${E(x[1])}${h.type==='huur'?'/mnd':''}</b></div>`).join('')}<small class="fine">Fictieve woningen.</small></div>`};
+ ${LEEG()?'':`<div class="card"><h3>Gevonden in jouw regio ${demoTag('Demo')}</h3>${L.map(x=>`<div class="row"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('house')}</span><span class="grow"><b>${x[0]}</b><small>${esc(h.region)} · ${x[2]} kamers</small></span><b>${E(x[1])}${h.type==='huur'?'/mnd':''}</b></div>`).join('')}<small class="fine">Fictieve woningen.</small></div>`}`};
 /* =====================  TABS & OVERIGE VIEWS  ===================== */
 function tabHero(k,big,sub,extra){
  const P=PIL[k];
@@ -2452,7 +2554,7 @@ function aiLegacy(q){
 }
 ACT['ai-ask']=q=>aiPush(q);
 ACT['ai-send']=()=>{const i=$('#aiq');if(!i)return;const q=i.value;i.value='';aiPush(q)};
-ACT['ai-clear']=()=>{S.chat=[];save();refresh()};
+ACT['ai-clear']=()=>{S.chat=[];delete S.settings.aiOk;save();refresh()};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='aiq'){e.preventDefault();ACT['ai-send']()}});
 
 /* ---------- meldingen (alle uit dezelfde events) ---------- */
@@ -3391,7 +3493,7 @@ V.besparen=function(){
  <div class="card"><div class="tri sm"><div><small>Per maand</small><b>${E2(subCost())}</b></div><div><small>Per jaar</small><b>${E(subCost()*12)}</b></div><div><small>Ongebruikt</small><b>${E2(sum(S.subs.filter(s=>!s.off&&s.use==='nooit').map(s=>N(s.cost))))}</b></div></div>
  ${subs.length?subs.map((s,i)=>{const idx=S.subs.indexOf(s);return `<div class="sub2"><label class="chk"><input type="checkbox" ${s._sim?'checked':''} data-a="sub-sim" data-arg="${idx}" aria-label="Simuleer opzeggen van ${esc(s.n)}"><span class="grow"><b>${esc(s.n)}</b><small>${E2(s.cost)} per maand · <b>${E(N(s.cost)*12)} per jaar</b> · gebruik: ${s.use}</small></span></label><div class="seg mini" role="group" aria-label="Gebruik ${esc(s.n)}">${['vaak','soms','nooit'].map(u=>`<button class="${s.use===u?'on':''}" data-a="sub-use" data-arg="${idx}:${u}">${u}</button>`).join('')}</div></div>`}).join(''):empty('Geen abonnementen')}
  <h5>Wat als ik opzeg?</h5><div data-live="subsim">${LIVE.subsim()}</div>
- <button class="btn" data-a="sub-apply">Zeg geselecteerde op (demo)</button><small class="fine">Opzeggen is een demo: er wordt niets echt opgezegd.</small></div></div>`;
+ <button class="btn" data-a="sub-apply">${LEEG()?'Markeer als opgezegd':'Zeg geselecteerde op (demo)'}</button><small class="fine">${LEEG()?'WATCHDOG zegt niets voor je op. Zeg zelf op bij de aanbieder en markeer het hier.':'Opzeggen is een demo: er wordt niets echt opgezegd.'}</small></div></div>`;
 };
 ACT['sub-sim']=i=>{const s=S.subs[+i];if(!s)return;s._sim=!s._sim;const e=$('[data-live="subsim"]');if(e)e.innerHTML=LIVE.subsim()};
 ACT['sub-apply']=()=>{
@@ -3493,14 +3595,16 @@ function aiAnswer(q){
 }
 const bubble=m=>{
  if(m.r==='u')return `<div class="msg u"><div class="bub">${esc(m.t)}</div></div>`;
+ if(m.ai)return `<div class="msg a">${orb('ai')}<div class="bub">${aiFmt(m.t)}<br><span class="demo-tag" style="background:#E2F4EC;color:#0E7A54">AI-ANTWOORD</span><small class="ai-src">Bron: ${esc(m.src||'Mistral AI')} op basis van jouw ingevulde cijfers. Uitleg, geen financieel advies. Controleer belangrijke bedragen bij de officiële bron.</small></div></div>`;
+ const RT=LEEG()?`<span class="demo-tag">REKENREGEL</span><small class="ai-src">Bron: jouw ingevoerde gegevens en vaste rekenregels op dit toestel.${m.note?' '+esc(m.note):''}</small>`:'<span class="demo-tag">DEMO-antwoord</span><small class="ai-src">Bron: jouw ingevoerde gegevens en demo-logica. Geen live bron.</small>';
  const acts=m.acts&&m.acts.length?`<div class="ai-acts">${m.acts.map(a=>`<button class="chip a" data-a="${a[1]==='all-actions'||a[1]==='results'?a[1]:'go'}" data-arg="${a[1]}">${a[0]} ›</button>`).join('')}</div>`:'';
- if(m.b){const b=m.b,blk=(t,x)=>x?`<div class="ai4"><small>${t}</small><div>${x}</div></div>`:'';return `<div class="msg a">${orb('ai')}<div class="bub">${blk('INZICHT',b.i)}${blk('WAAROM BELANGRIJK',b.w)}${blk('MOGELIJKE ACTIE',b.a)}${blk('VERWACHT EFFECT',b.e)}${acts}<span class="demo-tag">DEMO-antwoord</span><small class="ai-src">Bron: jouw ingevoerde gegevens en demo-logica. Geen live bron.</small></div></div>`}
- return `<div class="msg a">${orb('ai')}<div class="bub">${m.h}${acts}<span class="demo-tag">DEMO-antwoord</span><small class="ai-src">Bron: jouw ingevoerde gegevens en demo-logica. Geen live bron.</small></div></div>`;
+ if(m.b){const b=m.b,blk=(t,x)=>x?`<div class="ai4"><small>${t}</small><div>${x}</div></div>`:'';return `<div class="msg a">${orb('ai')}<div class="bub">${blk('INZICHT',b.i)}${blk('WAAROM BELANGRIJK',b.w)}${blk('MOGELIJKE ACTIE',b.a)}${blk('VERWACHT EFFECT',b.e)}${acts}${RT}</div></div>`}
+ return `<div class="msg a">${orb('ai')}<div class="bub">${m.h}${acts}${RT}</div></div>`;
 };
 V.ai=function(){
  const F=fin(),A=agg(),sc=scoreVal();
  return `<div class="ai-page"><div class="top">${orb('ai',1)}<div class="top-t"><h1>WATCHDOG AI</h1><small id="dogst">Jouw persoonlijke geldwaakhond</small></div><div class="top-r">${guideBtn()}${bellBtn()}${avBtn()}</div></div>
- <div class="wrap"><div class="ai-demo">${I('info')}<span>${LEEG()?'Antwoorden zijn rekenregels op je eigen ingevulde cijfers. Er is nog geen echte AI gekoppeld. Productvragen worden live opgezocht.':demoTag('DEMO')+' Regelgebaseerde antwoorden op de cijfers van het voorbeeldhuishouden. Er is geen echte AI gekoppeld.'}</span></div>
+ <div class="wrap"><div class="ai-demo">${I('info')}<span>${LEEG()?(S.settings.aiOk===true?'Vrije vragen worden beantwoord door Mistral AI met je afgeronde bedragen. Productvragen (“zoek …”) worden live opgezocht.':'Vrije vragen: met jouw toestemming beantwoordt een echte AI (Mistral) ze, anders rekenregels op dit toestel. Productvragen (“zoek …”) worden live opgezocht.'):demoTag('DEMO')+' Regelgebaseerde antwoorden op de cijfers van het voorbeeldhuishouden. Er is geen echte AI gekoppeld.'}</span></div>
  <div class="ctx"><span><small>Vrij</small><b>${E(F.left)}</b></span><span><small>Buffer</small><b>${mFmt(F.bufMonths)} mnd</b></span><span><small>Acties</small><b>${A.actions.length}</b></span><span><small>Score</small><b>${sc}</b></span></div>
  <div id="vbar"></div>
  <div id="msgs" class="msgs"><div class="msg a">${orb('ai')}<div class="bub">Hoi ${esc(S.profile.name)}! ${LEEG()?'Ik reken alles door met de cijfers die jij invult.':'Ik ken je (fictieve) huishouden en reken alles door met die cijfers.'} Ik antwoord altijd in vier stappen: inzicht, waarom belangrijk, mogelijke actie en verwacht effect.</div></div>${S.chat.map(bubble).join('')}</div>
@@ -3508,8 +3612,27 @@ V.ai=function(){
  <div class="aibar"><input id="aiq" type="text" placeholder="Vraag WATCHDOG iets…" maxlength="160" aria-label="Vraag aan WATCHDOG AI" autocomplete="off"><button class="mic" data-a="voice-start" aria-label="Praten met WATCHDOG">${I('mic')}</button><button class="send" data-a="ai-send" aria-label="Verstuur">${SVG.send}</button></div>
  ${S.chat.length?`<div class="wrap"><button class="btn ghost" data-a="ai-clear">Gesprek wissen</button></div>`:''}</div>`;
 };
-function aiPush0(q){
+/* ---------- Echte AI-assistent (testfase): via de eigen backend naar Mistral AI (Frankrijk).
+   Alleen met toestemming. Er gaan geen namen mee, alleen je vraag en afgeronde bedragen. ---------- */
+const AI_LIVE={st:null,p:null,
+ check(){if(this.st!==null)return Promise.resolve(this.st);if(this.p)return this.p;
+  if(!LiveSearchProvider.backendUrl){this.st=false;return Promise.resolve(false)}
+  this.p=LiveSearchProvider.health().then(h=>{this.p=null;this.st=!!(h&&h.ai==='configured');return this.st}).catch(()=>{this.p=null;return false});return this.p},
+ ctx(){const F=fin(),p=S.profile,r=x=>Math.round(N(x));return {nettoInkomen:r(F.income),vasteLasten:r(F.fixed),variabeleUitgaven:r(F.variable),vrijBesteedbaar:r(F.left),spaargeldBuffer:r(p.buffer),bufferInMaanden:Math.round(F.bufMonths*10)/10,
+  schuldenTotaal:r(F.debts),woonlasten:r(p.housing),energie:r(p.energy),zorgverzekering:r(p.health),telecom:r(p.telecom),abonnementen:r(sum(S.subs.filter(x=>!x.off).map(x=>N(x.cost)))),
+  koopOfHuur:p.own,volwassenen:S.hh.adults.length,kinderen:S.hh.kids.length,autoAanwezig:!!(S.car&&S.car.has),doelen:S.goals.length}},
+ ask(q){return srcFetch(LiveSearchProvider.backendUrl.replace(/\/$/,'')+'/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,context:this.ctx()})},SRC_BACKEND_TIMEOUT_MS)}
+};
+const aiFmt=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#+\s*(.+)$/gm,'<b>$1</b>').replace(/^\s*[-•*]\s+(.+)$/gm,'• $1').replace(/\n/g,'<br>');
+ACT['ai-ok']=()=>{S.settings.aiOk=true;save();closeSheet();const q=window.__aiPending;window.__aiPending=null;if(q)aiPush0(q)};
+ACT['ai-no']=()=>{S.settings.aiOk=false;save();closeSheet();const q=window.__aiPending;window.__aiPending=null;if(q)aiPush0(q,{rules:true})};
+function aiPush0(q,opt){
  q=q.trim();if(!q)return;const box=$('#msgs');if(!box)return;
+ if(LEEG()&&!(opt&&opt.rules)&&AI_LIVE.st!==false){
+  if(AI_LIVE.st===null){AI_LIVE.check().then(()=>aiPush0(q,opt));return}
+  if(S.settings.aiOk===undefined){window.__aiPending=q;sheet('Echte AI gebruiken?',`<p>Voor vrije vragen kan WATCHDOG een echte AI gebruiken: <b>Mistral AI</b> (Frankrijk).</p><p class="note">Dan gaan je vraag en je <b>afgeronde bedragen</b> (inkomen, vaste lasten, buffer, schulden, aantal volwassenen en kinderen) naar Mistral. Er gaan geen namen, adressen of rekeningnummers mee. Typ zelf ook geen persoonsgegevens in je vraag. Het antwoord is uitleg, geen financieel advies.</p><button class="btn" data-a="ai-ok">Ja, gebruik de AI</button><button class="btn ghost" data-a="ai-no">Nee, alleen rekenregels op dit toestel</button><small class="fine">Je kunt dit later wijzigen door het gesprek te wissen.</small>`);return}
+  if(S.settings.aiOk===true)return aiPushLive(q);
+ }
  const keep=!S.settings.noChat;
  if(keep)S.chat.push({r:'u',t:q});box.insertAdjacentHTML('beforeend',bubble({r:'u',t:q}));
  const tp=document.createElement('div');tp.className='msg a';tp.innerHTML=orb('ai')+'<div class="bub typing"><i></i><i></i><i></i></div>';box.appendChild(tp);
@@ -3518,6 +3641,20 @@ function aiPush0(q){
   const r=aiAnswer(q),m={r:'a',b:{i:r.i,w:r.w,a:r.a,e:r.e},acts:r.acts};if(keep){S.chat.push(m);S.chat=S.chat.slice(-16);save()}
   if(tp.parentNode){tp.remove();box.insertAdjacentHTML('beforeend',bubble(m));CVSCROLL.to(box.lastElementChild,'legacy')}
  },RM()?50:650);
+}
+
+function aiPushLive(q){
+ const box=$('#msgs');if(!box)return;const keep=!S.settings.noChat;
+ if(keep)S.chat.push({r:'u',t:q});box.insertAdjacentHTML('beforeend',bubble({r:'u',t:q}));
+ const tp=document.createElement('div');tp.className='msg a';tp.innerHTML=orb('ai')+'<div class="bub typing"><i></i><i></i><i></i></div>';box.appendChild(tp);
+ CVSCROLL.to(box.lastElementChild,'legacy');
+ AI_LIVE.ask(q).then(r=>{
+  let m;
+  if(r.ok&&r.data&&r.data.ok)m={r:'a',ai:1,t:String(r.data.answer||''),src:r.data.source||'Mistral AI'};
+  else{const fb=aiAnswer(q);m={r:'a',b:{i:fb.i,w:fb.w,a:fb.a,e:fb.e},acts:fb.acts,note:'De AI was niet bereikbaar'+((r.data&&r.data.error)?' ('+r.data.error+')':'')+'. Dit is een antwoord met rekenregels.'}}
+  if(keep){S.chat.push(m);S.chat=S.chat.slice(-16);save()}
+  if(tp.parentNode){tp.remove();box.insertAdjacentHTML('beforeend',bubble(m));CVSCROLL.to(box.lastElementChild,'legacy')}
+ });
 }
 
 /* ---------- meldingen: instellingen ---------- */
@@ -3588,6 +3725,8 @@ function init(){
  const nb=$('#nav');nb.addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b){e.preventDefault();closeSheet();go(b.dataset.nav==='home'?'home':b.dataset.nav)}});
  render(true);
  if(!S.ui.welcomed)showWelcome();
+ try{ENERGY_LIVE.get()}catch(e){}
+ setTimeout(()=>{try{liveDealRefresh(false)}catch(e){}},4000);
 }
 window.addEventListener('error',e=>{try{console.error('WATCHDOG fout:',e.message)}catch(x){}});
 /* =====================================================================
@@ -3615,6 +3754,9 @@ const SBC=[
  {k:'grote',n:'Grote aankoop',ic:'bag',d:'',hide:1}
 ];
 const sbc=k=>SBC.find(x=>x.k===k);
+/* Testfase (leeg begin): onderdelen zonder betrouwbare bron zijn verborgen; ze komen terug zodra er een echte bron is. */
+const PILOT_HIDE={vakantie:1,opleiding:1,beleggen:1,gezin:1,wonen:1,verzekering:1};
+const pilotHidden=k=>LEEG()&&!!PILOT_HIDE[k];
 const ORD=(a,b)=>b.score-a.score;
 const r5=(x,n)=>Math.round(x/(n||5))*(n||5);
 const rate=(seed)=>Math.round((4.1+(hash(seed)%70)/100)*10)/10;
@@ -3654,7 +3796,12 @@ const SBQ={
   {t:'Wat vind je belangrijk?',why:'Zo weeg ik kwaliteit, prijs en levensduur.',f:[{k:'prio',l:'Kies wat telt',t:'multi',o:[['prijs','Lage prijs'],['kwaliteit','Beeld/geluid/prestaties'],['duur','Lange levensduur'],['groot','Groot formaat']],def:[]}]}
  ],
  energie:[
-  {t:'Je huidige contract',why:'Ik vergelijk met wat je nu betaalt. Alle bedragen zijn indicatief.',f:[{k:'cur',l:'Wat betaal je nu per maand (€)?',t:'num',def:()=>N(S.profile.energy),req:1},{k:'type',l:'Welk type contract past bij je?',t:'chips',o:[['vast','Vaste prijs (zekerheid)'],['var','Variabel'],['dyn','Dynamisch'],['geen','Geen voorkeur']],def:'geen'},{k:'groen',l:'Groene energie belangrijk?',t:'chips',o:YN,def:'nee'}]}
+  {t:'Je huidige energietarief',why:'Ik vergelijk jouw tarief met de actuele marktprijs van vandaag. Je tarief per kWh en per m³ staat op je jaarafrekening of in de app van je leverancier (inclusief belastingen). Weet je het niet? Laat 0 staan.',hook:'energie0',cta:()=>'Vergelijk met vandaag',f:[
+   {k:'kwhT',l:'Jouw stroomtarief per kWh (€, incl. belasting)',t:'num',def:0},
+   {k:'gasT',l:'Jouw gastarief per m³ (€, incl. belasting, 0 = geen gas of onbekend)',t:'num',def:0},
+   {k:'kwh',l:'Stroomverbruik per jaar (kWh)',t:'num',def:2700,req:1},
+   {k:'m3',l:'Gasverbruik per jaar (m³, 0 = geen gas)',t:'num',def:1100},
+   {k:'cur',l:'Wat betaal je nu per maand aan energie (€, 0 = onbekend)?',t:'num',def:()=>N(S.profile.energy)}]}
  ],
  verzekering:[
   {t:'Welke verzekering?',why:'Zo vergelijk ik alleen wat relevant is.',f:[{k:'soort',l:'Soort',t:'chips',o:[['zorg','Zorg'],['auto','Auto'],['inboedel','Inboedel'],['aansprakelijkheid','Aansprakelijkheid'],['reis','Reis'],['rechtsbijstand','Rechtsbijstand']],def:'inboedel'},{k:'cur',l:'Wat betaal je nu per maand (€)?',t:'num',def:()=>N(S.profile.otherIns)||30,req:1},{k:'prio',l:'Wat vind je belangrijk?',t:'multi',o:[['premie','Lage premie'],['dekking','Ruime dekking'],['risico','Laag eigen risico']],def:[]}]}
@@ -3902,15 +4049,34 @@ const EL={
  koptelefoon:[['Klank Basis',59,4.0],['Klank Sport',129,4.2],['Klank Studio',229,4.5],['Klank ANC Pro',349,4.7]]
 };
 function genEnergie(a){
- const cur=N(a.cur),T=[['Voltix Vast 1 jaar','vast',.90,'Vaste prijs, 1 jaar','laag',0],['Voltix Vast 3 jaar','vast',.86,'Vaste prijs, 3 jaar','laag',0],['Groenlicht Variabel','var',.82,'Prijs kan maandelijks wijzigen','midden',0],['Dynamo Dynamisch','dyn',.77,'Uurprijzen. Je verbruik verschuiven helpt.','hoog',0],['EcoStroom Groen Vast 1 jaar','vast',.93,'100% groen, vaste prijs','laag',1],['Eco3 Groen Vast 3 jaar','vast',.89,'100% groen, vaste prijs 3 jaar','laag',1]],out=[];
- T.forEach(t=>{
-  const mo=cur*t[2],diff=cur-mo;let sc=45+diff/Math.max(1,cur)*90;
-  if(a.type&&a.type!=='geen')sc+=t[1]===a.type?10:-6;if(a.groen==='ja')sc+=t[5]?12:-8;if(t[4]==='hoog'&&a.type!=='dyn')sc-=6;
-  const o=mk('energie',a,{title:t[0],sub:t[3],price:mo,score:sc,kv:[['Nu',E2(cur)+' p/m'],['Mogelijk',E2(mo)+' p/m'],['Verschil',E(diff*12)+' /jr','pos']],
-   pros:[`Mogelijk ${E2(diff)} per maand (${E(diff*12)} per jaar) minder dan nu`,`Prijsrisico: ${t[4]}`,t[5]?'Groene energie':null].filter(Boolean),notes:['Indicatieve schatting op basis van je huidige maandbedrag. Het echte tarief hangt af van je verbruik en de actuele voorwaarden.'],rows:[['Huidig per maand',E2(cur)],['Mogelijk per maand',E2(mo)],['Verschil per jaar',E(diff*12)]],watch:{label:'Bewaak dit tarief',price:mo,unit:'p/m'}});
-  o.why.crit=[['Lager maandbedrag dan nu','hoog'],['Jouw contractvoorkeur','middel'],['Groen',a.groen==='ja'?'hoog':'laag']];o.why.calc=[`${E2(cur)} × ${String(t[2]).replace('.',',')} = ${E2(mo)} per maand (demo-factor per contracttype)`];o.why.ass.push('Contracttypes hebben vaste demo-prijsfactoren, geen echte tarieven.');out.push(o);
- });
- return out.sort(ORD).slice(0,5);
+ const L=a.live,kwh=N(a.kwh),m3=N(a.m3),kT=N(a.kwhT),gT=N(a.gasT),out=[],e2=v=>'€ '+(+v).toFixed(3).replace('.',',');
+ const liveGas=L&&L.gas,liveEl=L&&L.stroom;
+ const mineY=(kT>0?kwh*kT:0)+(gT>0?m3*gT:0),known=kT>0&&(m3<=0||gT>0);
+ if(kT>0||gT>0){
+  const o=mk('energie',a,{title:'Jouw huidige contract',sub:known?'Op basis van jouw tarieven en verbruik':'Deels bekend: vul ook je gastarief in',price:mineY/12,score:100,badge:'Jouw huidige contract',est:true,
+   kv:[['Stroom',kT>0?e2(kT)+' /kWh':'onbekend'],['Gas',gT>0?e2(gT)+' /m³':(m3>0?'onbekend':'geen gas')],['Per jaar',E(mineY)]],
+   pros:[`Stroom: ${kwh} kWh × ${kT>0?e2(kT):'?'}`,m3>0?`Gas: ${m3} m³ × ${gT>0?e2(gT):'?'}`:'Geen gasverbruik'],
+   notes:['Exclusief vaste leveringskosten, netbeheerkosten en de belastingvermindering (€ 628,96 per jaar in 2026). Die staan los van het tarief per kWh en m³.'],
+   rows:[['Stroom per jaar',E(kT*kwh)],['Gas per jaar',E(gT*m3)],['Totaal per jaar',E(mineY)],['Per maand',E(mineY/12)]]});
+  o.conf={l:known?'hoog':'middel',r:'rekenwerk op jouw eigen tarieven en verbruik',need:known?[]:['gastarief']};
+  o.why.crit=[['Jouw eigen tarieven','hoog']];o.why.calc=[`${kwh} kWh × ${e2(kT)} + ${m3} m³ × ${e2(gT)} = ${E(mineY)} per jaar`];o.why.data=[['Stroomverbruik',kwh+' kWh'],['Gasverbruik',m3+' m³']];o.why.date=`Jouw invoer, ${sbDate()}`;
+  out.push(o);
+ }
+ if(liveEl||liveGas){
+  const dynY=(liveEl?kwh*liveEl.allIn:0)+(liveGas?m3*liveGas.allIn:0),diff=known?mineY-dynY:null;
+  const o=mk('energie',a,{title:'Dynamisch contract, tarief van vandaag',sub:'Marktprijs + energiebelasting + inkoopvergoeding, incl. btw',price:dynY/12,score:90,live:true,
+   kv:[['Stroom (gem. vandaag)',liveEl?e2(liveEl.allIn)+' /kWh':'—'],['Gas (vandaag)',liveGas?e2(liveGas.allIn)+' /m³':'—'],[known?'Verschil per jaar':'Per jaar',known?(diff>=0?'−':'+')+E(Math.abs(diff)):E(dynY),known?(diff>=0?'pos':'neg'):'']],
+   pros:[known?(diff>=0?`Met de prijzen van vandaag zou dit circa ${E(diff)} per jaar goedkoper zijn dan jouw contract`:`Met de prijzen van vandaag zou dit circa ${E(-diff)} per jaar duurder zijn dan jouw contract`):'Vul je eigen tarief in om te vergelijken',
+    liveEl?`Stroom schommelt vandaag tussen ${e2(liveEl.min)} en ${e2(liveEl.max)} per kWh (marktprijs, incl. btw)`:null,'Prijzen veranderen elk uur (stroom) en elke dag (gas). Eén dag zegt weinig over een heel jaar.'].filter(Boolean),
+   notes:['Bron: EnergyZero, dynamische tarieven van vandaag. Dit is een voorbeeld van een dynamisch contract; andere leveranciers rekenen een andere inkoopvergoeding. WATCHDOG krijgt geen commissie.','Vaste leveringskosten, netbeheerkosten en de belastingvermindering zijn niet meegenomen.'],
+   rows:[['Stroom: marktprijs (gem.)',liveEl?e2(liveEl.markt):'—'],['Stroom: energiebelasting',liveEl?e2(liveEl.belasting):'—'],['Stroom: inkoopvergoeding',liveEl?e2(liveEl.inkoop):'—'],['Gas: marktprijs',liveGas?e2(liveGas.markt):'—'],['Gas: energiebelasting',liveGas?e2(liveGas.belasting):'—'],['Gas: inkoopvergoeding',liveGas?e2(liveGas.inkoop):'—'],['Totaal per jaar (bij prijzen van vandaag)',E(dynY)]]});
+  o.conf={l:'middel',r:'live prijzen van vandaag (EnergyZero); een jaar kan anders uitvallen',need:[]};
+  o.why.crit=[['Actuele marktprijs','hoog']];o.why.calc=[liveEl?`${kwh} kWh × ${e2(liveEl.allIn)} = ${E(kwh*liveEl.allIn)}`:'',liveGas?`${m3} m³ × ${e2(liveGas.allIn)} = ${E(m3*liveGas.allIn)}`:''].filter(Boolean);
+  o.why.data=[['Bron',L.src],['Opgehaald',L.date]];o.why.ass=['Verbruik is gelijk verdeeld over de dag; wie verbruik verschuift naar goedkope uren betaalt minder.'];o.why.lim=['Eén dag is geen jaargemiddelde. Winterprijzen zijn vaak hoger.'];o.why.date=`Live opgehaald op ${L.date}`;
+  out.push(o);
+ }
+ if(!out.length){const o=mk('energie',a,{title:'Geen vergelijking mogelijk',sub:'Vul je tarief in, of probeer het later opnieuw als de prijsbron weer bereikbaar is',price:0,score:0,est:true,kv:[['Status','onvoldoende gegevens']],notes:['WATCHDOG verzint geen tarieven.']});out.push(o)}
+ return out;
 }
 function genVerzekering(a){
  const cur=N(a.cur),soort=a.soort,prio=a.prio||[],T=[['Basis Online',.82,'Basisdekking','hoog'],['Voordeel Plus',.90,'Standaard dekking','middel'],['Compleet',1.0,'Ruime dekking','middel'],['Compleet Zonder Zorgen',1.14,'Zeer ruime dekking','laag'],['Collectief via werkgever/vereniging',.88,'Standaard dekking, collectiviteitskorting','middel']],out=[];
@@ -4033,12 +4199,34 @@ const SB_DEMO=`<div class="sb-demo">${I('info')}<span>${demoTag('DEMO')} Fictiev
 const STAGES=['WATCHDOG zoekt','WATCHDOG vergelijkt','WATCHDOG beoordeelt','WATCHDOG legt uit'];
 
 /* ---------- hub ---------- */
+const KZ_INFO={woning:['Bouwjaar en oppervlakte uit de BAG',1],auto:['Kenteken opzoeken bij de RDW, of een occasion zoeken',1],energie:['Jouw tarief naast de energieprijs van vandaag',1],
+ aankoop:['Actuele prijzen bij Nederlandse winkels',1],telefoon:['Sim-only of een nieuw toestel',1],internet:['Glasvezel en bundels vergelijken',1],
+ sparen:['Hoeveel per maand voor je doel',0],doel:['Een spaarplan voor iets anders',0],vakantie:['Totale kosten en waarde',0],verzekering:['Premie en dekking',0],opleiding:['Cursus of studie',0],beleggen:['Uitleg en scenario’s',0],gezin:['Kinderopvang en kosten',0],wonen:['Huren of kopen',0]};
+/* Kleur per tegel (verloop van licht naar donker) en tweekleurige iconen */
+const TILE={woning:['#2DD4BF','#0D9488'],auto:['#60A5FA','#1D4ED8'],vakantie:['#FDBA74','#EA580C'],aankoop:['#F472B6','#DB2777'],energie:['#FCD34D','#D97706'],telefoon:['#A78BFA','#6D28D9'],internet:['#67E8F9','#0891B2'],verzekering:['#818CF8','#4338CA'],opleiding:['#FB7185','#E11D48'],sparen:['#6EE7B7','#059669'],beleggen:['#BEF264','#4D7C0F'],doel:['#FCA5A5','#DC2626'],gezin:['#F0ABFC','#A21CAF'],wonen:['#FDE68A','#B45309'],_:['#C4B5FD','#6D28D9']};
+const tic=(fill,line)=>`<svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor" fill-opacity=".45" stroke="none">${fill}</g><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${line}</g></svg>`;
+const TIC={
+ woning:tic('<path d="M4 10.4 12 4l8 6.4V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/>','<path d="M3 11.2 12 4l9 7.2"/><path d="M5 9.8V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.8"/><path d="M10 20v-5.5h4V20"/>'),
+ auto:tic('<path d="M4 12.5 5.6 8.3A2 2 0 0 1 7.5 7h9a2 2 0 0 1 1.9 1.3L20 12.5V16H4z"/>','<path d="M4 12.5 5.6 8.3A2 2 0 0 1 7.5 7h9a2 2 0 0 1 1.9 1.3L20 12.5"/><rect x="3" y="12.5" width="18" height="4.5" rx="1.5"/><path d="M6 17v1.5M18 17v1.5"/><circle cx="7.3" cy="14.8" r=".6" fill="currentColor"/><circle cx="16.7" cy="14.8" r=".6" fill="currentColor"/>'),
+ vakantie:tic('<path d="M21 3 3.5 10.2l6.3 2.9 2.9 6.4z"/>','<path d="M21 3 3.5 10.2l6.3 2.9 2.9 6.4z"/><path d="m9.8 13.1 5-5"/>'),
+ aankoop:tic('<path d="M5.2 8h13.6l-1 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/>','<path d="M5.2 8h13.6l-1 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path d="M9 10V6.8a3 3 0 0 1 6 0V10"/>'),
+ energie:tic('<path d="M13.5 2.5 5 13.5h6.2l-1.2 8L19 10.3h-6.3z"/>','<path d="M13.5 2.5 5 13.5h6.2l-1.2 8L19 10.3h-6.3z"/>'),
+ telefoon:tic('<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/>','<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/><path d="M10.5 18.2h3"/>'),
+ internet:tic('<path d="M12 20.2 4.6 12.4a10.6 10.6 0 0 1 14.8 0z"/>','<path d="M2.8 9.2a13.2 13.2 0 0 1 18.4 0"/><path d="M5.8 12.4a8.8 8.8 0 0 1 12.4 0"/><path d="M8.8 15.6a4.4 4.4 0 0 1 6.4 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/>'),
+ verzekering:tic('<path d="M12 3.2 5 6v5.6c0 4.3 3 7.4 7 9.1 4-1.7 7-4.8 7-9.1V6z"/>','<path d="M12 3.2 5 6v5.6c0 4.3 3 7.4 7 9.1 4-1.7 7-4.8 7-9.1V6z"/><path d="m9 12 2.2 2.2 4-4.2"/>'),
+ opleiding:tic('<path d="M2.5 9.2 12 4.8l9.5 4.4L12 13.6z"/>','<path d="M2.5 9.2 12 4.8l9.5 4.4L12 13.6z"/><path d="M6.5 11.2v4.3c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-4.3"/><path d="M21.5 9.2V14"/>'),
+ sparen:tic('<ellipse cx="12" cy="7" rx="7" ry="3"/>','<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>'),
+ beleggen:tic('<path d="M4 20V14h3.5v6zM10.2 20v-9h3.6v9zM16.5 20V8H20v12z"/>','<path d="M3.5 20.5h17"/><path d="M4 20V14h3.5v6M10.2 20v-9h3.6v9M16.5 20V8H20v12"/><path d="m4 9.5 5-4 4 2.5 6.5-4.5"/>'),
+ doel:tic('<circle cx="12" cy="12" r="8.5"/>','<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/>'),
+ gezin:tic('<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.4"/>','<circle cx="9" cy="8" r="3.2"/><path d="M3 19.5a6 6 0 0 1 12 0"/><circle cx="17" cy="9.5" r="2.4"/><path d="M15.8 14.3a4.6 4.6 0 0 1 5.7 4.5"/>'),
+ wonen:tic('<circle cx="8" cy="15" r="4.5"/>','<circle cx="8" cy="15" r="4.5"/><path d="m11.2 11.8 8.3-8.3M16.5 6.5l2.5 2.5M14.3 8.7l2 2"/>')
+};
 function kiesHub(){
  const tr=[].concat(S.deals,S.trips,S.tickets).filter(x=>x.active),h=S.sb.hist;
  return `<div class="wrap">${topbar('Kies slim',{sub:'Eerst zoeken, dan beslissen. Daarna bewaakt WATCHDOG.'})}
  <div class="card sb-hero">${dogSay('Waar kan ik je mee helpen? Kies wat je wilt doen of kopen. Ik vraag alleen wat nodig is.')}
-  <div class="sb-say"><label class="f"><span class="lbl">Of typ wat je zoekt</span><input id="sb-say" type="text" maxlength="120" placeholder="Bijv. ik zoek een televisie tot €1.200" autocomplete="off"></label><button class="btn sm" data-a="sb-say">Zoek</button></div>
-  <div class="sbg" role="group" aria-label="Wat wil je doen of kopen?">${SBC.filter(c=>!c.hide).map(c=>`<button class="sbt" data-a="sb-go" data-arg="${c.k}"><span class="sbt-i">${I(c.ic)}</span><b>${c.n}</b></button>`).join('')}</div></div>
+  <div class="sb-say"><label class="f"><span class="lbl">Of typ wat je zoekt</span><input id="sb-say" type="text" maxlength="120" placeholder="Bijv. televisie tot €1.200" autocomplete="off"></label><button class="btn sm" data-a="sb-say">Zoek</button></div>
+  <div class="sbg" role="group" aria-label="Wat wil je doen of kopen?">${SBC.filter(c=>!c.hide&&!pilotHidden(c.k)).map(c=>{const t=TILE[c.k]||TILE._;return `<button class="sbt" data-a="sb-go" data-arg="${c.k}" style="--tc1:${t[0]};--tc2:${t[1]}"><span class="sbt-i">${TIC[c.k]||I(c.ic)}</span><b>${c.n}</b>${LEEG()&&LIVE_PRODUCTS()&&KZ_INFO[c.k]&&KZ_INFO[c.k][1]?'<em class="sbt-live">LIVE</em>':''}</button>`}).join('')}</div></div>
  <div class="card sb-how"><h3>Zo werkt het</h3><div class="how">${['zoekt','vergelijkt','beoordeelt','legt uit'].map((t,i)=>`<span><i>${i+1}</i>WATCHDOG ${t}</span>`).join('')}<span class="you"><i>${I('check')}</i>Jij beslist</span><span><i>${I('eye')}</i>WATCHDOG bewaakt</span><span><i>${I('alert')}</i>WATCHDOG waarschuwt</span></div><small class="fine">Daarna kan WATCHDOG je keuze bewaken en waarschuwen als er iets verandert.</small></div>
  ${h.length?`${sec('Eerder bekeken')}<div class="card list">${h.map(x=>`<button class="row" data-a="sb-hist" data-arg="${x.id}"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I(sbc(x.cat).ic)}</span><span class="grow"><b>${esc(sbc(x.cat).n)}</b><small>${x.top?`Beste match: ${esc(x.top)}`:'Zonder resultaat'} · ${evAgo(x.ts)}</small></span><i class="chev">›</i></button>`).join('')}</div>`:''}
  ${sec('Mijn bewaakte keuzes',`<button class="link" data-a="go" data-arg="deals">Alles ›</button>`)}
@@ -4097,7 +4285,7 @@ ACT['sb-more']=()=>{const W=S.sb.wiz;W.stage='q';W.step=0;save();window.scrollTo
 
 /* ---------- resultaten ---------- */
 const sbFind=id=>{const W=S.sb.wiz;return W?sbOpts(W).find(o=>o.id===id):null};
-const sbLive=W=>!!(W&&((W.cat==='auto'&&W.ans.mode==='mijn'&&W.ans.cp&&W.ans.cp.live)||(W.cat==='woning'&&W.ans.wp&&W.ans.wp.live)));
+const sbLive=W=>!!(W&&((W.cat==='auto'&&W.ans.mode==='mijn'&&W.ans.cp&&W.ans.cp.live)||(W.cat==='woning'&&W.ans.wp&&W.ans.wp.live)||(W.cat==='energie'&&W.ans.live)));
 function optCard(o,i,W){
  const w=S.sb.watched[o.id],chosen=S.sb.choices.some(c=>c.id===o.id);
  return `<article class="sbo ${i===0?'best':''}" aria-label="${esc(o.title)}">
@@ -4430,7 +4618,36 @@ const WDA_LIVE={
    catalogusprijs:cat,apk:apk.length===8?apk.slice(6,8)+'-'+apk.slice(4,6)+'-'+apk.slice(0,4):null,zitplaatsen:+v.aantal_zitplaatsen||null,idx:idx,live:true,src:'RDW Open Data'}};
  }
 };
+/* ---------- LIVE: energieprijzen van vandaag (EnergyZero, openbare API, geen sleutel) ----------
+   Stroom: gemiddelde uurprijs van vandaag. Gas: dagprijs (geldig van 06:00 tot 06:00).
+   'allIn' = marktprijs + energiebelasting + inkoopvergoeding, alles incl. btw (per kWh of m³). */
+const ENERGY_LIVE={c:null,p:null,
+ get(){
+  if(this.c&&Date.now()-this.c.t<3*3600e3)return Promise.resolve(this.c);
+  if(this.p)return this.p;
+  const q='query Q($input: EnergyMarketPricesInput!){energyMarketPrices(input:$input){averageIncl prices{energyPriceIncl from till additionalCosts{name priceIncl}}}}';
+  const call=input=>srcFetch('https://api.energyzero.nl/v1/gql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,variables:{input:input}})},12000);
+  const d0=new Date();d0.setHours(0,0,0,0);const d1=new Date(d0.getTime()+DAY),g0=new Date(d0.getTime()-DAY+6*3600e3),g1=new Date(d0.getTime()+DAY+6*3600e3);
+  const add=(x,n)=>{const c=(x.additionalCosts||[]).find(a=>new RegExp(n,'i').test(a.name));return c?+c.priceIncl:0};
+  const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
+  this.p=Promise.all([call({from:d0.toISOString(),till:d1.toISOString(),intervalType:'Hourly',type:'Electricity'}),call({from:g0.toISOString(),till:g1.toISOString(),intervalType:'Daily',type:'Gas'})]).then(([e,g])=>{
+   this.p=null;
+   const ep=e.ok&&e.data&&e.data.data&&e.data.data.energyMarketPrices&&e.data.data.energyMarketPrices.prices||[];
+   const gp=g.ok&&g.data&&g.data.data&&g.data.data.energyMarketPrices&&g.data.data.energyMarketPrices.prices||[];
+   if(!ep.length&&!gp.length)return null;
+   const now=Date.now(),gx=gp.find(x=>new Date(x.from).getTime()<=now&&now<new Date(x.till).getTime())||gp[gp.length-1];
+   const r={t:now,date:new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}),
+    stroom:ep.length?{markt:avg(ep.map(x=>+x.energyPriceIncl)),min:Math.min.apply(null,ep.map(x=>+x.energyPriceIncl)),max:Math.max.apply(null,ep.map(x=>+x.energyPriceIncl)),belasting:add(ep[0],'tax'),inkoop:add(ep[0],'purchas')}:null,
+    gas:gx?{markt:+gx.energyPriceIncl,belasting:add(gx,'tax'),inkoop:add(gx,'purchas')}:null,src:'EnergyZero (dynamische tarieven, incl. btw)'};
+   if(r.stroom)r.stroom.allIn=r.stroom.markt+r.stroom.belasting+r.stroom.inkoop;
+   if(r.gas)r.gas.allIn=r.gas.markt+r.gas.belasting+r.gas.inkoop;
+   this.c=r;return r;
+  }).catch(()=>{this.p=null;return null});
+  return this.p;
+ }
+};
 const SBHOOK={},SBEXTRA={},SBDONE={};
+SBHOOK.energie0=async W=>{const r=await ENERGY_LIVE.get();W.ans.live=r||null;if(!r)toast('Actuele energieprijzen zijn nu niet bereikbaar. Ik reken alleen met jouw eigen tarief.');return true};
 const HEAT={cv:'Cv-ketel op gas',hybride:'Hybride warmtepomp',pomp:'Volledige warmtepomp',stad:'Stadsverwarming',elek:'Elektrisch',weet:'Weet ik niet'};
 SBHOOK.woning0=async W=>{
  const a=W.ans,r=await WDA_LIVE.woning(a.pc,a.nr,a.toev);
@@ -4566,7 +4783,7 @@ V.bronnen=function(){
 /* ---------- snelle keuzes op Home ---------- */
 const QG=[['woning','Mijn woning','house'],['auto','Auto','car'],['vakantie','Vakantie','plane'],['aankoop','Aankoop','bag'],['energie','Energie','bolt'],['telefoon','Telefoon','phone'],['internet','Internet','wifi'],['verzekering','Verzekering','umbrella'],['opleiding','Opleiding','graduation'],['sparen','Sparen','coins'],['beleggen','Vermogen','chart'],['doel','Ander doel','target']];
 /* LEGACY CANDIDATE — DO NOT EXTEND: quickGrid Geen verwijzingen gevonden in de code (dependency-scan V12.1); niet automatisch verwijderd. */
-const quickGrid=()=>`<div class="qg" role="group" aria-label="Snelle keuzes">${QG.map(q=>`<button class="qt" data-a="sb-go" data-arg="${q[0]}"><span>${I(q[2])}</span><b>${q[1]}</b></button>`).join('')}</div>`;
+const quickGrid=()=>`<div class="qg" role="group" aria-label="Snelle keuzes">${QG.filter(q=>!pilotHidden(q[0])).map(q=>`<button class="qt" data-a="sb-go" data-arg="${q[0]}"><span>${I(q[2])}</span><b>${q[1]}</b></button>`).join('')}</div>`;
 
 /* ---------- wizard: voorwaardelijke velden, hooks, vrije invoer ---------- */
 const visF=(st,a)=>st.f.filter(f=>!f.show||f.show(a));
@@ -4647,7 +4864,7 @@ const carInterestM=carInt,carRealM=carTrue;
 /* ---------- WATCHDOG Vandaag: concrete acties ---------- */
 const QH=[['woning','Woning','house'],['auto','Auto','car'],['vakantie','Vakantie','plane'],['aankoop','Aankoop','bag'],['energie','Energie','bolt'],['verzekering','Verzekering','umbrella'],['doel','Ander doel','target']];
 /* LEGACY CANDIDATE — DO NOT EXTEND: quickHome Geen verwijzingen gevonden in de code (dependency-scan V12.1); niet automatisch verwijderd. */
-const quickHome=()=>`<div class="qg" role="group" aria-label="Snelle keuzes">${QH.map(q=>`<button class="qt" data-a="sb-go" data-arg="${q[0]}"><span>${I(q[2])}</span><b>${q[1]}</b></button>`).join('')}<button class="qt" data-a="go" data-arg="kies"><span>${I('search')}</span><b>Meer</b></button></div>`;
+const quickHome=()=>`<div class="qg" role="group" aria-label="Snelle keuzes">${QH.filter(q=>!pilotHidden(q[0])).map(q=>`<button class="qt" data-a="sb-go" data-arg="${q[0]}"><span>${I(q[2])}</span><b>${q[1]}</b></button>`).join('')}<button class="qt" data-a="go" data-arg="kies"><span>${I('search')}</span><b>Meer</b></button></div>`;
 
 /* ---------- financiële check (beslissen) ---------- */
 const FIN_CATS=['vakantie','auto','wonen','telefoon','elektronica','aankoop','grote','opleiding','sparen','doel','gezin','woning'];
@@ -4733,7 +4950,7 @@ SBQ.woning=[
 const MODN={energie:'Energie',verduurzaming:'Verduurzaming',verzekering:'Verzekering',internet:'Internet en telecom',woonlasten:'Woonlasten'};
 function genWoning(a){
  const p=S.profile,hier=a.status!=='overweeg',own=hier?p.own==='koop':a.vorm==='koop',m2=N(a.m2)||100,by=N(a.bouwjaar)||1980,lab=a.label||'D',type=a.type||'Tussenwoning',heat=a.verwarming||'cv',plannen=a.plannen||[];
- const LF={A:5,B:8,C:11,D:14,E:17,F:20,G:23},gasPrice=1.45,kwhPrice=.27,gasHeat=(heat==='cv'||heat==='hybride'||heat==='weet');
+ const LF={A:5,B:8,C:11,D:14,E:17,F:20,G:23},EL_=ENERGY_LIVE.c,gasPrice=EL_&&EL_.gas?Math.round(EL_.gas.allIn*100)/100:1.45,kwhPrice=EL_&&EL_.stroom?Math.round(EL_.stroom.allIn*100)/100:.27,gasHeat=(heat==='cv'||heat==='hybride'||heat==='weet');
  const known=N(a.verbruik)>0,gasM3=known?N(a.verbruik):Math.max(300,m2*(LF[lab]||14)),gasCost=gasHeat?gasM3*gasPrice:0,adr=`${a.pc||''} ${a.nr||''}${a.toev||''}`.trim(),solar=hier?!!p.solar:a.solar==='ja',out=[];
  const est=known?'':' (schatting)',canPay=heat!=='weet';
  const opp=(mod,title,sub,save,cost,o)=>{
@@ -4743,7 +4960,7 @@ function genWoning(a){
   if(plan)it.pros.unshift('Je gaf aan dat je dit overweegt');
   if(a.verbouwing&&a.verbouwing!=='geen'&&mod==='verduurzaming')it.pros.push('Je plant een verbouwing: combineren kan mogelijk voordeel geven (indicatief)');
   it.why.data=[['Adres',adr],['Woningtype (jouw invoer)',type],['Bouwjaar'+(a.wp&&a.wp.bouwjaar==by?' (BAG)':''),by],['Oppervlakte'+(a.wp&&a.wp.m2==m2?' (BAG)':''),m2+' m²'],['Energielabel (jouw invoer)',lab],['Situatie',hier?'ik woon hier':'ik overweeg deze woning'],['Verwarming',HEAT[heat]],['Gasverbruik',Math.round(gasM3)+' m³ per jaar'+(known?' (jouw opgave)':' (geschat)')]];
-  it.why.ass.push(`Gasprijs €${String(gasPrice).replace('.',',')} per m³ en stroomprijs €${String(kwhPrice).replace('.',',')} per kWh (gemiddelde aannames, geen live tarief).`,a.wp&&a.wp.live?'Bouwjaar en oppervlakte komen uit de BAG (Kadaster). Woningtype en energielabel zijn jouw invoer.':'Woningkenmerken zijn jouw invoer.');it.why.lim.push('Werkelijke besparing hangt af van gedrag, weer, bouwkundige staat en prijzen.');
+  it.why.ass.push(`Gasprijs €${String(gasPrice).replace('.',',')} per m³ en stroomprijs €${String(kwhPrice).replace('.',',')} per kWh (${EL_?'dynamisch tarief van vandaag via EnergyZero':'gemiddelde aannames, geen live tarief'}).`,a.wp&&a.wp.live?'Bouwjaar en oppervlakte komen uit de BAG (Kadaster). Woningtype en energielabel zijn jouw invoer.':'Woningkenmerken zijn jouw invoer.');it.why.lim.push('Werkelijke besparing hangt af van gedrag, weer, bouwkundige staat en prijzen.');
   const gasBased=o&&(o.plan==='isolatie'||o.plan==='warmtepomp'||/glas/i.test(title));
   if(gasBased){const need=[];if(!known)need.push('werkelijk gasverbruik');if(heat==='weet')need.push('type verwarming');it.conf={l:need.length?'laag':'middel',r:need.length?'schatting op aannames over je woning':'BAG-gegevens en aannames',need:need}}
   it.why.ass.push('Bandbreedte: voordeel −25% tot +30%, kosten −20% tot +30% (aanname van WATCHDOG).');it.why.date=a.wp&&a.wp.live?`BAG opgehaald op ${sbDate()}. Prijzen en besparingen zijn schattingen.`:`Schatting van ${sbDate()}.`;
@@ -4783,7 +5000,22 @@ ACT['sb-woning-watch']=()=>{WE.create({type:'woning',categorie:'Woning',onderwer
 
 /* ---------- Auto: kenteken → profiel → ontbrekende info → werkelijke kosten → check → alternatieven → Watch ---------- */
 SBHOOK.auto0=async W=>{
- const a=W.ans;if(a.mode!=='mijn')return true;
+ const a=W.ans;
+ if(a.mode!=='mijn'&&LEEG()&&LIVE_PRODUCTS()){
+  /* Testfase: geen fictieve autocatalogus. We zoeken live naar echte occasions en verwijzen naar echte autosites. */
+  const b=N(a.budget),q=(a.cond==='nieuw'?'nieuwe auto':'occasion auto')+(a.size==='compact'?' compact':a.size==='midden'?' middenklasse':a.size==='ruim'?' suv stationwagon':'');
+  const reqs=b>0?[{k:'budget',label:'Maximaal '+E(b),check:x=>x&&x.price!=null?(x.price<=b?'ok':'nok'):'unknown',val:x=>x&&x.price!=null?E2g(x.price):null}]:[];
+  S.sb.wiz=null;save();go('ai');
+  setTimeout(()=>{try{
+   convNew(null,q);CONV.stage='route';convUser(`Ik zoek een ${a.cond==='nieuw'?'nieuwe ':''}auto${b>0?' tot '+E(b):''}`,'typ');
+   liveSearchInChat(q,'Zoeken: '+q+(b>0?' tot '+E(b):''),reqs).then(()=>{
+    const mq=encodeURIComponent((a.cond==='nieuw'?'nieuwe ':'')+'auto');
+    convSay('Meer auto’s',{type:'html',html:`<div class="card"><b>Zoek ook verder op de grote autosites</b><p class="note">Daar staat het volledige aanbod. Met het kenteken van een auto die je ziet, kan WATCHDOG de RDW-gegevens en de echte kosten voor je doorrekenen (Zoeken → Auto → Dit is mijn auto).</p><a class="link" href="https://www.autoscout24.nl/" target="_blank" rel="noopener">AutoScout24</a> · <a class="link" href="https://www.gaspedaal.nl/" target="_blank" rel="noopener">Gaspedaal</a> · <a class="link" href="https://www.marktplaats.nl/l/auto-s/" target="_blank" rel="noopener">Marktplaats</a></div>`},{mute:true});
+   });
+  }catch(e){console.error(e)}},150);
+  return false;
+ }
+ if(a.mode!=='mijn')return true;
  const r=await WDA_LIVE.voertuig(a.kenteken);if(!r.ok){toast(r.error);return false}
  const d=r.data;a.cp=d;a.kenteken=d.kenteken;if(d.bouwjaar)a.cbj=d.bouwjaar;if(['benzine','hybride','elektrisch','diesel'].indexOf(d.brandstof)>=0)a.cfuel=d.brandstof;return true;
 };
@@ -5870,7 +6102,7 @@ function convHandle(text,src){
  if(cat||/wil iets kopen|ik zoek iets|iets aanschaffen|wat wil ik kopen/.test(t)){convNew(cat,text);convUser(text,src);convStep(text,true);return true}
  const r=sbParse(text);
  const isForm=r&&r.cat&&r.cat!=='aankoop'&&!gi;/* een concreet productwoord (geen formulier-domein) gaat altijd de generieke flow in */
- if(isForm&&/(wil|zoek|ga |plan|overweeg|denk|kopen|boeken|regelen)/.test(t)){convNew(null,text);CONV.stage='route';convUser(text,src);convRoute(r);return true}
+ if(isForm&&/(wil|zoek|ga |plan|overweeg|denk|kopen|boeken|regelen)/.test(t)){convNew(null,text);CONV.stage='route';convUser(text,src);if(LEEG()&&r.cat==='vakantie'){vakantieUitleg();return true}if((pilotHidden(r.cat)||['telefoon','internet'].indexOf(r.cat)>=0)&&LIVE_PRODUCTS()){liveSearchInChat(text,'Zoeken: '+text,[]);return true}convRoute(r);return true}
  if(gi){convNew('generic',text);CONV.req.item=gi;convUser(text,src);convStep(text,true);return true}
  return false;
 }
@@ -6161,7 +6393,14 @@ function startPurchaseConversation(){
  if(route[0]!=='ai')go('ai');
 }
 const _sbGoLegacy=ACT['sb-go'];
-ACT['sb-go']=k=>{if(V12_TILES[k]&&!window.__legacyWizard){startPurchaseConversation();return}return _sbGoLegacy(k)};/* window.__legacyWizard: alleen voor regressietests van de oude wizardcode */
+ACT['sb-go']=k=>{
+ if(LEEG()&&LIVE_PRODUCTS()){
+  if(k==='internet'){ACT['live-q']('glasvezel internet abonnement');return}
+  if(k==='telefoon'){sheet('Telefoon',`<p class="note">Wat zoek je? WATCHDOG zoekt live bij Nederlandse winkels.</p><button class="btn" data-a="live-q" data-arg="sim only abonnement">Een sim-only abonnement</button><button class="btn ghost" data-a="live-q" data-arg="smartphone">Een nieuw toestel</button>`);return}
+  if(k==='vakantie'){go('ai');setTimeout(()=>{convNew(null,'vakantie');CONV.stage='route';vakantieUitleg()},150);return}
+ }
+ if(pilotHidden(k)){toast('Dit onderdeel komt later terug, zodra er een betrouwbare bron is.');return}
+ if(V12_TILES[k]&&!window.__legacyWizard){startPurchaseConversation();return}return _sbGoLegacy(k)};/* window.__legacyWizard: alleen voor regressietests van de oude wizardcode */
 const _kiesLegacy=V.kies;
 V.kies=function(cat){
  if(V12_TILES[cat]&&!window.__legacyWizard){setTimeout(()=>{if(route[0]==='kies')startPurchaseConversation()},0);return '<div class="card"><p class="note">Even geduld, ik open het gesprek…</p></div>'}
@@ -7738,6 +7977,7 @@ function rgResCard(res){
  return `<div class="rg-c l${res.level}"><small class="rg-k">${kick}</small><b class="rg-a">${esc(regAmtText(res)||res.name)}</b><p>${esc(regBlurb(res))}</p><div class="chips">${rgChips(res)}</div><small class="rg-src">${I('check')} Bron gecontroleerd · demo-bron · ${regChecked()}</small><button class="btn sm" data-a="reg-why" data-arg="${res.id}">Bekijk waarom</button></div>`;
 }
 function regCard(id){
+ if(LEEG())return '';
  REG.ensure();const R=regStore();
  if(!regEnabled())return `<div class="card rg"><h3>Regelingen &amp; wijzigingen</h3><p class="note">Regelingen controleren staat uit${S.settings.finctx===false?' omdat “Financiële context gebruiken” uit staat':''}. Zet het aan in Instellingen als je wilt dat WATCHDOG regelingen voor je in de gaten houdt.</p></div>`;
  const all=rgRes(id),l3=all.filter(r=>r.level>=3),l2=all.filter(r=>r.level===2),l1=all.filter(r=>r.level===1),zero=all.filter(r=>r.level===0).length;
@@ -8228,7 +8468,7 @@ CONV_HOOK.inp.push((text,src)=>{
 function srcBuildReqs(text){
  let P=null;try{P=nluParse(text)}catch(e){}
  const reqs=[];
- if(P&&P.budget&&P.budget.max)reqs.push({k:'budget',label:'Maximaal '+E(P.budget.max),check:a=>a&&a.price!=null?(a.price<=P.budget.max?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2(a.price):null});
+ if(P&&P.budget&&P.budget.max)reqs.push({k:'budget',label:'Maximaal '+E(P.budget.max),check:a=>a&&a.price!=null?(a.price<=P.budget.max?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2g(a.price):null});
  if(P&&P.cat&&CATS[P.cat]&&P.hard)Object.keys(P.hard).forEach(k=>{
   const f=(CATS[P.cat].fields||[]).find(x=>x.k===k);if(!f)return;
   const disp=(f.disp||f.txt||(v=>String(v)))(P.hard[k]);
@@ -8245,6 +8485,7 @@ function srcReqRowsHTML(reqs,attrs){
  }).join('');
 }
 /* Live zoeken in het gesprek: gebruikt door "zoek …" en door het aankoopgesprek (convSearch) zodra de backend is ingesteld. */
+const E2g=n=>{if(PRIV)return '€ •••';n=+n||0;const c=Math.round(Math.abs(n)*100),e=Math.floor(c/100),ct=String(c%100).padStart(2,'0');return (n<0?'−':'')+'€'+grp(e)+','+ct};
 function liveSearchInChat(query,title,reqs){
  convSay('Ik zoek dit live op bij Google Shopping. Als de zoekserver even heeft geslapen, kan dit de eerste keer tot ongeveer een minuut duren.',null,{mute:true});
  return LiveSearchProvider.search(query,{}).then(r=>{
@@ -8254,12 +8495,13 @@ function liveSearchInChat(query,title,reqs){
   const scored=r.results.map((it,i)=>{const a=it.attributes||{};const ok=reqs.filter(q=>q.check(a)==='ok').length,nok=reqs.filter(q=>q.check(a)==='nok').length;return {it:it,ok:ok,nok:nok,i:i,p:a.price!=null}}).sort((a,b)=>(a.nok-b.nok)||(b.ok-a.ok)||(b.p-a.p)||(a.i-b.i));
   const rows='<div class="list">'+scored.slice(0,8).map(({it})=>{
    const a=it.attributes||{};
-   const priceLine=a.price!=null?`<b>${esc(E2(a.price))}</b>${a.availability?' · '+esc(a.availability):''}`:`<small class="note">Prijs niet bevestigd${a.priceNote?' ('+esc(a.priceNote)+')':''}</small>`;
+   const priceLine=a.price!=null?`<b>${esc(E2g(a.price))}</b>${a.availability?' · '+esc(a.availability):''}`:`<small class="note">Prijs niet bevestigd${a.priceNote?' ('+esc(a.priceNote)+')':''}</small>`;
    return `<div class="row" style="display:block;padding:10px 0"><b>${esc(it.title||'')}</b><br>${priceLine}${reqs.length?`<ul class="sbo-p" style="margin:4px 0 0">${srcReqRowsHTML(reqs,a)}</ul>`:''}<a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Bekijk bij ${esc(it.source||'de winkel')}</a></div>`;
   }).join('')+'</div>';
   convSay('Zoeken',{type:'html',html:srcLiveCard(title,'live',r.source,null,r.fetchedAt,rows,r.results.length+' resultaten · eisen alleen "bevestigd" als de bron dat echt aangeeft · controleer prijs en voorwaarden bij de winkel')},{mute:true});
  }).catch(()=>{convSay('Er ging iets mis bij het live zoeken.',null,{mute:true})});
 }
+function vakantieUitleg(){convSay('Vakanties',{type:'html',html:`<div class="card"><b>Vakanties vergelijken kan WATCHDOG nog niet</b><p class="note">Er is nog geen betrouwbare bron voor reisprijzen gekoppeld, en WATCHDOG verzint geen aanbiedingen. Vergelijk prijzen bij een reisvergelijker. Met <b>Ander doel</b> kan WATCHDOG wel uitrekenen hoeveel je per maand moet sparen voor je reis.</p><a class="link" href="https://www.zoover.nl/" target="_blank" rel="noopener">Zoover</a> · <a class="link" href="https://www.skyscanner.nl/" target="_blank" rel="noopener">Skyscanner</a> · <a class="link" href="https://www.booking.com/" target="_blank" rel="noopener">Booking.com</a><br><button class="btn sm" data-a="sb-go" data-arg="doel">Spaarplan voor mijn reis</button></div>`},{mute:true})}
 const LIVE_PRODUCTS=()=>!!LiveSearchProvider.backendUrl&&!window.__demoProducts;
 function convSearchLive(){
  const C=CONV,R=C.req;
@@ -8270,7 +8512,7 @@ function convSearchLive(){
   .replace(/\s+(nodig|kopen|hebben|aanschaffen)\b.*$/,'').replace(/[?!.]+/g,' ').replace(/\s+/g,' ').trim();
  const extra=(R.cat==='generic'?(R.item||''):reqTitle(Object.assign({},R,{budget:{}}))).toLowerCase().split(/\s+/).filter(w=>w&&base.indexOf(w)<0);
  const q=((base||'')+' '+extra.join(' ')).replace(/\s+/g,' ').trim()||'product';
- const reqs=[];if(R.budget&&R.budget.max){const mx=R.budget.max;reqs.push({k:'budget',label:'Maximaal '+E(mx),check:a=>a&&a.price!=null?(a.price<=mx?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2(a.price):null})}
+ const reqs=[];if(R.budget&&R.budget.max){const mx=R.budget.max;reqs.push({k:'budget',label:'Maximaal '+E(mx),check:a=>a&&a.price!=null?(a.price<=mx?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2g(a.price):null})}
  C.stage='route';convSave();
  liveSearchInChat(q,'Zoeken: '+q+(R.budget&&R.budget.max?' tot '+E(R.budget.max):''),reqs);
 }
