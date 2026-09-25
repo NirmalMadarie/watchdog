@@ -1238,7 +1238,20 @@ function seed(){
   gm:{xp:0,badges:{},streak:0,last:'',ch:{},flags:{}},sb:{wiz:null,hist:[],choices:[],watched:{}},imp:null,wishes:[],conv:null,alerted:{},scenUsed:{},
   score:0
  };
- applyPresetTo(st,'gezin');return st;
+ applyPresetTo(st,'gezin');
+ if(!window.__demoSeed)emptyStart(st);
+ return st;
+}
+/* Testfase: iedere nieuwe gebruiker begint LEEG (geen fictief huishouden, contracten, deals of reizen).
+   Een voorbeeldhuishouden kan nog steeds geladen worden via Mijn gegevens → Demo-huishouden (duidelijk als DEMO). */
+const LEEG=()=>!!(S&&S.ui&&S.ui.preset==='leeg');
+function emptyStart(st){
+ applyPresetTo(st,'leeg');
+ Object.assign(st.profile,{name:'',income:0,extra:0,solar:false,label:'',loans:0,other:0,saveMonthly:0,plannedName:'',plannedAmt:0});
+ st.car.has=false;st.subs=[];st.contracts=[];st.deals=[];st.trips=[];st.tickets=[];st.goals=[];st.fstat={};st.hist={risks:0};
+ st.housing=Object.assign({},st.housing,{region:''});st.prev={score:0,saved:0};
+ Object.keys(st.w).forEach(k=>{Object.assign(st.w[k],{on:false,added:0,checked:0})});
+ st.ui.preset='leeg';st.ui.pilot1=true;return st;
 }
 let S=null;
 function load(){
@@ -1892,7 +1905,7 @@ function initEvents(){
  if(tv)L.push({ts:now-95*6e4,kind:'price',title:`${tv.t}-prijs gecontroleerd`,text:tv.cur>tv.max?`Nog ${E(tv.cur-tv.max)} boven je doel`:`${E(tv.max-tv.cur)} onder je doel`});
  if(tr)L.push({ts:now-150*6e4,kind:'ok',title:`Reisprijs ${tr.t.split('·')[0].trim()} gecontroleerd`,text:'Geen actie nodig'});
  L.push({ts:now-26*3600e3,kind:'found',title:'Nieuwe regeling gecontroleerd',text:A.F.some(f=>f.id==='ben_isde')?`Mogelijk ${E(850)} gevonden`:'Geen nieuwe regeling'});
- L.forEach(l=>S.log.push(Object.assign({id:uid('lg_'),demo:true},l)));
+ if(S.ui.preset!=='leeg')L.forEach(l=>S.log.push(Object.assign({id:uid('lg_'),demo:true},l)));
  S.evInit=true;save();
 }
 function ensureWatch(id){const st=S.w[id];if(!st.on){Object.assign(st,{on:true,st:'active',added:Date.now(),checked:Date.now()})}else if(st.st!=='active')st.st='active'}
@@ -2511,7 +2524,7 @@ const SCS=[
  {t:'Verzekeringen en telecom',why:'Hiermee kan WATCHDOG zien of je te veel betaalt en wanneer overstappen loont.',h:()=>sf('Zorgverzekering per maand, totaal (€)','health','n')+sf('Mobiel, internet en tv per maand (€)','telecom','n')+more(sf('Overige verzekeringen per maand (€)','otherIns','n','Inboedel, aansprakelijkheid, opstal'))},
  {t:'Abonnementen en leningen',why:'WATCHDOG zoekt abonnementen die je nauwelijks gebruikt en let op aflossingen.',h:()=>`<span class="lbl">Tik aan wat je hebt</span><div class="chips wrapc">${SUBCAT.map(x=>`<button class="chip ${SC.D.subsSel.indexOf(x[0])>=0?'on':''}" data-a="sd-toggle" data-arg="subsSel:${x[0]}" aria-pressed="${SC.D.subsSel.indexOf(x[0])>=0}">${x[0]} ${E2(x[1])}</button>`).join('')}</div>`+sf('Boodschappen en overige vaste uitgaven per maand (€)','other','n')+more(sf('Leningen en aflossingen per maand (€)','loans','n','Zonder auto en hypotheek'))},
  {t:'Sparen en doelen',why:'Zo kan WATCHDOG je buffer bewaken en laten zien of je doelen haalbaar zijn.',h:()=>`<div class="grid2">${sf('Spaartegoed (€)','buffer','n')}${sf('Sparen per maand (€)','saveMonthly','n')}</div><span class="lbl">Doelen</span><div class="chips wrapc">${[['buffer','Noodbuffer'],['trip','Vakantie'],['buy','Grote aankoop'],['car','Auto'],['debt','Aflossen']].map(x=>`<button class="chip ${SC.D.goals.indexOf(x[0])>=0?'on':''}" data-a="sd-toggle" data-arg="goals:${x[0]}" aria-pressed="${SC.D.goals.indexOf(x[0])>=0}">${x[1]}</button>`).join('')}</div>`+more(`${sf('Spaarrente (% per jaar)','rate','n')}${sf('Geplande grote aankoop','plannedName','t','Bijv. 77 inch OLED TV')}${sf('Maximaal bedrag (€)','plannedAmt','n')}`)},
- {t:'Klaar voor de analyse',why:'WATCHDOG stelt hieruit je dashboard samen en zet passende Watches aan. Alles is een demo-analyse op fictieve data.',h:()=>{const D=SC.D,inc=N(D.income)+N(D.extra),low=N(D.housing)+N(D.energy)+N(D.telecom)+N(D.health)+N(D.otherIns)+N(D.loans)+N(D.other);return `<div class="res"><b>${esc(D.name||'Sam')}</b> · ${D.hh} · ${N(D.kids)} ${plural(N(D.kids),'kind','kinderen')}<br>Inkomen ${E(inc)} · vaste lasten (zonder auto en abonnementen) ${E(low)}<br>${D.carType==='geen'?'Geen auto':cap(D.carType)+' · '+E(N(D.carLoan)+N(D.carIns)+N(D.carMrb)+N(D.carFuel)+N(D.carMaint)+N(D.carParking))+' per maand aan auto'}<br>${D.subsSel.length} abonnementen · spaartegoed ${E(D.buffer)}</div>`}}
+ {t:'Klaar voor de analyse',why:'WATCHDOG stelt hieruit je dashboard samen en zet passende Watches aan. Je gegevens blijven op dit toestel. Besparingen zijn schattingen.',h:()=>{const D=SC.D,inc=N(D.income)+N(D.extra),low=N(D.housing)+N(D.energy)+N(D.telecom)+N(D.health)+N(D.otherIns)+N(D.loans)+N(D.other);return `<div class="res"><b>${esc(D.name||'Sam')}</b> · ${D.hh} · ${N(D.kids)} ${plural(N(D.kids),'kind','kinderen')}<br>Inkomen ${E(inc)} · vaste lasten (zonder auto en abonnementen) ${E(low)}<br>${D.carType==='geen'?'Geen auto':cap(D.carType)+' · '+E(N(D.carLoan)+N(D.carIns)+N(D.carMrb)+N(D.carFuel)+N(D.carMaint)+N(D.carParking))+' per maand aan auto'}<br>${D.subsSel.length} abonnementen · spaartegoed ${E(D.buffer)}</div>`}}
 ];
 function scanClose(){const d=$('#scanov');if(d)d.remove();document.body.classList.remove('lock');SC=null}
 function scanSet(t){const k=t.dataset.sd;SC.D[k]=t.type==='number'?N(t.value):t.value}
@@ -2853,6 +2866,11 @@ function afterChange(){syncAll();checkAuto(false);checkGame(false);save()}
 
 /* ---------- huishoudens (fictief, Nederlands) ---------- */
 const PRESETS={
+ leeg:{n:'Mijn eigen gegevens',d:'Leeg begin: je vult alleen je eigen cijfers in',
+  adults:[['Jij',[]]],kids:[],
+  p:{own:'huur',housing:0,energy:0,telecom:0,health:0,otherIns:0,bank:0,fixedOther:0,buffer:0,rate:.5,role:''},car:false,
+  bud:{boodschappen:[0,1,1],vrijetijd:[0,1,1],horeca:[0,1,1],kinderen:[0,1,1],zorg:[0,1,1],kleding:[0,1,1],vakantie:[0,1,1],overige:[0,1,1]},
+  debts:[],inv:[],goals:[],cover:{},pay:[0,12],prev:{score:0,saved:0},home:0,subs:[]},
  gezin:{n:'Gezin met twee inkomens',d:'Loondienst + ZZP · 2 kinderen · koopwoning',
   adults:[['Sam',[['loondienst','Salaris ICT',3500,'m',0]]],['Lisa',[['zzp','Freelance design',1500,'m',1]]]],kids:[['Noor',8],['Daan',5]],
   p:{own:'koop',housing:1250,energy:210,telecom:62,health:290,otherIns:68,bank:9,fixedOther:85,buffer:8500,rate:.8,role:'ict'},car:true,
@@ -2921,8 +2939,9 @@ function applyPresetTo(s,k){
  s.ui.preset=k;
 }
 function switchPreset(k){
- const n=seed(),old=S;applyPresetTo(n,k);
- n.ui=Object.assign(n.ui,{welcomed:true,preset:k});n.settings=old.settings;n.gm=old.gm;n.scenUsed=old.scenUsed;
+ const was=window.__demoSeed;window.__demoSeed=k!=='leeg';let n;try{n=seed()}finally{window.__demoSeed=was}
+ const old=S;if(k==='leeg')emptyStart(n);else applyPresetTo(n,k);
+ n.ui=Object.assign(n.ui,{welcomed:true,preset:k,pilot1:true});n.settings=old.settings;n.gm=old.gm;n.scenUsed=old.scenUsed;
  S=n;syncAll();fixBufferTarget();
  S.goals.forEach(g=>{if(g.kind==='buffer'){const pr=goalSaved(g)/Math.max(1,g.target);g.ms=[.25,.5,.75,1].filter(t=>pr>=t)}});
  initEvents();checkAuto(true);S.scoreLast=scoreVal();S.prev.score=Math.max(0,S.scoreLast-3);save();
@@ -3002,7 +3021,7 @@ V.homeLegacy=function(){
   <div class="card"><div class="sec sm"><h3>Doelvoortgang</h3><button class="link" data-a="go" data-arg="plan/doelen">Alle doelen ›</button></div>${S.goals.slice(0,3).map(g=>goalRow(g)).join('')||empty('Nog geen doelen','Maak er een aan bij Plan.')}</div>
 
   ${sec('Activiteit','<button class="link" data-a="go" data-arg="activity">Alles ›</button>')}
-  <div class="card feed">${feed.length?feed.map(feedRow).join(''):empty('Nog geen activiteit','Zodra WATCHDOG iets controleert, zie je het hier.')}<small class="fine">${demoTag('DEMO')}Gesimuleerde controles op je lokale demodata.</small></div>
+  <div class="card feed">${feed.length?feed.map(feedRow).join(''):empty('Nog geen activiteit','Zodra WATCHDOG iets controleert, zie je het hier.')}<small class="fine">${LEEG()?'Controles op je eigen gegevens op dit toestel.':demoTag('DEMO')+'Gesimuleerde controles op je lokale demodata.'}</small></div>
 
   </div></details>
 
@@ -3016,9 +3035,9 @@ V.homeLegacy=function(){
 
   ${spotF?`<button class="spot" data-a="ai-spot"><span class="spot-h">${orb('ai',1)}<b>Vraag het WATCHDOG AI</b></span><p>${SPOT[spotF.w]||esc(spotF.title)+'.'} Ik denk dat je ongeveer <b>${Em(spotF.monthly)} per maand</b> kunt besparen. Stel me een vraag en ik reken het door.</p><span class="go">Open WATCHDOG AI →</span></button>`:`<button class="spot" data-a="ai-spot"><span class="spot-h">${orb('ai',1)}<b>WATCHDOG AI</b></span><p>Stel me een vraag over je geld en ik reken het door met jouw cijfers.</p><span class="go">Stel een vraag →</span></button>`}
   <div class="qa">${['Kan ik deze aankoop betalen?','Waarom geef ik meer uit?','Hoe bouw ik sneller een buffer?'].map(q=>`<button class="chip" data-a="ai-go" data-arg="${esc(q)}">${q}</button>`).join('')}</div>
-  ${S.ui.scanned?'':`<button class="card banner" data-a="scan"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('search')}</span><span class="grow"><b>Doe de Money Scan</b><small>Je ziet nu een demo-huishouden. Vul in 2 minuten je eigen (fictieve) cijfers in.</small></span><i class="chev">›</i></button>`}
+  ${S.ui.scanned?'':`<button class="card banner" data-a="scan"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('search')}</span><span class="grow"><b>Doe de Money Scan</b><small>${LEEG()?'Je hebt nog niets ingevuld. Vul in 2 minuten je eigen situatie in.':'Je ziet nu een voorbeeldhuishouden. Vul in 2 minuten je eigen cijfers in.'}</small></span><i class="chev">›</i></button>`}
   <p class="tagl">BESPAAR · BEWAAK · GROEI · KIES SLIM</p>
-  <p class="foot">WATCHDOG informeert. Jij beslist. Alle gegevens in deze test zijn fictief en blijven lokaal op dit toestel. Bedragen zijn demo-schattingen, geen financieel advies.</p>
+  <p class="foot">WATCHDOG informeert. Jij beslist. ${LEEG()?'Je gegevens blijven alleen op dit toestel. Bedragen zijn schattingen op jouw eigen cijfers, geen financieel advies.':'Dit is een fictief voorbeeldhuishouden. Bedragen zijn demo-schattingen, geen financieel advies.'}</p>
  </div>`;
 };
 ACT['ai-go']=q=>{window.__aiq=q;go('ai')};
@@ -3055,7 +3074,7 @@ PV.overzicht=function(){
  return `${tabHero('plan',`${E(F.left)}<small> vrij besteedbaar per maand</small>`,`Inkomen ${E(F.income)} − lasten ${E(F.fixed+F.variable)} − sparen ${E(F.planned)}`)}
  <div class="card"><h3>Waar gaat je maand naartoe?</h3><div data-live="cash">${LIVE.cash()}</div><small class="fine">Inkomen en lasten komen uit Huishouden, Budget, Schulden en Beleggen. Alles rekent mee.</small></div>
  ${indivCard()}
- <div class="card"><h3>Vermogen</h3><div data-live="wealth">${LIVE.wealth()}</div><small class="fine">Waarde van beleggingen en woning zijn handmatige demo-invoer, geen live koersen.</small></div>
+ <div class="card"><h3>Vermogen</h3><div data-live="wealth">${LIVE.wealth()}</div><small class="fine">Waarde van beleggingen en woning is ${LEEG()?'je eigen invoer':'handmatige demo-invoer'}, geen live koersen.</small></div>
  <button class="card banner" data-a="go" data-arg="score"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I('shield')}</span><span class="grow"><b>WATCHDOG-score ${sc}/100</b><small>${scoreLabel(sc)}. Bekijk waarom en wat hem verhoogt.</small></span><i class="chev">›</i></button>
  <div class="card"><h3>Kan ik dit betalen?</h3><div class="grid2"><label class="f"><span>Waarvoor</span><input id="af-n" type="text" placeholder="Bijv. nieuwe laptop" maxlength="30"></label><label class="f"><span>Bedrag (€)</span><input id="af-x" type="number" inputmode="decimal" placeholder="Bijv. 900"></label></div><button class="btn pu" data-a="afford">Reken door</button><div id="afRes"></div></div>
  ${modBlock('housing')}`;
@@ -3080,7 +3099,7 @@ PV.budget=function(){
  return `${tabHero('plan',`${E(B.proj)}<small> prognose</small>`,`Budget ${E(B.b)} · ${B.over.length?B.over.length+' boven budget':'alles op koers'}`)}
  <div class="card"><h3>Deze maand</h3><div data-live="budsum">${LIVE.budsum()}</div></div>
  <div data-live="budrows" class="brs">${LIVE.budrows()}</div>
- <div class="card"><h3>Uitgave toevoegen</h3><p class="note">Demo: voeg een uitgave toe en zie direct wat het met je prognose doet.</p>
+ <div class="card"><h3>Uitgave toevoegen</h3><p class="note">Voeg een uitgave toe en zie direct wat het met je prognose doet.</p>
   <div class="grid2"><label class="f"><span>Categorie</span><select id="ux-k">${BCATS.filter(c=>c.v).map(c=>`<option value="${c.k}">${c.n}</option>`).join('')}</select></label><label class="f"><span>Bedrag (€)</span><input id="ux-x" type="number" inputmode="decimal" placeholder="Bijv. 45"></label></div>
   <button class="btn pu" data-a="ux-add">Uitgave toevoegen</button><button class="btn ghost" data-a="ux-reset">Zet extra uitgaven terug (nieuwe maand)</button></div>
  <details class="dt card"><summary>Budgetten aanpassen</summary><p class="note">Variabele categorieën. Het totaal telt mee in je variabele uitgaven.</p><div class="grid2">${BCATS.filter(c=>c.v).map(c=>fld(c.n+' (€/mnd)','bud.cats.'+c.k+'.b',vb(c.k),{after:'fin'})).join('')}</div></details>
@@ -3180,8 +3199,8 @@ ACT['inc-del']=a=>{const [i,j]=a.split(':').map(Number);snapshot();S.hh.adults[i
 ACT['inc-var']=a=>{const [i,j,v]=a.split(':').map(Number);S.hh.adults[i].inc[j].var=!!v;hhDone()};
 ACT['kid-add']=()=>{snapshot();S.hh.kids.push({id:'k'+Date.now(),name:'Kind '+(S.hh.kids.length+1),age:4});hhDone();toast('Kind toegevoegd',true)};
 ACT['kid-del']=i=>{snapshot();S.hh.kids.splice(+i,1);hhDone();toast('Verwijderd',true)};
-ACT['preset-ask']=k=>sheet('Demo-huishouden laden?',`<p><b>${esc(PRESETS[k].n)}</b><br><small>${esc(PRESETS[k].d)}</small></p><p class="note">Je huidige (fictieve) gegevens worden vervangen. Je instellingen, level en badges blijven.</p><button class="btn" data-a="preset-ok" data-arg="${k}">Ja, laad dit huishouden</button><button class="btn ghost" data-a="close">Annuleren</button>`);
-ACT['preset-ok']=k=>{switchPreset(k);closeSheet();Object.keys(CUV).forEach(x=>delete CUV[x]);UI.auto=false;go('home');toast(`Demo-huishouden geladen: ${PRESETS[k].n}`,false,true)};
+ACT['preset-ask']=k=>sheet(k==='leeg'?'Leeg beginnen?':'Voorbeeldhuishouden laden?',`<p><b>${esc(PRESETS[k].n)}</b><br><small>${esc(PRESETS[k].d)}</small></p><p class="note">${k==='leeg'?'Al je huidige gegevens op dit toestel worden gewist. Daarna vul je alleen je eigen cijfers in.':'Je huidige gegevens worden vervangen door een <b>fictief</b> voorbeeldhuishouden. Handig om rond te kijken, niet voor je eigen situatie.'} Je instellingen, level en badges blijven.</p><button class="btn" data-a="preset-ok" data-arg="${k}">${k==='leeg'?'Ja, begin leeg':'Ja, laad dit voorbeeld'}</button><button class="btn ghost" data-a="close">Annuleren</button>`);
+ACT['preset-ok']=k=>{switchPreset(k);closeSheet();Object.keys(CUV).forEach(x=>delete CUV[x]);UI.auto=false;go('home');toast(k==='leeg'?'Je begint nu leeg. Vul je eigen gegevens in.':`Voorbeeldhuishouden geladen: ${PRESETS[k].n}`,false,true)};
 
 /* ============================ SCHULDEN ============================ */
 const effPay=d=>{if(N(d.pay)>0)return N(d.pay);if(d.type==='hypotheek'){const r=N(d.rate)/1200,n=300,P=N(d.bal);return r>0?P*r/(1-Math.pow(1+r,-n)):P/n}return 0};
@@ -3258,7 +3277,7 @@ PV.beleggen=function(){
  return `${tabHero('plan',`${E(inv.val)}<small> beleggingen</small>`,`Inleg ${E(inv.inleg)} · ${inv.gain>=0?'resultaat +':'resultaat −'}${E(Math.abs(inv.gain))} (${Math.round(inv.pct*1000)/10}%) · ${E(inv.monthly)} per maand`)}
  <div class="lvl3"><span class="st bl">${I('info')}INFORMATIE</span><span class="st am">${I('chart')}SIMULATIE</span><span class="st gr">${I('shield')}GEEN PERSOONLIJK ADVIES</span></div>
  <button class="card banner" data-a="go" data-arg="kies/beleggen"><span class="ico" style="--c:#0E7490;--bg:#E0F5F9">${I('info')}</span><span class="grow"><b>Sparen versus beleggen: uitleg</b><small>Risico, spreiding, kosten en horizon in het kort.</small></span><i class="chev">›</i></button>
- <div class="card note-demo">${I('info')}<span class="note">Hier zie je alleen overzicht en scenario’s. WATCHDOG is geen handelsapp: er zijn geen koop- of verkoopknoppen, geen koersmeldingen en geen hefboom. Waarden zijn handmatige demo-invoer.</span></div>
+ <div class="card note-demo">${I('info')}<span class="note">Hier zie je alleen overzicht en scenario’s. WATCHDOG is geen handelsapp: er zijn geen koop- of verkoopknoppen, geen koersmeldingen en geen hefboom. Waarden zijn ${LEEG()?'je eigen invoer':'handmatige demo-invoer'}.</span></div>
  <div class="card"><h3>Mijn beleggingen</h3>${inv.n?S.inv.items.map((it,i)=>{const gn=N(it.val)-N(it.inleg);return `<div class="hold"><div class="hold-h"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I(it.type==='obligaties'||it.type==='spaargeld'?'bank':'trend')}</span><div class="grow"><b>${esc(it.n)}</b><small>${ITYPES[it.type]||'Belegging'}${N(it.m)>0?` · ${E(it.m)} per maand`:''}</small></div><div class="hold-v"><b>${E(it.val)}</b><small class="${gn<0?'neg':'pos'}">${gn<0?'▼ verlies':'▲ winst'} ${E(Math.abs(gn))}</small></div></div><div class="pc-a"><button class="btn sm ghost" data-a="inv-edit" data-arg="${i}">Aanpassen</button><button class="btn sm ghost dng" data-a="inv-del" data-arg="${i}">Verwijder</button></div></div>`}).join(''):empty('Nog geen beleggingen','Voeg hieronder je eerste positie toe. Alleen als je dat wilt.')}</div>
  ${parts.length?`<div class="card"><h3>Verdeling</h3><div class="dn">${donut(parts)}<ul class="dn-l">${parts.map((p,i)=>`<li><i style="background:${ICOL[i%ICOL.length]}"></i>${ITYPES[p.k]}<b>${Math.round(p.v/tot*100)}%</b></li>`).join('')}</ul></div></div>`:''}
  <div class="card"><h3>Beleggingsdoel</h3><div class="goal-h"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('target')}</span><div class="grow"><b>${esc(g.n)}</b><small>${E(inv.val)} van ${E(g.target)}</small></div><b class="pct">${Math.round(gp)}%</b></div>${bar(gp,'var(--pu)')}<div class="grid2">${fld('Doelbedrag (€)','inv.goal.target',g.target,{after:'fin'})}<span></span></div></div>
@@ -3481,10 +3500,10 @@ const bubble=m=>{
 V.ai=function(){
  const F=fin(),A=agg(),sc=scoreVal();
  return `<div class="ai-page"><div class="top">${orb('ai',1)}<div class="top-t"><h1>WATCHDOG AI</h1><small id="dogst">Jouw persoonlijke geldwaakhond</small></div><div class="top-r">${guideBtn()}${bellBtn()}${avBtn()}</div></div>
- <div class="wrap"><div class="ai-demo">${I('info')}<span>${demoTag('DEMO')} Regelgebaseerde antwoorden op je eigen demo-cijfers. Er is geen echte AI of backend gekoppeld.</span></div>
+ <div class="wrap"><div class="ai-demo">${I('info')}<span>${LEEG()?'Antwoorden zijn rekenregels op je eigen ingevulde cijfers. Er is nog geen echte AI gekoppeld. Productvragen worden live opgezocht.':demoTag('DEMO')+' Regelgebaseerde antwoorden op de cijfers van het voorbeeldhuishouden. Er is geen echte AI gekoppeld.'}</span></div>
  <div class="ctx"><span><small>Vrij</small><b>${E(F.left)}</b></span><span><small>Buffer</small><b>${mFmt(F.bufMonths)} mnd</b></span><span><small>Acties</small><b>${A.actions.length}</b></span><span><small>Score</small><b>${sc}</b></span></div>
  <div id="vbar"></div>
- <div id="msgs" class="msgs"><div class="msg a">${orb('ai')}<div class="bub">Hoi ${esc(S.profile.name)}! Ik ken je (fictieve) huishouden en reken alles door met jouw cijfers. Ik antwoord altijd in vier stappen: inzicht, waarom belangrijk, mogelijke actie en verwacht effect.</div></div>${S.chat.map(bubble).join('')}</div>
+ <div id="msgs" class="msgs"><div class="msg a">${orb('ai')}<div class="bub">Hoi ${esc(S.profile.name)}! ${LEEG()?'Ik reken alles door met de cijfers die jij invult.':'Ik ken je (fictieve) huishouden en reken alles door met die cijfers.'} Ik antwoord altijd in vier stappen: inzicht, waarom belangrijk, mogelijke actie en verwacht effect.</div></div>${S.chat.map(bubble).join('')}</div>
  <div class="sugs" role="group" aria-label="Voorbeeldvragen">${['Ik wil een grote koelkast','Ik zoek een 77-inch OLED televisie tot €1.500'].concat(AIQS,['Waar heb ik mogelijk recht op?','Kan ik op vakantie zonder mijn buffer aan te spreken?','Welke contracten moet ik binnenkort controleren?']).map(x=>`<button class="chip" data-a="ai-ask" data-arg="${esc(x)}">${x}</button>`).join('')}</div></div>
  <div class="aibar"><input id="aiq" type="text" placeholder="Vraag WATCHDOG iets…" maxlength="160" aria-label="Vraag aan WATCHDOG AI" autocomplete="off"><button class="mic" data-a="voice-start" aria-label="Praten met WATCHDOG">${I('mic')}</button><button class="send" data-a="ai-send" aria-label="Verstuur">${SVG.send}</button></div>
  ${S.chat.length?`<div class="wrap"><button class="btn ghost" data-a="ai-clear">Gesprek wissen</button></div>`:''}</div>`;
@@ -3561,6 +3580,8 @@ V.me=function(){
 /* ---------- start ---------- */
 function init(){
  S=load();PRIV=!!(S.settings&&S.settings.hide);
+ /* Testfase: wie nog het ongewijzigde voorbeeldhuishouden heeft (geen Money Scan gedaan), begint eenmalig leeg. */
+ if(!S.ui.pilot1){if(S.ui.preset!=='leeg'&&!S.ui.scanned&&!window.__demoSeed){try{switchPreset('leeg');S.ui.welcomed=false}catch(e){console.error('WATCHDOG leeg beginnen:',e)}}S.ui.pilot1=true;save()}
  syncAll();if(!S.evInit){initEvents();checkAuto(true);S.scoreLast=scoreVal();S.prev.score=Math.max(0,S.scoreLast-3)}
  refreshEvents();checkAuto(false);checkGame(true);
  route=parseHash();
@@ -4023,14 +4044,14 @@ function kiesHub(){
  ${sec('Mijn bewaakte keuzes',`<button class="link" data-a="go" data-arg="deals">Alles ›</button>`)}
  <div class="card list">${tr.length?tr.slice(0,4).map(x=>{const hit=x.cur<=x.max;return `<button class="row" data-a="go" data-arg="deals"><span class="ico" style="--c:#B94E08;--bg:#FFF0E4">${I('tag')}</span><span class="grow"><b>${esc(x.t)}</b><small>${hit?'Doel bereikt':`Nog ${E(x.cur-x.max)} boven je limiet`} · demo-prijs</small></span><b>${E(x.cur)}</b></button>`}).join(''):empty('Nog niets bewaakt','Kies iets en laat WATCHDOG het bewaken.')}</div>
  ${S.sb.choices.length?`<small class="fine">${I('check')} Je hebt ${S.sb.choices.length} slimme ${plural(S.sb.choices.length,'keuze','keuzes')} gemaakt.</small>`:''}
- <p class="foot">WATCHDOG informeert. Jij beslist. Alle resultaten zijn demo-schattingen en geen persoonlijk advies.<br><button class="link" data-a="go" data-arg="bronnen">Bronnen en transparantie</button> · <button class="link" data-a="go" data-arg="gegevens">Mijn gegevens</button></p></div>`;
+ <p class="foot">WATCHDOG informeert. Jij beslist. Resultaten zonder LIVE-label zijn schattingen of voorbeelden, geen persoonlijk advies.<br><button class="link" data-a="go" data-arg="bronnen">Bronnen en transparantie</button> · <button class="link" data-a="go" data-arg="gegevens">Mijn gegevens</button></p></div>`;
 }
 V.kies=function(cat){
  if(!cat)return kiesHub();
  const c=sbc(cat);if(!c)return kiesHub();
  let W=S.sb.wiz;if(!W||W.cat!==cat)W=sbStart(cat);
  const body=W.stage==='run'?wizRun(W):W.stage==='health'?wizHealth(W):W.stage==='res'?wizRes(W):wizQ(W);
- return `<div class="wrap">${topbar(c.n,{back:1,sub:W.stage==='q'?`Stap ${visIdx(W)+1} van ${visCount(W)}`:W.stage==='res'?'Resultaten (demo)':'Even geduld'})}${body}</div>`;
+ return `<div class="wrap">${topbar(c.n,{back:1,sub:W.stage==='q'?`Stap ${visIdx(W)+1} van ${visCount(W)}`:W.stage==='res'?(sbLive(W)?'Resultaten':'Resultaten (demo)'):'Even geduld'})}${body}</div>`;
 };
 ACT['sb-go']=k=>{sbStart(k);go('kies/'+k)};
 ACT['sb-hist']=id=>{const h=S.sb.hist.find(x=>x.id===id);if(!h)return;S.sb.wiz={cat:h.cat,step:0,ans:JSON.parse(JSON.stringify(h.ans)),stage:'res',gate:true,started:Date.now()};save();go('kies/'+h.cat)};
@@ -4076,10 +4097,11 @@ ACT['sb-more']=()=>{const W=S.sb.wiz;W.stage='q';W.step=0;save();window.scrollTo
 
 /* ---------- resultaten ---------- */
 const sbFind=id=>{const W=S.sb.wiz;return W?sbOpts(W).find(o=>o.id===id):null};
+const sbLive=W=>!!(W&&((W.cat==='auto'&&W.ans.mode==='mijn'&&W.ans.cp&&W.ans.cp.live)||(W.cat==='woning'&&W.ans.wp&&W.ans.wp.live)));
 function optCard(o,i,W){
  const w=S.sb.watched[o.id],chosen=S.sb.choices.some(c=>c.id===o.id);
  return `<article class="sbo ${i===0?'best':''}" aria-label="${esc(o.title)}">
-  <div class="sbo-h">${i===0?`<span class="st em">${I('trophy')}${o.badge||'Beste match'}</span>`:(o.badge?`<span class="st bl">${o.badge}</span>`:`<span class="st gr">Optie ${i+1}</span>`)}${(o.tags||[]).map(t=>`<span class="st bl">${I('tag')}${t}</span>`).join('')}${o.comm?`<span class="st bl">Commerciële samenwerking</span>`:''}${w?`<span class="st am">${I('eye')}Wordt bewaakt</span>`:''}${chosen?`<span class="st em">${I('check')}Jouw keuze</span>`:''}<span class="demo-tag">DEMO</span></div>
+  <div class="sbo-h">${i===0?`<span class="st em">${I('trophy')}${o.badge||'Beste match'}</span>`:(o.badge?`<span class="st bl">${o.badge}</span>`:`<span class="st gr">Optie ${i+1}</span>`)}${(o.tags||[]).map(t=>`<span class="st bl">${I('tag')}${t}</span>`).join('')}${o.comm?`<span class="st bl">Commerciële samenwerking</span>`:''}${w?`<span class="st am">${I('eye')}Wordt bewaakt</span>`:''}${chosen?`<span class="st em">${I('check')}Jouw keuze</span>`:''}${o.live?liveTag():o.est?'<span class="demo-tag">SCHATTING</span>':'<span class="demo-tag">DEMO</span>'}</div>
   <b class="sbo-t">${esc(o.title)}</b><small class="sbo-s">${esc(o.sub)}</small>
   <div class="sbo-kv">${o.kv.map(k=>`<div><small>${k[0]}</small><b class="${k[2]||''}">${k[1]}</b></div>`).join('')}</div>
   ${confHTML(confOf(o))}
@@ -4095,7 +4117,7 @@ function wizRes(W){
  const opts=sbOpts(W),A=sbAssess(W.cat,W.ans),c=sbc(W.cat);
  if(!opts.length)return `${dogSay('Ik vond geen opties binnen deze criteria. Pas je budget of wensen aan, dan zoek ik opnieuw.')}${SB_DEMO}<button class="btn pu" data-a="sb-more">Wensen aanpassen</button>`;
  const bp=opts.slice().sort((a,b)=>a.price-b.price)[0],best=opts[0];
- return `${dogSay(`WATCHDOG heeft <b>${opts.length}</b> ${W.cat==='woning'?plural(opts.length,'kans','kansen'):plural(opts.length,'mogelijkheid','mogelijkheden')} gevonden.`)}${SB_DEMO}
+ return `${dogSay(`WATCHDOG heeft <b>${opts.length}</b> ${W.cat==='woning'?plural(opts.length,'kans','kansen'):plural(opts.length,'mogelijkheid','mogelijkheden')} gevonden.`)}${sbLive(W)?'':SB_DEMO}
  ${W.cat==='auto'&&W.ans.mode==='mijn'?'':resFin(W,A,opts)}${altNote(W,opts)}
  ${W.cat==='auto'&&W.ans.mode!=='mijn'&&best!==bp?`<p class="sb-ok warn">${I('info')}De beste match is niet de auto met de laagste aanschafprijs (${esc(bp.title)}). Over ${N(W.ans.years)||5} jaar tellen de totale kosten zwaarder dan de aanschafprijs.</p>`:''}
  ${W.cat==='auto'&&W.ans.mode==='mijn'&&opts[0].mine?`<div class="sbos">${optCard(opts[0],0,W)}</div>${resFin(W,A,opts)}${sec('Alternatieven')}<div class="sbos">${opts.slice(1).map((o,i)=>optCard(o,i+1,W)).join('')}</div>`:`<div class="sbos">${opts.map((o,i)=>optCard(o,i,W)).join('')}</div>`}
@@ -4359,13 +4381,62 @@ const WDA={
   const h=hash(c),i=h%CARS.length;return {ok:true,source:'DEMO',fetchedAt:Date.now(),data:{kenteken:c.slice(0,2)+'-'+c.slice(2,4)+'-'+c.slice(4),idx:i,model:CARS[i][0],brandstof:CARS[i][2],bouwjaar:2012+(h>>4)%11}};
  }}
 };
+/* ---------- LIVE (testfase): woning via BAG/PDOK en voertuig via RDW — echte open data, geen sleutel nodig ---------- */
+const kentekenFmt=c=>{const g=String(c).match(/[A-Z]+|[0-9]+/g)||[c];if(g.length===2){const i=g[0].length===4?0:1;g.splice(i,1,g[i].slice(0,2),g[i].slice(2))}return g.join('-')};
+const titleCase=s=>String(s||'').toLowerCase().replace(/(^|[\s\-\/])([a-zà-ÿ])/g,(m,a,b)=>a+b.toUpperCase());
+const WDA_LIVE={
+ async woning(pc,nr,toev){
+  const p=String(pc||'').toUpperCase().replace(/\s/g,''),n=String(nr||'').trim(),t=String(toev||'').toUpperCase().replace(/[\s\-]/g,'');
+  if(!/^[1-9][0-9]{3}[A-Z]{2}$/.test(p)||!/^[0-9]{1,5}$/.test(n))return {ok:false,error:'Vul een geldige postcode (bijvoorbeeld 3511 AB) en huisnummer in.'};
+  const r=await srcFetch('https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?'+new URLSearchParams({q:'postcode:'+p+' AND huisnummer:'+n,fq:'type:adres',rows:'30',fl:'weergavenaam,straatnaam,woonplaatsnaam,huisletter,huisnummertoevoeging,adresseerbaarobject_id'}),null,12000);
+  if(!r.ok)return {ok:false,error:'Het Kadaster (PDOK) is nu niet bereikbaar. Probeer het zo opnieuw.'};
+  const docs=(r.data&&r.data.response&&r.data.response.docs)||[];
+  const suf=d=>String((d.huisletter||'')+(d.huisnummertoevoeging||'')).toUpperCase();
+  let d=docs.find(x=>suf(x)===t);
+  if(!d&&!t&&docs.length===1)d=docs[0];
+  if(!d){
+   const opts=docs.map(suf).filter(Boolean);
+   if(docs.length&&opts.length)return {ok:false,error:(t?'Toevoeging '+t+' bestaat niet. ':'Dit adres heeft meerdere toevoegingen. ')+'Kies uit: '+opts.slice(0,8).join(', ')+'.'};
+   return {ok:false,error:'Dit adres staat niet in de BAG. Controleer postcode en huisnummer.'};
+  }
+  let v=null;
+  if(d.adresseerbaarobject_id){
+   const f='<Filter><PropertyIsEqualTo><PropertyName>identificatie</PropertyName><Literal>'+d.adresseerbaarobject_id+'</Literal></PropertyIsEqualTo></Filter>';
+   const w=await srcFetch('https://service.pdok.nl/lv/bag/wfs/v2_0?'+new URLSearchParams({service:'WFS',version:'2.0.0',request:'GetFeature',typeName:'bag:verblijfsobject',outputFormat:'application/json',count:'1',filter:f}),null,12000);
+   if(w.ok&&w.data&&w.data.features&&w.data.features[0])v=w.data.features[0].properties;
+  }
+  return {ok:true,source:'BAG (Kadaster, via PDOK)',fetchedAt:Date.now(),data:{pc:p.slice(0,4)+' '+p.slice(4),nr:n,toev:suf(d),adres:d.weergavenaam,
+   bouwjaar:v&&+v.bouwjaar>0?+v.bouwjaar:null,m2:v&&+v.oppervlakte>0?+v.oppervlakte:null,gebruiksdoel:v&&v.gebruiksdoel?String(v.gebruiksdoel).replace(/,/g,', '):null,
+   status:v&&v.status||null,type:null,label:null,live:true,src:'BAG (Kadaster, via PDOK)'}};
+ },
+ async voertuig(k){
+  const c=String(k||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!/^[A-Z0-9]{6}$/.test(c))return {ok:false,error:'Een kenteken heeft 6 tekens, bijvoorbeeld 12-AB-34.'};
+  const [a,b]=await Promise.all([srcFetch('https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken='+c,null,12000),srcFetch('https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken='+c,null,12000)]);
+  if(!a.ok)return {ok:false,error:'De RDW is nu niet bereikbaar. Probeer het zo opnieuw.'};
+  const v=(a.data||[])[0];if(!v)return {ok:false,error:'Dit kenteken staat niet in de RDW-registratie. Controleer het kenteken.'};
+  const fu=(b.ok&&Array.isArray(b.data))?b.data:[],kinds=fu.map(x=>String(x.brandstof_omschrijving||'').toLowerCase());
+  const el=kinds.indexOf('elektriciteit')>=0,ben=kinds.indexOf('benzine')>=0,die=kinds.indexOf('diesel')>=0;
+  const brandstof=el&&(ben||die)?'hybride':el?'elektrisch':die?'diesel':ben?'benzine':(kinds[0]||'onbekend');
+  let verbruik=null;
+  if(brandstof==='elektrisch'){const e=fu.find(x=>/elektr/i.test(x.brandstof_omschrijving));const wh=e?+e.elektrisch_verbruik_enkel_elektrisch_wltp:0;if(wh>0)verbruik=Math.round(wh)/10}
+  else{const m=fu.find(x=>/benzine|diesel/i.test(x.brandstof_omschrijving))||{};const l=+m.brandstof_verbruik_gecombineerd_wltp||+m.brandstofverbruik_gecombineerd||0;if(l>0)verbruik=l}
+  const dt=String(v.datum_eerste_toelating||''),bj=dt.length>=4?+dt.slice(0,4):null,cat=+v.catalogusprijs>0?+v.catalogusprijs:null;
+  const merk=titleCase(v.merk),hb=titleCase(v.handelsbenaming),model=hb.toLowerCase().indexOf(merk.toLowerCase())===0?hb:(merk+' '+hb).trim();
+  const fcar=brandstof==='diesel'||brandstof==='onbekend'?'benzine':brandstof;let idx=0,best=1e12;
+  CARS.forEach((x,i)=>{if(x[2]!==fcar)return;const dd=Math.abs(x[3]-(cat||25000));if(dd<best){best=dd;idx=i}});
+  const apk=String(v.vervaldatum_apk||'');
+  return {ok:true,source:'RDW Open Data',fetchedAt:Date.now(),data:{kenteken:kentekenFmt(c),merk:merk,model:model,bouwjaar:bj,brandstof:brandstof,brandstofRDW:brandstof,verbruik:verbruik,
+   catalogusprijs:cat,apk:apk.length===8?apk.slice(6,8)+'-'+apk.slice(4,6)+'-'+apk.slice(0,4):null,zitplaatsen:+v.aantal_zitplaatsen||null,idx:idx,live:true,src:'RDW Open Data'}};
+ }
+};
 const SBHOOK={},SBEXTRA={},SBDONE={};
 const HEAT={cv:'Cv-ketel op gas',hybride:'Hybride warmtepomp',pomp:'Volledige warmtepomp',stad:'Stadsverwarming',elek:'Elektrisch',weet:'Weet ik niet'};
-SBHOOK.woning0=W=>{
- const a=W.ans,r=WDA.woning.lookup(a.pc,a.nr,a.toev);
+SBHOOK.woning0=async W=>{
+ const a=W.ans,r=await WDA_LIVE.woning(a.pc,a.nr,a.toev);
  if(!r.ok){toast(r.error);return false}
  const d=r.data;a.pc=d.pc;a.nr=d.nr;a.toev=d.toev;a.wp=d;
- ['type','bouwjaar','m2','label'].forEach(k=>a[k]=d[k]);return true;
+ if(d.bouwjaar)a.bouwjaar=d.bouwjaar;if(d.m2)a.m2=d.m2;return true;
 };
 SBHOOK.auto0=W=>{
  const a=W.ans;if(a.mode!=='mijn')return true;
@@ -4421,7 +4492,7 @@ SBGEN.aankoop=a=>EL[a.soort]?genElektronica(a):genGrote(a);
 SBGEN.woning=genWoning;
 
 SBEXTRA.woning=W=>`<div class="card"><h3>Zal ik je woning voor je bewaken?</h3><p class="note">WATCHDOG kan je energiecontract, woonlasten en woningkansen in de gaten houden. Jij houdt de controle.</p><button class="btn" data-a="sb-woning-watch">Ja, bewaak mijn woning</button></div>`;
-SBDONE.woning=W=>{const a=W.ans;S.woning={pc:a.pc,nr:a.nr,toev:a.toev||'',type:a.type,bouwjaar:a.bouwjaar,m2:a.m2,label:a.label,ts:Date.now(),demo:true};save()};
+SBDONE.woning=W=>{const a=W.ans;S.woning={pc:a.pc,nr:a.nr,toev:a.toev||'',type:a.type,bouwjaar:a.bouwjaar,m2:a.m2,label:a.label,ts:Date.now(),demo:!(a.wp&&a.wp.live),src:a.wp&&a.wp.live?'BAG':null};save()};
 ACT['sb-woning-watch']=()=>{['energy','home','housing'].forEach(id=>{const st=S.w[id];if(st&&!st.on)Object.assign(st,{on:true,st:'active',added:Date.now(),checked:Date.now()})});save();refresh();toast('WATCHDOG bewaakt nu je woning (demo).',false,true)};
 ACT['sb-enable']=id=>{const o=sbFind(id);if(!o||!o.enable)return;const st=S.w[o.enable];if(st&&!st.on)Object.assign(st,{on:true,st:'active',added:Date.now(),checked:Date.now()});save();closeSheet();refresh();toast(`${WM[o.enable].n} staat aan`,false,true)};
 ACT['sb-jump']=id=>{const o=sbFind(id);if(!o||!o.jump)return;closeSheet();sbStart(o.jump);go('kies/'+o.jump)};
@@ -4510,14 +4581,28 @@ function wizQ(W){
  <small class="fine">Je gegevens blijven op dit toestel. Overslaan kan altijd: WATCHDOG gebruikt dan een gemiddelde.</small>`;
 }
 ACT['sb-back']=()=>{const W=S.sb.wiz,p=prevStep(W,W.step);if(p>=0){W.step=p;save();refresh()}};
+let SB_BUSY=false;
 ACT['sb-next']=()=>{
  const W=S.sb.wiz,st=QS(W.cat)[W.step];
  for(const f of visF(st,W.ans)){const v=W.ans[f.k];if(f.req&&(f.t==='text'?!String(v||'').trim():N(v)<=0)){toast(`Vul ${f.l.toLowerCase().replace(' (€)','')} in`);return}}
- if(st.hook&&SBHOOK[st.hook]&&SBHOOK[st.hook](W)===false)return;
+ if(st.hook&&SBHOOK[st.hook]){
+  if(SB_BUSY)return;
+  const hr=SBHOOK[st.hook](W);
+  if(hr&&typeof hr.then==='function'){
+   SB_BUSY=true;const btn=document.querySelector('[data-a="sb-next"]');if(btn){btn.disabled=true;btn.dataset.lbl=btn.textContent;btn.textContent='Bezig met opzoeken…'}
+   hr.then(ok=>{SB_BUSY=false;if(ok===false){if(btn){btn.disabled=false;btn.textContent=btn.dataset.lbl||'Volgende'}return}sbAfterHook(W)})
+     .catch(e=>{SB_BUSY=false;if(btn){btn.disabled=false;btn.textContent=btn.dataset.lbl||'Volgende'}toast('Opzoeken mislukt. Controleer je internetverbinding.')});
+   return;
+  }
+  if(hr===false)return;
+ }
+ sbAfterHook(W);
+};
+function sbAfterHook(W){
  W.said='';const n=nextStep(W,W.step);
  if(n>=0){W.step=n;save();window.scrollTo(0,0);refresh();return}
  W.stage='run';W.gate=false;save();refresh();sbRunSeq();
-};
+}
 
 const visIdxs=W=>QS(W.cat).map((s,i)=>i).filter(i=>visF(QS(W.cat)[i],W.ans).length);
 const visIdx=W=>Math.max(0,visIdxs(W).indexOf(W.step)),visCount=W=>Math.max(1,visIdxs(W).length);
@@ -4618,19 +4703,21 @@ function altNote(W,opts){
 }
 
 /* ---------- Woning: adres → profiel → alleen ontbrekende vragen → analyse ---------- */
-const woningPre=W=>{const d=W.ans.wp;return d?`<div class="sb-demo">${I('info')}<span>${demoTag('DEMO')} Gesimuleerd woningprofiel voor ${esc(d.pc)} ${esc(d.nr)}${esc(d.toev)}. Er is geen live woningbron gekoppeld. In productie komt dit uit betrouwbare bronnen (BAG en EP-Online). Klopt iets niet? Pas het hieronder aan.</span></div><div class="card wprof"><div class="rows"><div><span>Adres</span><b>${esc(d.pc)} ${esc(d.nr)}${esc(d.toev)}</b></div><div><span>Woningtype</span><b>${esc(d.type)}</b></div><div><span>Woonoppervlakte (indicatief)</span><b>${d.m2} m²</b></div><div><span>Bouwjaar</span><b>${d.bouwjaar}</b></div><div><span>Energielabel</span><b>${d.label}</b></div></div></div>`:''};
+const liveTag=src=>`<span class="demo-tag" style="background:#E2F4EC;color:#0E7A54">LIVE</span>`;
+const woningPre=W=>{const d=W.ans.wp;if(!d)return '';
+ return `<div class="sb-ok">${I('check')}<span>${liveTag()} Gevonden in de <b>BAG</b> (Kadaster, via PDOK). Woningtype en energielabel staan niet in de BAG: vul die hieronder zelf in. Je energielabel vind je op ep-online.nl.</span></div><div class="card wprof"><div class="rows"><div><span>Adres</span><b>${esc(d.adres||(d.pc+' '+d.nr+d.toev))}</b></div><div><span>Bouwjaar</span><b>${d.bouwjaar||'niet bekend in BAG'}</b></div><div><span>Oppervlakte</span><b>${d.m2?d.m2+' m²':'niet bekend in BAG'}</b></div><div><span>Gebruiksdoel</span><b>${esc(d.gebruiksdoel||'onbekend')}</b></div></div></div>`};
 const woningKnown=W=>{const a=W.ans,p=S.profile,ce=S.contracts.find(c=>c.id==='c_energy'),k=[];
  if(a.status!=='overweeg'){k.push(`${p.own==='koop'?'koopwoning':'huurwoning'}`,`woonlast ${E(p.housing)} per maand`,`energiekosten ${E(p.energy)} per maand`,p.solar?'zonnepanelen aanwezig':'geen zonnepanelen');if(ce)k.push(`energiecontract tot ${dFmt(ce.end)}`)}
  return `<p class="note">${k.length?`Al bekend uit je profiel: ${k.join(', ')}. Dit vraag ik niet opnieuw.`:'Ik gebruik alleen wat je hier invult.'}</p>`};
 SBQ.woning=[
- {t:'Welke woning wil je bekijken?',why:'Met alleen je adres begin je. Nu simuleert WATCHDOG het woningprofiel. Later komt dat uit een betrouwbare bron.',hook:'woning0',cta:()=>'Zoek mijn woning',f:[
+ {t:'Welke woning wil je bekijken?',why:'Met alleen je adres begin je. WATCHDOG zoekt bouwjaar en oppervlakte op in de BAG, de officiële registratie van het Kadaster.',hook:'woning0',cta:()=>'Zoek mijn woning',f:[
   {k:'pc',l:'Postcode',t:'text',ph:'3511 AB',def:()=>S.woning?S.woning.pc:'',req:1},
   {k:'nr',l:'Huisnummer',t:'text',ph:'12',def:()=>S.woning?S.woning.nr:'',req:1},
   {k:'toev',l:'Toevoeging (optioneel)',t:'text',ph:'A',def:()=>S.woning?S.woning.toev:''}]},
- {t:'Klopt dit woningprofiel?',why:'Controleer of dit klopt. Jij weet het beste hoe je woning is.',pre:woningPre,f:[
+ {t:'Klopt dit woningprofiel?',why:'Bouwjaar en oppervlakte komen uit de BAG. Woningtype en energielabel vul je zelf in. Jij weet het beste hoe je woning is.',pre:woningPre,f:[
   {k:'type',l:'Woningtype',t:'chips',o:['Tussenwoning','Hoekwoning','Twee-onder-een-kapwoning','Appartement','Vrijstaande woning','Rijwoning'].map(x=>[x,x]),def:'Tussenwoning'},
   {k:'bouwjaar',l:'Bouwjaar',t:'num',def:1985},{k:'m2',l:'Woonoppervlakte (m²)',t:'num',def:100},
-  {k:'label',l:'Energielabel',t:'chips',o:'ABCDEFG'.split('').map(x=>[x,x]),def:'D'}]},
+  {k:'label',l:'Energielabel (zie ep-online.nl)',t:'chips',o:'ABCDEFG'.split('').map(x=>[x,x]),def:'D'}]},
  {t:'Jouw situatie',why:'Dit bepaalt welke gegevens ik uit je profiel hergebruik en welke financiële check past.',f:[
   {k:'status',l:'Woon je hier al of overweeg je deze woning?',t:'chips',o:[['hier','Ik woon hier al'],['overweeg','Ik overweeg deze woning']],def:'hier'}]},
  {t:'Alleen wat ik nog niet weet',why:'Hiermee maak ik de schattingen nauwkeuriger. Alles is optioneel, behalve wat voor de financiële check nodig is.',pre:woningKnown,f:[
@@ -4655,11 +4742,12 @@ function genWoning(a){
   it.notes=(it.notes||[]).concat(['Schattingen zijn indicatief en geen zekerheid. Laat een erkend adviseur of installateur een offerte opstellen.']);
   if(plan)it.pros.unshift('Je gaf aan dat je dit overweegt');
   if(a.verbouwing&&a.verbouwing!=='geen'&&mod==='verduurzaming')it.pros.push('Je plant een verbouwing: combineren kan mogelijk voordeel geven (indicatief)');
-  it.why.data=[['Adres',adr],['Woningtype (demo)',type],['Bouwjaar',by],['Oppervlakte (indicatief)',m2+' m²'],['Energielabel',lab],['Situatie',hier?'ik woon hier':'ik overweeg deze woning'],['Verwarming',HEAT[heat]],['Gasverbruik',Math.round(gasM3)+' m³ per jaar'+(known?' (jouw opgave)':' (geschat)')]];
-  it.why.ass.push(`Gasprijs €${String(gasPrice).replace('.',',')} per m³ en stroomprijs €${String(kwhPrice).replace('.',',')} per kWh (demo-aannames, geen live bron).`,'Woningkenmerken zijn een simulatie, geen BAG- of EP-Online-gegevens.');it.why.lim.push('Werkelijke besparing hangt af van gedrag, weer, bouwkundige staat en prijzen.');
+  it.why.data=[['Adres',adr],['Woningtype (jouw invoer)',type],['Bouwjaar'+(a.wp&&a.wp.bouwjaar==by?' (BAG)':''),by],['Oppervlakte'+(a.wp&&a.wp.m2==m2?' (BAG)':''),m2+' m²'],['Energielabel (jouw invoer)',lab],['Situatie',hier?'ik woon hier':'ik overweeg deze woning'],['Verwarming',HEAT[heat]],['Gasverbruik',Math.round(gasM3)+' m³ per jaar'+(known?' (jouw opgave)':' (geschat)')]];
+  it.why.ass.push(`Gasprijs €${String(gasPrice).replace('.',',')} per m³ en stroomprijs €${String(kwhPrice).replace('.',',')} per kWh (gemiddelde aannames, geen live tarief).`,a.wp&&a.wp.live?'Bouwjaar en oppervlakte komen uit de BAG (Kadaster). Woningtype en energielabel zijn jouw invoer.':'Woningkenmerken zijn jouw invoer.');it.why.lim.push('Werkelijke besparing hangt af van gedrag, weer, bouwkundige staat en prijzen.');
   const gasBased=o&&(o.plan==='isolatie'||o.plan==='warmtepomp'||/glas/i.test(title));
-  if(gasBased){const need=[];if(!known)need.push('werkelijk gasverbruik');if(heat==='weet')need.push('type verwarming');it.conf={l:need.length?'laag':'middel',r:need.length?'schatting op aannames over je woning':'DEMO-bron en aannames',need:need}}
-  it.why.ass.push('Bandbreedte: voordeel −25% tot +30%, kosten −20% tot +30% (aanname van WATCHDOG).');it.why.date=`Demo-gegevens van ${sbDate()}. Geen live bron.`;
+  if(gasBased){const need=[];if(!known)need.push('werkelijk gasverbruik');if(heat==='weet')need.push('type verwarming');it.conf={l:need.length?'laag':'middel',r:need.length?'schatting op aannames over je woning':'BAG-gegevens en aannames',need:need}}
+  it.why.ass.push('Bandbreedte: voordeel −25% tot +30%, kosten −20% tot +30% (aanname van WATCHDOG).');it.why.date=a.wp&&a.wp.live?`BAG opgehaald op ${sbDate()}. Prijzen en besparingen zijn schattingen.`:`Schatting van ${sbDate()}.`;
+  if(a.wp&&a.wp.live&&(mod==='verduurzaming'&&cost>0||mod==='woonlasten'||(mod==='energie'&&!hier)))it.est=true;
   if(it.price>0)it.goal={n:title,target:Math.round(cost),saved:0,monthly:Math.round(cost/24),due:isoIn(730)};
   out.push(it);return it;};
  const ce=S.contracts.find(c=>c.id==='c_energy'),dce=ce?daysTo(ce.end):null,cur=N(p.energy);
@@ -4673,37 +4761,38 @@ function genWoning(a){
  opp('verzekering',own?'Opstal en inboedel controleren':'Inboedelverzekering controleren','Kijk of je dekking en premie kloppen',Math.round(N(p.otherIns)*.12*12),0,{jump:'verzekering',kv:[['Huidige kosten',E(p.otherIns)+' p/m'],['Mogelijk voordeel',E(p.otherIns*.12*12)+' /jr'],['Bron','DEMO']],why:{data:[['Verzekeringen (profiel)',E(p.otherIns)+' per maand']],crit:[['Huidige premie','hoog']],ass:['Vergelijken scheelt gemiddeld ongeveer 12% (aanname).'],lim:['Geen live premiebron.'],calc:[`${E(p.otherIns)} × 12% × 12 = ${E(p.otherIns*.12*12)} per jaar`],date:'Demo'}});
  opp('internet','Internet en mobiel vergelijken','Vergelijk je huidige abonnement',Math.round(N(p.telecom)*.29*12),0,{jump:'internet',kv:[['Huidige kosten',E(p.telecom)+' p/m'],['Mogelijk voordeel',E(p.telecom*.29*12)+' /jr'],['Bron','DEMO']],why:{data:[['Telecom (profiel)',E(p.telecom)+' per maand']],crit:[['Lager maandbedrag dan nu','hoog']],ass:['Sim-only plus los internet is gemiddeld ongeveer 29% goedkoper (aanname).'],lim:['Geen live tariefbron.'],calc:[`${E(p.telecom)} × 29% × 12 = ${E(p.telecom*.29*12)} per jaar`],date:'Demo'}});
  if(own){const val=m2*3600,res=val*.01/12;opp('woonlasten','Onderhoudsreserve inplannen',`Geschatte woningwaarde ${E(val)} (aanname)`,0,0,{kv:[['Reserve',E(res)+' p/m'],['Basis','1% van waarde'],['Status','Indicatief']],why:{data:[],crit:[['Bouwjaar en oppervlakte','middel']],ass:['Richtlijn: circa 1% van de woningwaarde per jaar (aanname).'],lim:[],calc:[`${E(val)} × 1% ÷ 12 = ${E(res)} per maand`],date:'Demo'},notes:['Een reserve voorkomt dat groot onderhoud je buffer leegmaakt.']})}
+ /* Testfase (leeg begin): geen kaarten op basis van fictief aanbod (energie-, verzekerings- en telecomvergelijking) of zonder bron (regelingen). */
+ if(LEEG())return out.filter(o=>['energie','verzekering','internet'].indexOf(o.mod)<0&&o.title!=='Regelingen en subsidies'||(o.mod==='energie'&&!hier)).sort(ORD);
  return out.sort(ORD);
 }
 SBGEN.woning=genWoning;
 function woningProfielCard(a){
  const p=S.profile,hier=a.status!=='overweeg';
- return `<div class="card wprof"><div class="sec sm"><h3>Woningprofiel</h3><span class="demo-tag">DEMO</span></div><div class="rows"><div><span>Adres</span><b>${esc(a.pc||'')} ${esc(a.nr||'')}${esc(a.toev||'')}</b></div><div><span>Type</span><b>${esc(a.type||'')}</b></div><div><span>Oppervlakte (indicatief)</span><b>${N(a.m2)} m²</b></div><div><span>Bouwjaar</span><b>${N(a.bouwjaar)}</b></div><div><span>Energielabel</span><b>${esc(a.label||'')}</b></div><div><span>Situatie</span><b>${hier?`Ik woon hier (${p.own==='koop'?'koop':'huur'}, uit je profiel)`:`Ik overweeg deze woning (${a.vorm==='koop'?'koop':'huur'})`}</b></div></div></div>`;
+ return `<div class="card wprof"><div class="sec sm"><h3>Woningprofiel</h3>${a.wp&&a.wp.live?liveTag():'<span class="demo-tag">EIGEN INVOER</span>'}</div><div class="rows"><div><span>Adres</span><b>${esc(a.pc||'')} ${esc(a.nr||'')}${esc(a.toev||'')}</b></div><div><span>Type</span><b>${esc(a.type||'')}</b></div><div><span>Oppervlakte</span><b>${N(a.m2)} m²</b></div><div><span>Bouwjaar</span><b>${N(a.bouwjaar)}</b></div>${a.wp&&a.wp.gebruiksdoel?`<div><span>Gebruiksdoel (BAG)</span><b>${esc(a.wp.gebruiksdoel)}</b></div>`:''}<div><span>Energielabel</span><b>${esc(a.label||'')}</b></div><div><span>Situatie</span><b>${hier?`Ik woon hier (${p.own==='koop'?'koop':'huur'}, uit je profiel)`:`Ik overweeg deze woning (${a.vorm==='koop'?'koop':'huur'})`}</b></div></div></div>`;
 }
 function wizResWoning(W){
  const a=W.ans,opts=sbOpts(W),C=woonCheck(a),off=S.settings.finctx===false||a.fin==='nee';
  const secs=['energie','verduurzaming','verzekering','internet'].map(m=>{const L=opts.filter(o=>o.mod===m);return L.length?`${sec(MODN[m])}<div class="sbos">${L.map(o=>optCard(o,1,W)).join('')}</div>`:''}).join('');
  const wl=opts.filter(o=>o.mod==='woonlasten');
- return `${dogSay('Dit kan WATCHDOG voor deze woning doen.')}<div class="sb-demo">${I('info')}<span>${demoTag('DEMO')} Gesimuleerde woninggegevens en geschatte waarden. Er is geen live bron gekoppeld. Schattingen zijn indicatief en geen zekerheid.</span></div>${woningProfielCard(a)}${secs}
+ return `${dogSay('Dit kan WATCHDOG voor deze woning doen.')}<div class="sb-demo">${I('info')}<span>${a.wp&&a.wp.live?'Adres, bouwjaar en oppervlakte komen uit de BAG (Kadaster). ':''}Besparingen en kosten zijn schattingen op basis van gemiddelde prijzen. Ze zijn indicatief en geen zekerheid.</span></div>${woningProfielCard(a)}${secs}
  ${sec(MODN.woonlasten)}${off?`<p class="sb-ok">${I('info')}<span>Financiële check overgeslagen${S.settings.finctx===false?'. Zet hem aan in Profiel.':' op jouw verzoek.'}</span></p>`:finCard(C)}${wl.length?`<div class="sbos">${wl.map(o=>optCard(o,1,W)).join('')}</div>`:''}
  ${SBEXTRA.woning(W)}<small class="fine">Schattingen zijn indicatief en geen advies. Jij beslist.</small>`;
 }
 SBEXTRA.woning=W=>`<div class="card"><h3>Zal ik deze woning voor je bewaken?</h3><p class="note">WATCHDOG bewaakt dan je energiecontract en woonlasten. Jij houdt de controle.</p><button class="btn" data-a="sb-woning-watch">Ja, bewaak mijn woning</button></div>`;
-ACT['sb-woning-watch']=()=>{WE.create({type:'woning',categorie:'Woning',onderwerp:'Woning'});addXP(10,'een bewaakte woning');save();refresh();toast('WATCHDOG bewaakt nu deze woning (demo).',false,true)};
+ACT['sb-woning-watch']=()=>{WE.create({type:'woning',categorie:'Woning',onderwerp:'Woning'});addXP(10,'een bewaakte woning');save();refresh();toast('WATCHDOG bewaakt nu deze woning.',false,true)};
 
 /* ---------- Auto: kenteken → profiel → ontbrekende info → werkelijke kosten → check → alternatieven → Watch ---------- */
-SBHOOK.auto0=W=>{
+SBHOOK.auto0=async W=>{
  const a=W.ans;if(a.mode!=='mijn')return true;
- const r=WDA.voertuig.lookup(a.kenteken);if(!r.ok){toast(r.error);return false}
- const d=Object.assign({},r.data);
- if(S.car&&S.car.has){d.model=String(S.car.o.name).replace(/\s*\(huidig\)/,'');d.brandstof=/elektr/i.test(S.car.o.name)?'elektrisch':/hybr/i.test(S.car.o.name)?'hybride':'benzine'}
- a.cp=d;a.kenteken=d.kenteken;a.cbj=d.bouwjaar;a.cfuel=d.brandstof;return true;
+ const r=await WDA_LIVE.voertuig(a.kenteken);if(!r.ok){toast(r.error);return false}
+ const d=r.data;a.cp=d;a.kenteken=d.kenteken;if(d.bouwjaar)a.cbj=d.bouwjaar;if(['benzine','hybride','elektrisch','diesel'].indexOf(d.brandstof)>=0)a.cfuel=d.brandstof;return true;
 };
 const autoPre=W=>{const d=W.ans.cp;if(!d)return '';const has=S.car&&S.car.has,o=has?S.car.o:null;
- return `<div class="sb-demo">${I('info')}<span>${demoTag('DEMO')} Gesimuleerd voertuigprofiel voor kenteken ${esc(d.kenteken)}. Er is geen live voertuigbron gekoppeld. In productie komt dit uit RDW-data.</span></div><div class="card wprof"><div class="rows"><div><span>Kenteken</span><b>${esc(d.kenteken)}</b></div><div><span>Model (demo)</span><b>${esc(d.model)}</b></div><div><span>Bouwjaar</span><b>${d.bouwjaar}</b></div><div><span>Brandstof</span><b>${esc(d.brandstof)}</b></div></div></div>${has?`<p class="note">Al bekend uit je Auto True Cost: verzekering ${E(o.ins)}, wegenbelasting ${E(o.mrb)}, brandstof ${E(o.fuel)}, onderhoud ${E(o.maint)}, parkeren ${E(o.parking)} per maand. Dit vraag ik niet opnieuw.</p>`:''}`};
+ return `<div class="sb-ok">${I('check')}<span>${liveTag()} Gevonden bij de <b>RDW</b> (open data). Klopt iets niet? Pas het hieronder aan.</span></div><div class="card wprof"><div class="rows"><div><span>Kenteken</span><b>${esc(d.kenteken)}</b></div><div><span>Merk en model</span><b>${esc(d.model)}</b></div><div><span>Eerste toelating</span><b>${d.bouwjaar||'onbekend'}</b></div><div><span>Brandstof</span><b>${esc(d.brandstof)}</b></div>${d.verbruik?`<div><span>Verbruik (fabriek)</span><b>${String(d.verbruik).replace('.',',')} ${d.brandstof==='elektrisch'?'kWh':'liter'} per 100 km</b></div>`:''}${d.catalogusprijs?`<div><span>Catalogusprijs (nieuw)</span><b>${E(d.catalogusprijs)}</b></div>`:''}${d.apk?`<div><span>APK geldig tot</span><b>${esc(d.apk)}</b></div>`:''}</div></div>${has?`<p class="note">Al bekend uit je Auto True Cost: verzekering ${E(o.ins)}, wegenbelasting ${E(o.mrb)}, brandstof ${E(o.fuel)}, onderhoud ${E(o.maint)}, parkeren ${E(o.parking)} per maand. Dit vraag ik niet opnieuw.</p>`:''}`};
+const AUTO_ALTS_DEMO=false;
 const noCar=a=>a.mode==='mijn'&&!(S.car&&S.car.has);
 SBQ.auto=[
- {t:'Jouw auto of een andere?',why:'Met je kenteken kan WATCHDOG (met RDW-data) je auto herkennen. Nu gebruik ik demo-gegevens.',hook:'auto0',cta:W=>W.ans.mode==='mijn'?'Herken mijn auto':'Volgende',f:[
+ {t:'Jouw auto of een andere?',why:'Met je kenteken zoekt WATCHDOG je auto op bij de RDW: model, bouwjaar, brandstof, verbruik en catalogusprijs.',hook:'auto0',cta:W=>W.ans.mode==='mijn'?'Herken mijn auto':'Volgende',f:[
   {k:'mode',l:'Wat wil je?',t:'chips',o:[['mijn','Dit is mijn auto'],['zoek','Ik zoek een auto']],def:'zoek'},
   {k:'kenteken',l:'Kenteken',t:'text',ph:'12-AB-34',show:a=>a.mode==='mijn',def:'',req:1},
   {k:'budget',l:'Budget voor aanschaf (€)',t:'num',show:a=>a.mode!=='mijn',def:24000,req:1},
@@ -4711,14 +4800,14 @@ SBQ.auto=[
   {k:'size',l:'Gewenste grootte',t:'chips',show:a=>a.mode!=='mijn',o:[['compact','Compact'],['midden','Middenklasse'],['ruim','Ruim (SUV, stationwagon, MPV)'],['geen','Geen voorkeur']],def:'geen'}]},
  {t:'Klopt dit autoprofiel?',why:'Controleer of dit klopt. Pas het aan als het afwijkt.',pre:autoPre,f:[
   {k:'cbj',l:'Bouwjaar',t:'num',show:a=>a.mode==='mijn',def:2018},
-  {k:'cfuel',l:'Brandstof',t:'chips',show:a=>a.mode==='mijn',o:[['benzine','Benzine'],['hybride','Hybride'],['elektrisch','Elektrisch']],def:'benzine'}]},
+  {k:'cfuel',l:'Brandstof',t:'chips',show:a=>a.mode==='mijn',o:[['benzine','Benzine'],['diesel','Diesel'],['hybride','Hybride'],['elektrisch','Elektrisch']],def:'benzine'}]},
  {t:'Hoe gebruik je hem?',why:'Kilometers en gebruik bepalen brandstof- en onderhoudskosten.',f:[{k:'km',l:'Kilometers per jaar',t:'num',def:15000},{k:'commute',l:'Woon-werk per dag (km, heen en terug)',t:'num',def:30},{k:'use',l:'Privé of zakelijk?',t:'chips',o:[['prive','Privé'],['zakelijk','Zakelijk']],def:'prive'},{k:'years',l:'Hoe lang wil je hem houden?',t:'chips',o:[['3','3 jaar'],['5','5 jaar'],['7','7 jaar'],['10','10 jaar']],def:'5'}]},
  {t:'Kosten en wensen',why:'Alleen wat WATCHDOG nog niet weet.',f:[
   {k:'ins',l:'Autoverzekering per maand (€)',t:'num',show:noCar,def:70},{k:'mrb',l:'Wegenbelasting per maand (€)',t:'num',show:noCar,def:40},
   {k:'maint',l:'Onderhoud per maand (€, 0 = schatting)',t:'num',show:noCar,def:0},{k:'fuelM',l:'Brandstof of stroom per maand (€, 0 = schatting)',t:'num',show:noCar,def:0},
   {k:'loanM',l:'Maandbedrag autolening (€, 0 = geen)',t:'num',show:noCar,def:0},
   {k:'parkM',l:'Parkeerkosten per maand (€)',t:'num',show:a=>a.mode!=='mijn'||noCar(a),def:()=>N(S.car&&S.car.has?S.car.o.parking:0)},
-  {k:'altBudget',l:'Alternatieven vergelijken tot (€)',t:'num',show:a=>a.mode==='mijn',def:25000},
+  {k:'altBudget',l:'Alternatieven vergelijken tot (€)',t:'num',show:a=>a.mode==='mijn'&&AUTO_ALTS_DEMO,def:25000},
   {k:'fuel',l:'Voorkeur aandrijving',t:'chips',show:a=>a.mode!=='mijn',o:[['benzine','Benzine'],['hybride','Hybride'],['elektrisch','Elektrisch'],['geen','Geen voorkeur']],def:'geen'},
   {k:'charge',l:'Kun je thuis of bij werk laden?',t:'chips',o:[['ja','Ja'],['nee','Nee'],['weet','Weet ik niet']],def:'weet'},
   {k:'people',l:'Hoeveel zitplaatsen heb je nodig?',t:'num',show:a=>a.mode!=='mijn',def:()=>Math.min(7,Math.max(2,S.hh.adults.length+S.hh.kids.length))}]},
@@ -4726,23 +4815,24 @@ SBQ.auto=[
 ];
 function genAutoMijn(a){
  const has=!!(S.car&&S.car.has),o=has?S.car.o:{},cp=Object.assign({},a.cp||WDA.voertuig.lookup(a.kenteken).data,{bouwjaar:N(a.cbj)||(a.cp&&a.cp.bouwjaar),brandstof:a.cfuel||(a.cp&&a.cp.brandstof)});
- const c=CARS[cp.idx],yrs=N(a.years)||3,km=N(a.km)||15000,age=Math.max(0,new Date().getFullYear()-cp.bouwjaar),val=Math.max(1500,Math.round((has&&N(o.price)?N(o.price):c[3])*Math.exp(-(has?.12:.14)*age)));
- const cons=cp.brandstof===c[2]?c[5]:({benzine:6.2,hybride:4.8,elektrisch:17})[cp.brandstof]||6,unit=cp.brandstof==='elektrisch'?(a.charge==='ja'?.31:.58):2.10;
+ const c=CARS[cp.idx]||CARS[0],yrs=N(a.years)||3,km=N(a.km)||15000,age=Math.max(0,new Date().getFullYear()-(cp.bouwjaar||new Date().getFullYear())),val=Math.max(1500,Math.round((has&&N(o.price)?N(o.price):(cp.catalogusprijs||c[3]))*Math.exp(-(has?.12:.14)*age)));
+ const cons=(cp.verbruik&&cp.brandstof===cp.brandstofRDW)?cp.verbruik:(cp.brandstof===c[2]?c[5]:({benzine:6.2,diesel:5.2,hybride:4.8,elektrisch:17})[cp.brandstof]||6),unit=cp.brandstof==='elektrisch'?(a.charge==='ja'?.31:.58):cp.brandstof==='diesel'?1.85:2.10;
  const dep=has?carDep(o):val*(1-Math.exp(-.105*yrs))/(12*yrs);
  let fin=has?carInterestM(o):N(a.loanM)*.15;
  const P=[['Afschrijving',dep],['Financiering (rente)',fin],['Verzekering',has?N(o.ins):N(a.ins)],['Wegenbelasting',has?N(o.mrb):N(a.mrb)],[cp.brandstof==='elektrisch'?'Elektriciteit':'Brandstof',has?N(o.fuel):(N(a.fuelM)>0?N(a.fuelM):km*cons/100*unit/12)],['Onderhoud',has?N(o.maint):(N(a.maint)>0?N(a.maint):c[8]/12)],['Parkeren',has?N(o.parking):N(a.parkM)]].filter(x=>x[1]>0);
  const m=sum(P.map(x=>x[1])),park=has?N(o.parking):N(a.parkM);
- const mine=mk('auto',a,{title:`Jouw auto: ${cp.model} (${cp.bouwjaar})`,sub:`Kenteken ${cp.kenteken} · ${cp.brandstof} · demo-gegevens`,price:val,tcoM:m,tco:{total:m*12*yrs,dep:dep*12*yrs,fuel:0,unit:unit},mine:true,badge:'Jouw huidige auto',score:100,
+ const mine=mk('auto',a,{live:!!cp.live,title:`Jouw auto: ${cp.model} (${cp.bouwjaar||'?'})`,sub:`Kenteken ${cp.kenteken} · ${cp.brandstof} · ${cp.live?'RDW-gegevens':'eigen invoer'}`,price:val,tcoM:m,tco:{total:m*12*yrs,dep:dep*12*yrs,fuel:0,unit:unit},mine:true,badge:'Jouw huidige auto',score:100,
   kv:[['Aanschafwaarde nu (geschat)',E(val)],['Werkelijke kosten',E(m)+' p/m'],[`Totaal ${yrs} jr`,E(m*12*yrs)]]});
  mine.rows=P.map(x=>[x[0]+' per maand',E(x[1])]).concat([['Werkelijke kosten per maand',E(m)],[`Over ${yrs} jaar`,E(m*12*yrs)]]);
  mine.pros=[`De aanschafprijs is niet wat de auto je kost: circa ${E(m)} per maand`,has?'Kosten uit je Auto True Cost hergebruikt':'Kosten uit je eigen invoer',`Grootste post: ${P.slice().sort((x,y)=>y[1]-x[1])[0][0].toLowerCase()}`];
- mine.notes=['Gegevens over je auto zijn een demo-simulatie. In productie komen ze uit RDW-data. Kosten zijn schattingen.'];
- mine.why.data=[['Kenteken',cp.kenteken],['Model (demo)',cp.model],['Bouwjaar',cp.bouwjaar],['Kilometers per jaar',km],['Kostenbron',has?'Auto True Cost in je profiel':'jouw invoer']];
+ mine.notes=[cp.live?'Model, bouwjaar, brandstof, verbruik en catalogusprijs komen uit RDW open data. De huidige waarde en de kosten zijn schattingen; brandstofprijzen zijn gemiddelde aannames.':'Kosten zijn schattingen op basis van jouw invoer.'];
+ mine.why.data=[['Kenteken',cp.kenteken],['Model'+(cp.live?' (RDW)':''),cp.model],['Bouwjaar',cp.bouwjaar],['Verbruik',cons+(cp.brandstof==='elektrisch'?' kWh':' l')+' per 100 km'+(cons===cp.verbruik?' (RDW)':' (gemiddelde)')],['Kilometers per jaar',km],['Kostenbron',has?'Auto True Cost in je profiel':'jouw invoer']];
  mine.why.crit=[['Werkelijke maandelijkse kosten','hoog']];mine.why.calc=P.map(x=>`${x[0]}: ${E(x[1])} per maand`).concat([`Totaal ${E(m)} per maand`]);mine.why.ass.push('Afschrijving over de gebruiksduur; rente als gemiddeld aandeel van de lening.');
  mine.watch={label:'Bewaak mijn autokosten',price:m,unit:'p/m',dir:'boven'};
  const alts=genAuto(Object.assign({},a,{mode:'zoek',budget:N(a.altBudget)||25000,cond:'geen',size:'geen',fuel:'geen',pay:'spaargeld',years:String(yrs),people:'4',parkM:park}));
  alts.forEach(x=>{const d=m-x.tcoM;x.kv[2]=['Verschil met jouw auto',(d>=0?'−':'+')+E(Math.abs(d))+' p/m',d>=0?'pos':''];x.pros.unshift(d>=0?`Mogelijk ${E(d)} per maand goedkoper dan jouw auto (indicatief)`:`Mogelijk ${E(-d)} per maand duurder dan jouw auto`);x.tags=[];x.badge=null});
- alts.sort((x,y)=>x.tcoM-y.tcoM);return [mine].concat(alts.slice(0,4));
+ /* Testfase: alternatieven komen uit een fictieve autocatalogus. Die tonen we niet naast echte RDW-gegevens. */
+ alts.sort((x,y)=>x.tcoM-y.tcoM);return AUTO_ALTS_DEMO?[mine].concat(alts.slice(0,4)):[mine];
 }
 
 /* ---------- Aankoop: wanneer heb je het nodig ---------- */
@@ -4776,6 +4866,8 @@ ACT['w-kies']=()=>{S.ui.finAsk=true;save();hideWelcome();go('kies')};
 /* ---------- betrouwbaarheid (§35): nooit "hoog" voor DEMO-bronnen ---------- */
 function confOf(o){
  if(o&&o.conf)return o.conf;
+ if(o&&o.live)return {l:'middel',r:'RDW-gegevens; waarde en kosten zijn schattingen',need:[]};
+ if(o&&o.est)return {l:'middel',r:'BAG-gegevens en gemiddelde prijzen; schatting',need:[]};
  return {l:'middel',r:'DEMO-bron en aannames, geen live gegevens',need:[]};
 }
 const CONF_CLS={hoog:'gr',middel:'am',laag:'rd'};
@@ -4807,7 +4899,7 @@ V.gegevens=function(){
   ${wo?srcRow('house','Woning (DEMO-profiel)',`${esc(maskPc(wo.pc))} ${esc(wo.nr)}${esc(wo.toev)} · gesimuleerd, geen live bron`,`<button class="link" data-a="src-exp" data-arg="woning">Exporteer</button><button class="link" data-a="src-del" data-arg="woning">Verwijderen</button>`):srcRow('house','Woning','Niet toegevoegd',`<button class="link" data-a="sb-go" data-arg="woning">Toevoegen</button>`)}
   ${car?srcRow('car','Auto True Cost',`${esc(S.car.o.name)} · kosten die jij hebt ingevuld`,`<button class="link" data-a="src-exp" data-arg="auto">Exporteer</button><button class="link" data-a="src-del" data-arg="auto">Verwijderen</button>`):srcRow('car','Auto','Niet toegevoegd',`<button class="link" data-a="sb-go" data-arg="auto">Toevoegen</button>`)}
   ${S.imp?srcRow('repeat','Transactiebestand (CSV)',`${S.imp.n} transacties gelezen${S.imp.tx?', op dit toestel bewaard':', niet bewaard'} · ${S.imp.recurring.filter(x=>x.dir==='uit').length} terugkerende betalingen · laatste transactie ${dFmt(S.imp.last)}${S.imp.demo?' · DEMO':''}`,`<button class="link" data-a="go" data-arg="import">Bekijk</button><button class="link" data-a="src-exp" data-arg="csv">Exporteer</button><button class="link" data-a="src-del" data-arg="csv">Verwijderen</button>`):srcRow('repeat','Transactiebestand (CSV)','Niet toegevoegd',`<button class="link" data-a="go" data-arg="import">Toevoegen</button>`)}
-  ${srcRow('shield','Bankkoppeling','Niet gekoppeld',`<span class="demo-tag">DEMO</span>`)}
+  ${srcRow('shield','Bankkoppeling','Niet gekoppeld. Gebruik de CSV-import van je bank.',`<span class="demo-tag">LATER</span>`)}
   ${srcRow('search','Zoekgeschiedenis',`${hist.length} ${plural(hist.length,'zoekopdracht','zoekopdrachten')} op dit toestel${carHist?', met kenteken':''}${wo?', met adres':''}`,hist.length?`<button class="link" data-a="src-exp" data-arg="hist">Exporteer</button><button class="link" data-a="src-del" data-arg="hist">Wissen</button>`:'')}
  </div>
  <div class="card list"><div class="row"><span class="grow"><b>Financiële context gebruiken</b><small>WATCHDOG toetst aankopen aan je buffer en maandruimte.</small></span><button class="sw ${S.settings.finctx===false?'':'on'}" role="switch" aria-checked="${S.settings.finctx!==false}" aria-label="Financiële context gebruiken" data-a="set-finctx"><i></i></button></div>
@@ -5664,7 +5756,7 @@ function speechSummary(R){
  v.prefs.forEach(p=>bits.push(p));
  const asm=v.assumed.length?` Zelf ga ik uit van ${v.assumed.map(a=>a.label).join(' en ')}, dat is mijn eigen richtlijn.`:'';
  const u=v.unk.length?` ${v.unk.map(x=>x.split(':')[0]).join(' en ')} maken niet uit.`:'';
- const tail=providerFor(R.cat)?'Klopt dat en zal ik zoeken?':'Klopt dat en zal ik je wens vastleggen?';
+ const tail=providerFor(R.cat)||LIVE_PRODUCTS()?'Klopt dat en zal ik zoeken?':'Klopt dat en zal ik je wens vastleggen?';
  return `Ik zoek dus een ${d}${bits.length?' ('+bits.join(', ')+')':''}.${asm}${u} ${tail}`;
 }
 /* =====================================================================
@@ -5747,7 +5839,7 @@ function confirmHTML(){
  return `<div class="card cv-conf"><h3>Heb ik je goed begrepen?</h3><b class="cf-t">${esc(cap1(catName(R)))}</b>
  <div class="cf-src"><span class="cf-lb you">Door jou opgegeven</span>${g('Harde eisen',v.hard)}${g('Voorkeuren',v.prefs)}${g('Context',v.ctx)}${g('Geen voorkeur of onbekend',v.unk)}${(v.hard.length+v.prefs.length+v.ctx.length+v.unk.length)?'':'<div class="fine">Nog niets specifieks opgegeven.</div>'}</div>
  ${v.assumed.length?`<div class="cf-src asm"><span class="cf-lb wd">WATCHDOG-aanname/richtlijn</span>${v.assumed.map(a=>`<div>${esc(a.label)}<small class="fine" style="display:block">${esc(a.why)} · niet door jou gezegd</small></div>`).join('')}</div>`:''}
- <div class="btn-row"><button class="btn pu" data-a="cv-search">${providerFor(R.cat)?'Zoeken':'Wens vastleggen'}</button><button class="btn ghost" data-a="cv-edit">Aanpassen</button></div></div>`;
+ <div class="btn-row"><button class="btn pu" data-a="cv-search">${providerFor(R.cat)||LIVE_PRODUCTS()?'Zoeken':'Wens vastleggen'}</button><button class="btn ghost" data-a="cv-edit">Aanpassen</button></div></div>`;
 }
 function cardHTML(c){
  const C=CONV,R=C&&C.req;
@@ -5844,7 +5936,8 @@ function convStep(text,first){
 }
 function convSearch(){
  const C=CONV,R=C.req,pr=providerFor(R.cat);
- WD.log('search requested',R.cat);WD.log('provider selected',pr?pr.id:'GEEN (generieke categorie)');
+ WD.log('search requested',R.cat);WD.log('provider selected',LIVE_PRODUCTS()?'livesearch':(pr?pr.id:'GEEN (generieke categorie)'));
+ if(LIVE_PRODUCTS()){convSearchLive();return}
  if(!pr){C.stage='noprov';convNoProv();return}
  C.stage='searching';try{GUIDE.applyState()}catch(e){}
  convSay(`Ik ga zoeken bij de provider “${pr.sourceName}”.`,{type:'steps',src:pr.sourceName});
@@ -6421,7 +6514,7 @@ ACT['buf-info']=()=>{
 function showWelcome(){
  const d=document.createElement('div');d.className='full welcome';d.id='welcome';
  const S3=[['Vraag WATCHDOG voordat je geld uitgeeft.','Zeg of typ wat je wilt kopen of regelen. Bijvoorbeeld: “Ik wil een grote koelkast.”'],['WATCHDOG zoekt, vergelijkt en bewaakt voor je.','Ik stel alleen vragen die ertoe doen, leg uit waarom ik iets kies en houd de prijs daarna in de gaten.'],['Jij beslist altijd zelf.','WATCHDOG geeft informatie en advies. Ik koop nooit iets voor je en laat duidelijk zien wat demo is.']];
- d.innerHTML=`<div class="wl"><button class="wl-skip" data-a="w-demo">Overslaan</button><img class="wl-logo" src="${WD_LOGO}" width="200" height="200" alt="WATCHDOG, jouw slimme geldwaakhond">${S3.map((s,i)=>`<div class="wl-s${i?'':' on'}" data-s="${i}"><h1>${s[0]}</h1><p>${s[1]}</p></div>`).join('')}<div class="wl-dots" aria-hidden="true">${S3.map((s,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div><button class="btn" data-a="w-next" id="wl-next">Volgende</button><small>Prototype · alle gegevens zijn fictief en blijven lokaal op dit toestel.</small></div>`;
+ d.innerHTML=`<div class="wl"><button class="wl-skip" data-a="w-demo">Overslaan</button><img class="wl-logo" src="${WD_LOGO}" width="200" height="200" alt="WATCHDOG, jouw slimme geldwaakhond">${S3.map((s,i)=>`<div class="wl-s${i?'':' on'}" data-s="${i}"><h1>${s[0]}</h1><p>${s[1]}</p></div>`).join('')}<div class="wl-dots" aria-hidden="true">${S3.map((s,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div><button class="btn" data-a="w-next" id="wl-next">Volgende</button><small>${S.ui.preset==='leeg'?'Testversie · je gegevens blijven alleen op dit toestel.':'Voorbeeldhuishouden · de gegevens zijn fictief en blijven op dit toestel.'}</small></div>`;
  document.body.appendChild(d);document.body.classList.add('lock');
 }
 ACT['w-next']=()=>{
@@ -7432,7 +7525,8 @@ const DemoRegProvider={id:'demo-reg',sourceType:'demo',sourceName:'Demo-bron (fi
   });
  }};
 REG_PROVIDERS.push(DemoRegProvider);
-const regFetch=tick=>[].concat.apply([],REG_PROVIDERS.map(p=>p.fetch(tick)||[]));
+const regDemoOn=()=>!(S&&S.ui&&S.ui.preset==='leeg');
+const regFetch=tick=>[].concat.apply([],REG_PROVIDERS.filter(p=>p.id!=='demo-reg'||regDemoOn()).map(p=>p.fetch(tick)||[]));
 const regMaxTick=()=>Math.max.apply(null,REG_PROVIDERS.map(p=>p.maxTick||0));
 
 /* ---------- persoonlijke gegevens: alleen wat er is en waarvoor toestemming is ---------- */
@@ -7733,7 +7827,7 @@ function hMoney(F,B,sc){
  return `<section class="card hmg" aria-label="Mijn geld"><div class="hmg-h"><h3>Mijn geld</h3><button class="link" data-a="go" data-arg="plan/overzicht">Bekijk Mijn geld →</button></div>
  <div class="hmg-k" role="group" aria-label="Kerncijfers"><button data-a="go" data-arg="plan/budget"><small>Vrij te besteden</small><b class="${F.left<0?'neg':''}">${E(F.left)}</b><em>per maand</em></button><button data-a="buf-info"><small>Buffer</small><b>${E(N(S.profile.buffer))}</b><em>${mFmt(F.bufMonths)} maanden</em></button><button data-a="go" data-arg="plan/budget"><small>Deze maand</small><b>${E(B.proj)}</b><em>uitgaven, prognose</em></button></div>
  ${(()=>{const g=bufGoalM(),ok=F.bufMonths>=g;return `<p class="hmg-p ${ok?'ok':''}">${I(ok?'check':'shield')}<span>${ok?'Je buffer ligt boven je ingestelde grens.':'Je buffer ligt onder je doel van '+mFmt(g)+' maanden.'}</span></p>`})()}
- <div class="hmg-f"><button class="hmg-s" data-a="go" data-arg="score">${I('shield')}<span>Score <b>${sc}/100</b> <small class="demo-tag">DEMO</small></span></button><button class="hmg-s" data-a="go" data-arg="situatie">${I('chart')}<span>Mijn situatie</span></button></div></section>`;
+ <div class="hmg-f"><button class="hmg-s" data-a="go" data-arg="score">${I('shield')}<span>Score <b>${sc}/100</b>${LEEG()?'':' <small class="demo-tag">DEMO</small>'}</span></button><button class="hmg-s" data-a="go" data-arg="situatie">${I('chart')}<span>Mijn situatie</span></button></div></section>`;
 }
 /* =====================================================================
    V12 CORE — KEEP: "Voor jou" (V12.8) — vervangt de vroegere aparte "Actie nodig" + "Kansen voor jou"
@@ -7789,7 +7883,7 @@ function hMeer(A){
 function hMore(A){
  const lvl=lvlOf(S.gm.xp),cur=lvlNeed(lvl-1),nxt=lvlNeed(lvl),lp=clamp((S.gm.xp-cur)/Math.max(1,nxt-cur)*100,0,100),mc=CHALL.map(c=>chState(c.id)).filter(x=>x.on&&!x.done)[0];
  return `<button class="card gm-c hm-gm" data-a="go" data-arg="missies"><div class="gm-h"><span class="lvl">${I('star')}Level ${lvl}</span><b>${LEVELS[lvl-1]}</b><em>${S.gm.xp} XP</em></div>${bar(lp,'var(--pu)')}<small class="fine">${mc?`Actieve missie: ${esc(mc.t||mc.n||'')}`:'Missies en levels'}</small></button>
- ${S.ui.scanned?'':`<button class="card banner" data-a="scan"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('search')}</span><span class="grow"><b>Doe de Money Scan</b><small>Je ziet nu een demo-huishouden. Vul in 2 minuten je eigen situatie in.</small></span><i class="chev">›</i></button>`}
+ ${S.ui.scanned?'':`<button class="card banner" data-a="scan"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('search')}</span><span class="grow"><b>Doe de Money Scan</b><small>${LEEG()?'Je hebt nog niets ingevuld. Vul in 2 minuten je eigen situatie in.':'Je ziet nu een voorbeeldhuishouden. Vul in 2 minuten je eigen situatie in.'}</small></span><i class="chev">›</i></button>`}
  ${profCard()}`;
 }
 
@@ -7798,13 +7892,14 @@ V.home=function(){
  const A=agg(),F=fin(),B=budTotals(),H=homeState(),sc=scoreVal();
  return `${homeTop(A,F,H)}
  <div class="wrap hmv2">
+  ${LEEG()&&!S.ui.scanned?`<button class="card banner" data-a="scan"><span class="ico" style="--c:#5B21B6;--bg:#F0EAFD">${I('search')}</span><span class="grow"><b>Begin met je eigen gegevens</b><small>Vul in 2 minuten je inkomen en vaste lasten in. Daarna rekent WATCHDOG met jouw cijfers.</small></span><i class="chev">›</i></button>`:''}
   ${hMoney(F,B,sc)}
   ${hVoorJou(A)}
   ${hWatches(A,H)}
   ${askCard()}
   ${hMeer(A)}
   ${hMore(A)}
-  <p class="foot">WATCHDOG informeert. Jij beslist. Alle gegevens in deze test zijn fictief en blijven lokaal op dit toestel. Bedragen zijn demo-schattingen, geen financieel advies.</p>
+  <p class="foot">WATCHDOG informeert. Jij beslist. ${LEEG()?'Je gegevens blijven alleen op dit toestel. Bedragen zijn schattingen op jouw eigen cijfers, geen financieel advies.':'Dit is een fictief voorbeeldhuishouden. Bedragen zijn demo-schattingen, geen financieel advies.'}</p>
  </div>`;
 };
 
@@ -7812,9 +7907,9 @@ V.home=function(){
 V.kansen=function(){
  const A=agg(),kr=regKansen(),regs=kr.act.concat(kr.kans),potY=Math.round(A.pendSave*12);
  const card=r=>`<div class="kn-w">${rgResCard(r)}<button class="link kn-l" data-a="go" data-arg="watch/${r.watch}">Open ${esc(WM[r.watch].n)} ›</button></div>`;
- return `<div class="wrap">${topbar('Mijn kansen',{back:1,sub:'Persoonlijk voor jou · demo',noav:1})}
+ return `<div class="wrap">${topbar('Mijn kansen',{back:1,sub:LEEG()?'Persoonlijk voor jou':'Persoonlijk voor jou · demo',noav:1})}
   <div class="card kn-s"><div class="kn-sc"><div><small>Regelingen</small><b>${regs.length}</b></div><div><small>Besparen en verdienen</small><b>${A.actions.length}</b></div><div><small>Mogelijk per jaar</small><b>${E(potY)}</b></div></div>
-   <small class="fine">${demoTag('DEMO')} Alle regelingen zijn fictieve voorbeelden. WATCHDOG toont alleen wat voor jou relevant kan zijn. Mogelijk voordeel is nog niet bevestigd.</small></div>
+   <small class="fine">${LEEG()?'Er is nog geen betrouwbare bron voor regelingen gekoppeld, daarom toont WATCHDOG nog geen regelingen. Controleer zelf op toeslagen.nl en de website van je gemeente.':demoTag('DEMO')+' Alle regelingen zijn fictieve voorbeelden.'} WATCHDOG toont alleen wat voor jou relevant kan zijn. Mogelijk voordeel is nog niet bevestigd.</small></div>
   ${kr.act.length?`${sec('Actie nodig')}${kr.act.map(card).join('')}`:''}
   ${kr.kans.length?`${sec('Regelingen en toeslagen')}${kr.kans.map(card).join('')}`:''}
   ${!regs.length?`<div class="card">${empty('Geen regelingen die nu actie vragen','WATCHDOG controleert dit voor je op de achtergrond.')}</div>`:''}
@@ -7861,7 +7956,7 @@ V.resultaten=function(){
  return `<div class="wrap">${topbar('Mijn resultaten',{back:1,sub:'Bevestigd en mogelijk, apart gehouden',noav:1})}
   <div class="card res-ok"><small class="res-k">BEVESTIGD BESPAARD</small><b class="res-n em">${E(A.got)}</b><span class="res-u">per jaar · ${E(A.doneSave)} per maand gerealiseerd</span><p class="note">Alleen wat jij hebt bevestigd telt hier.${first?' Zo blijft WATCHDOG betrouwbaar.':''}</p></div>
   <div class="card res-pot"><small class="res-k">MOGELIJK VOORDEEL</small><b class="res-n">${E(pot)}</b><span class="res-u">per jaar · nog niet bevestigd, exclusief het bevestigde bedrag</span>
-   <div class="res-st"><div><b>${E(A.inAct)}</b><small>in actie, nog niet bevestigd</small></div><div><b>${E(A.possible)}</b><small>nog mogelijk</small></div><div><b>${regs.length}</b><small>${plural(regs.length,'regeling','regelingen')} (demo)</small></div></div>
+   <div class="res-st"><div><b>${E(A.inAct)}</b><small>in actie, nog niet bevestigd</small></div><div><b>${E(A.possible)}</b><small>nog mogelijk</small></div><div><b>${regs.length}</b><small>${plural(regs.length,'regeling','regelingen')}${LEEG()?'':' (demo)'}</small></div></div>
    <p class="note">Mogelijk voordeel wordt nooit bij bevestigd bespaard opgeteld.</p></div>
   ${real.length?`${sec('Bevestigd')}<div class="card list">${real.map(f=>`<div class="row"><span class="ico" ${icoStyle(f.w)}>${I(WM[f.w].ic)}</span><span class="grow"><b>${esc(f.title)}</b><small>${S.fstat[f.id]&&S.fstat[f.id].ts?evAgo(S.fstat[f.id].ts):''}</small></span><span class="amt">${Em(annOf(f))}<small>per jaar</small></span></div>`).join('')}</div>`:''}
   ${A.prog.length?`${sec('In actie',`<span class="hint">${A.prog.length} te bevestigen</span>`)}<div class="acts">${A.prog.slice(0,4).map(inActCard).join('')}</div>`:''}
@@ -7869,7 +7964,7 @@ V.resultaten=function(){
   ${regs.length?`${sec('Gevonden regelingen',`<span class="hint">demo · niet bevestigd</span>`)}<div class="card list">${regs.map(r=>`<button class="row" data-a="reg-why" data-arg="${r.id}"><span class="grow"><b>${esc(r.name)}</b><small>${esc(r.label)} · ${esc(regAmtText(r))}</small></span><i class="chev">›</i></button>`).join('')}</div><p class="note">Regelingen zijn nooit bevestigd bespaard totdat jij bevestigt dat je ze hebt ontvangen.</p>`:''}
   ${income.length?`${sec('Extra inkomsten en voordelen',`<span class="hint">${income.length} mogelijk</span>`)}<div class="card list">${income.slice(0,4).map(actionRow).join('')}</div>`:''}
   ${sec('Prijsdalingen')}<div class="card"><p class="note">${drops>0?`Bewaakte prijzen zijn samen ${E(drops)} gedaald (demo-prijzen). Dit is nog geen besparing totdat je koopt.`:'Nog geen prijsdalingen bij wat je volgt.'}</p><button class="btn ghost" data-a="go" data-arg="gevonden">Bekijk wat je volgt</button></div>
-  ${sec('Ontwikkeling',`<button class="link" data-a="go" data-arg="activity">Alles ›</button>`)}<div class="card feed">${log.length?log.map(feedRow).join(''):empty('Nog geen activiteit')}<small class="fine">${demoTag('DEMO')}Gesimuleerde controles op je lokale demodata.</small></div>
+  ${sec('Ontwikkeling',`<button class="link" data-a="go" data-arg="activity">Alles ›</button>`)}<div class="card feed">${log.length?log.map(feedRow).join(''):empty('Nog geen activiteit')}<small class="fine">${LEEG()?'Controles op je eigen gegevens op dit toestel.':demoTag('DEMO')+'Gesimuleerde controles op je lokale demodata.'}</small></div>
  </div>`;
 };
 ACT['results-sheet']=ACT.results;
@@ -7914,7 +8009,7 @@ V.situatie=function(){
   <div class="card"><div class="sec sm"><h3>Doelvoortgang</h3><button class="link" data-a="go" data-arg="plan/doelen">Alle doelen ›</button></div>${S.goals.slice(0,3).map(g=>goalRow(g)).join('')||empty('Nog geen doelen','Maak er een aan bij Plan.')}</div>
 
   ${sec('Activiteit','<button class="link" data-a="go" data-arg="activity">Alles ›</button>')}
-  <div class="card feed">${feed.length?feed.map(feedRow).join(''):empty('Nog geen activiteit','Zodra WATCHDOG iets controleert, zie je het hier.')}<small class="fine">${demoTag('DEMO')}Gesimuleerde controles op je lokale demodata.</small></div>
+  <div class="card feed">${feed.length?feed.map(feedRow).join(''):empty('Nog geen activiteit','Zodra WATCHDOG iets controleert, zie je het hier.')}<small class="fine">${LEEG()?'Controles op je eigen gegevens op dit toestel.':demoTag('DEMO')+'Gesimuleerde controles op je lokale demodata.'}</small></div>
  </div></div>`;
 };
 /* =====================================================================
@@ -8133,7 +8228,7 @@ CONV_HOOK.inp.push((text,src)=>{
 function srcBuildReqs(text){
  let P=null;try{P=nluParse(text)}catch(e){}
  const reqs=[];
- if(P&&P.budget&&P.budget.max)reqs.push({k:'budget',label:'Maximaal '+E(P.budget.max),check:a=>a&&a.price!=null?(a.price<=P.budget.max?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E(a.price):null});
+ if(P&&P.budget&&P.budget.max)reqs.push({k:'budget',label:'Maximaal '+E(P.budget.max),check:a=>a&&a.price!=null?(a.price<=P.budget.max?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2(a.price):null});
  if(P&&P.cat&&CATS[P.cat]&&P.hard)Object.keys(P.hard).forEach(k=>{
   const f=(CATS[P.cat].fields||[]).find(x=>x.k===k);if(!f)return;
   const disp=(f.disp||f.txt||(v=>String(v)))(P.hard[k]);
@@ -8149,25 +8244,42 @@ function srcReqRowsHTML(reqs,attrs){
   return `<li class="note">${esc(r.label)} — niet bevestigd op deze pagina</li>`;
  }).join('');
 }
+/* Live zoeken in het gesprek: gebruikt door "zoek …" en door het aankoopgesprek (convSearch) zodra de backend is ingesteld. */
+function liveSearchInChat(query,title,reqs){
+ convSay('Ik zoek dit live op bij Google Shopping. Als de zoekserver even heeft geslapen, kan dit de eerste keer tot ongeveer een minuut duren.',null,{mute:true});
+ return LiveSearchProvider.search(query,{}).then(r=>{
+  if(r.status==='offline'){convSay('Zoeken',{type:'html',html:srcLiveCard(title,'offline',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Live zoeken is niet beschikbaar.')}</p>`)},{mute:true});return}
+  if(r.status==='error'||!r.results||!r.results.length){convSay('Zoeken',{type:'html',html:srcLiveCard(title,'error',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Geen resultaten gevonden.')}</p>`)},{mute:true});return}
+  /* Sorteer op écht bevestigde eisen (nooit op gegokte); producten zonder bevestigde prijs achteraan. */
+  const scored=r.results.map((it,i)=>{const a=it.attributes||{};const ok=reqs.filter(q=>q.check(a)==='ok').length,nok=reqs.filter(q=>q.check(a)==='nok').length;return {it:it,ok:ok,nok:nok,i:i,p:a.price!=null}}).sort((a,b)=>(a.nok-b.nok)||(b.ok-a.ok)||(b.p-a.p)||(a.i-b.i));
+  const rows='<div class="list">'+scored.slice(0,8).map(({it})=>{
+   const a=it.attributes||{};
+   const priceLine=a.price!=null?`<b>${esc(E2(a.price))}</b>${a.availability?' · '+esc(a.availability):''}`:`<small class="note">Prijs niet bevestigd${a.priceNote?' ('+esc(a.priceNote)+')':''}</small>`;
+   return `<div class="row" style="display:block;padding:10px 0"><b>${esc(it.title||'')}</b><br>${priceLine}${reqs.length?`<ul class="sbo-p" style="margin:4px 0 0">${srcReqRowsHTML(reqs,a)}</ul>`:''}<a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Bekijk bij ${esc(it.source||'de winkel')}</a></div>`;
+  }).join('')+'</div>';
+  convSay('Zoeken',{type:'html',html:srcLiveCard(title,'live',r.source,null,r.fetchedAt,rows,r.results.length+' resultaten · eisen alleen "bevestigd" als de bron dat echt aangeeft · controleer prijs en voorwaarden bij de winkel')},{mute:true});
+ }).catch(()=>{convSay('Er ging iets mis bij het live zoeken.',null,{mute:true})});
+}
+const LIVE_PRODUCTS=()=>!!LiveSearchProvider.backendUrl&&!window.__demoProducts;
+function convSearchLive(){
+ const C=CONV,R=C.req;
+ const base=String(R.raw||'').toLowerCase()
+  .replace(/(tot|onder|maximaal|max\.?|hooguit|niet meer dan|rond|ongeveer|budget( van)?)\s*(€\s*)?[0-9][0-9.,]*\s*(euro|eur|€)?/g,' ')
+  .replace(/€\s*[0-9][0-9.,]*|[0-9][0-9.,]*\s*(euro|eur)\b/g,' ')
+  .replace(/^\s*(hoi|hallo|hey)[,!\s]+/,'').replace(/^\s*(ik\s+)?(wil|zoek|zou)\s+(graag\s+)?(een|de|het|nieuwe?)?\s*/,'').replace(/^\s*(ik\s+)?(ben\s+op\s+zoek\s+naar|heb|overweeg)\s+(een|de|het)?\s*/,'')
+  .replace(/\s+(nodig|kopen|hebben|aanschaffen)\b.*$/,'').replace(/[?!.]+/g,' ').replace(/\s+/g,' ').trim();
+ const extra=(R.cat==='generic'?(R.item||''):reqTitle(Object.assign({},R,{budget:{}}))).toLowerCase().split(/\s+/).filter(w=>w&&base.indexOf(w)<0);
+ const q=((base||'')+' '+extra.join(' ')).replace(/\s+/g,' ').trim()||'product';
+ const reqs=[];if(R.budget&&R.budget.max){const mx=R.budget.max;reqs.push({k:'budget',label:'Maximaal '+E(mx),check:a=>a&&a.price!=null?(a.price<=mx?'ok':'nok'):'unknown',val:a=>a&&a.price!=null?E2(a.price):null})}
+ C.stage='route';convSave();
+ liveSearchInChat(q,'Zoeken: '+q+(R.budget&&R.budget.max?' tot '+E(R.budget.max):''),reqs);
+}
 CONV_HOOK.inp.push((text,src)=>{
  if(!/\bzoek(en)?\b/i.test(text))return false;
  if(!LiveSearchProvider.backendUrl)return false; /* geen backend ingesteld: laat de bestaande demo-flow met rust (nog steeds duidelijk als DEMO gelabeld) */
  if(!CONV||CONV.stage==='confirm'||CONV.stage==='results')convNew(null,text);
  CONV.stage='route';convUser(text,src);
- const R=srcBuildReqs(text);
- convSay('Ik zoek dit live op (geen demo-data). Als de zoekserver even heeft geslapen kan dit de eerste keer tot ongeveer een minuut duren — ik controleer daarna per resultaat welke eisen echt bevestigd zijn.',null,{mute:true});
- LiveSearchProvider.search(text,{}).then(r=>{
-  if(r.status==='offline'){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'offline',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Live Search is niet beschikbaar.')}</p>`)},{mute:true});return}
-  if(r.status==='error'||!r.results||!r.results.length){convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'error',r.source,null,r.fetchedAt,`<p class="note">${esc(r.error||'Geen resultaten gevonden.')}</p>`)},{mute:true});return}
-  /* Sorteer op écht bevestigde eisen (nooit op gegokte) — eerlijke WATCHDOG-achtige rangschikking zonder verzonnen score. */
-  const scored=r.results.map(it=>{const ok=R.reqs.filter(q=>q.check(it.attributes)==='ok').length;return {it:it,ok:ok}}).sort((a,b)=>b.ok-a.ok);
-  const rows='<div class="list">'+scored.slice(0,6).map(({it})=>{
-   const a=it.attributes||{};
-   const priceLine=a.price!=null?`<b>${esc(E(a.price))}</b>${a.availability?' · '+esc(a.availability):''}`:'<small class="note">Prijs niet bevestigd op deze pagina</small>';
-   return `<div class="row" style="display:block;padding:10px 0"><b>${esc(it.title||'')}</b><br>${priceLine}${R.reqs.length?`<ul class="sbo-p" style="margin:4px 0 0">${srcReqRowsHTML(R.reqs,a)}</ul>`:''}<a class="link" href="${esc(it.url)}" target="_blank" rel="noopener">Open bij ${esc(it.source||'bron')}</a></div>`;
-  }).join('')+'</div>';
-  convSay('Zoeken',{type:'html',html:srcLiveCard('Zoeken: '+text,'live',r.source,null,r.fetchedAt,rows,r.results.length+' resultaten · eisen alleen "bevestigd" als de bron dat echt aangeeft')},{mute:true});
- }).catch(()=>{convSay('Er ging iets mis bij het live zoeken.',null,{mute:true})});
+ liveSearchInChat(text,'Zoeken: '+text,srcBuildReqs(text).reqs);
  return true;
 });
 function fmtRdwDate(yyyymmdd){const s=String(yyyymmdd);if(s.length!==8)return s;return s.slice(6,8)+'-'+s.slice(4,6)+'-'+s.slice(0,4)}
