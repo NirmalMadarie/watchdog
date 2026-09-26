@@ -7536,7 +7536,8 @@ const WD_SOUND={
 /* geeft terug: 'played' | 'file' | 'pending' | 'off' | 'voice' | 'unsupported' | 'blocked' | 'error' */
 function playWatchdogSound(type,opt){
  opt=opt||{};
- if(!opt.force&&(!guideCfg().on||!(S.settings&&S.settings.bark)))return 'off';
+ /* alleen de geluidsknop bij de hond bepaalt of de hond geluid maakt (los van de gids-instellingen) */
+ if(!opt.force&&!(S.settings&&S.settings.bark))return 'off';
  if(!opt.force&&typeof VOICE!=='undefined'&&VOICE.on)return 'voice';/* nooit blaffen tijdens een voicegesprek */
  WD.gl('sound requested',type);
  const f=WD_SOUND.files[type];
@@ -9663,6 +9664,34 @@ window.watchdogReact=watchdogReact;
 
 /* tik-hint bij de hond op Home (verdwijnt na de eerste tik) */
 {const _h4=homeV4;homeV4=function(){let h=_h4.apply(this,arguments);try{if(!(S.ui&&S.ui.petted))h=h.replace('<div class="h4-dog">','<div class="h4-dog"><span class="h4-hint" aria-hidden="true">Tik op mij, ik help je!</span>')}catch(e){}return h}}
+
+
+/* ---------- V15.1 — geluid op iPhone betrouwbaar ----------
+   1) Standaard staat het hondengeluid AAN (alleen als de gebruiker nog nooit zelf gekozen heeft).
+   2) iPhone telt alleen 'touchend'/'click' als echte tik voor geluid (niet 'pointerdown') → ontgrendelen op die momenten.
+   3) De stil-schakelaar van de iPhone dempt Web Audio. Als het hondengeluid AAN staat, vragen we Safari om
+      'playback'-geluid (navigator.audioSession, iOS 17+); oudere iPhones: één stil fragmentje via <audio> in de tik.
+   4) Een door iOS 'onderbroken' geluidscontext (na app-wissel/telefoontje) wordt bij de volgende tik hervat. */
+setTimeout(()=>{try{if(S&&S.settings&&S.settings.bark===undefined){S.settings.bark=true;save();if(route[0]==='home'||!route[0])refresh()}}catch(e){}},0);
+const WD_SILENT='data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAADAAABZwAMjIyMjIyMjJFRUVFRUVFRVhYWFhYWFhYampqampqampqfX19fX19fX2QkJCQkJCQkKKioqKioqKiorW1tbW1tbW1yMjIyMjIyMja2tra2tra2trt7e3t7e3t7f//////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQDNwAAAAAAAAWcHqGxZwAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80DEpAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsSjAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=';
+const WD_IOS={primed:false,
+ session(){try{if('audioSession' in navigator&&navigator.audioSession){if(S.settings&&S.settings.bark){if(navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}else if(navigator.audioSession.type==='playback')navigator.audioSession.type='auto';return true}}catch(e){}return false},
+ prime(){if(this.primed)return;this.primed=true;try{const a=new Audio(WD_SILENT);a.setAttribute('playsinline','');a.volume=0.01;const p=a.play();if(p&&p.catch)p.catch(()=>{this.primed=false})}catch(e){this.primed=false}}
+};
+function wdGesture(){
+ try{
+  if(!(S&&S.settings&&S.settings.bark))return;
+  if(!WD_IOS.session())WD_IOS.prime();
+  WD_SOUND.unlock();DOG_AUDIO.unlocked=true;
+  const c=WD_SOUND.ctx;if(c&&c.state!=='running'&&c.resume)c.resume().catch(()=>{});
+ }catch(e){}
+}
+['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,wdGesture,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{try{if(!document.hidden&&WD_SOUND.ctx&&WD_SOUND.ctx.state!=='running'&&WD_SOUND.ctx.state!=='closed')WD_SOUND.ctx.resume().catch(()=>{})}catch(e){}});
+/* geluidsknop: bij AAN direct ontgrendelen + één blafje ter bevestiging; bij UIT de playback-sessie loslaten */
+ACT['dog-sound']=()=>{S.settings.bark=!S.settings.bark;save();
+ if(S.settings.bark){wdGesture();try{playWatchdogSound('tap')}catch(e){}}else{try{WD_IOS.session()}catch(e){}}
+ toast(S.settings.bark?'Geluid van de hond staat aan':'Geluid van de hond staat uit');refresh()};
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
