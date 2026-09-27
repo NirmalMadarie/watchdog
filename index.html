@@ -1668,7 +1668,7 @@ body[data-view="home"],body[data-view="zoek"],body[data-view="watches"]{backgrou
 .zs-fit{display:inline-block;font-size:11px;font-weight:800;color:#6D28D9;background:#EDE9FE;border-radius:999px;padding:1px 7px;margin-bottom:2px}
 .zs-row .zs-t{padding-right:64px}
 /* wakker worden */
-.wk{display:flex;flex-direction:column;gap:10px;margin-top:-4px}
+.wk{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .wk-i{display:flex;gap:10px;align-items:flex-start}
 .wk-i .grow{display:flex;flex-direction:column;gap:3px;min-width:0}
 .wk-i b{font-size:14.5px;color:#16195A}.wk-i small{font-size:13px;color:#475569;overflow-wrap:anywhere}
@@ -1712,6 +1712,7 @@ body[data-view="home"],body[data-view="zoek"],body[data-view="watches"]{backgrou
 @media (prefers-reduced-motion:no-preference){.dogx[data-state="warning"]::after{animation:wkPulse 1.4s ease-in-out 3}.wk{animation:h4Up .4s ease-out both}}
 @keyframes wkPulse{50%{transform:scale(1.15)}}
 
+.mg-tasks .row{width:100%;text-align:left}.mg-back{display:block;margin:0 0 8px;font-size:14px}
 .dogx-p-snuffel{aspect-ratio:613/478;width:300px;max-width:88%}
 .dogx-md.dogx-p-snuffel{width:230px}
 .dogx-p-snuffel .dogx-lines{display:none}
@@ -10604,7 +10605,7 @@ const WDG_MON={januari:0,jan:0,februari:1,feb:1,maart:2,mrt:2,april:3,apr:3,mei:
 const WDG_NUM={een:1,twee:2,drie:3,vier:4,vijf:5,zes:6,zeven:7,acht:8,negen:9,tien:10};
 function wdgParse(text){
  const raw=String(text||''),t=raw.toLowerCase(),s={};
- const b=(()=>{try{return findBudget(t)}catch(e){return 0}})()||(()=>{const m=t.match(/(?:max(?:imaal)?\.?|tot|onder|hooguit)\s*€?\s*(\d{2,5})/)||t.match(/€\s*(\d{2,5})(?![\d.,])/);return m?+m[1]:0})();
+ const b=(()=>{try{return findBudget(t)}catch(e){return 0}})()||(()=>{const m=t.match(/(?:max(?:imaal)?\.?|tot|onder|hooguit)\s*€?\s*(\d{2,5})/)||t.match(/€\s*(\d{2,5})(?![\d.,])/)||t.match(/(?:^|\s)(\d{2,5})\s*(?:€|euro\b)/);return m?+m[1]:0})();
  if(b)s.budget=b;
  let m=t.match(/\bmaat\s*(\d{2}(?:[.,]5)?|xxs|xs|s|m|l|xl|xxl|3xl)\b/i);if(m)s.size=m[1].toUpperCase().replace(',','.');
  for(const c in WDG_COLORS){if(WDG_COLORS[c].test(t)&&!new RegExp('(geen|niet)\\s+'+WDG_COLORS[c].source).test(t)){s.color=c;break}}
@@ -10625,7 +10626,7 @@ function wdgParse(text){
  if(/^https?:\/\//.test(raw.trim()))s.url=raw.trim();
  /* product: wat overblijft na intentie-, budget-, maat-, kleur- en datumwoorden */
  let p=t.replace(/https?:\/\/\S+/g,' ')
-  .replace(/(?:max(?:imaal)?\.?|tot(?: maximaal)?|onder|hooguit|budget(?: van)?|niet meer dan|ongeveer|rond|circa)\s*(?:van\s*)?€?\s*\d[\d.,]*\s*(euro|eur)?/g,' ').replace(/€\s*\d[\d.,]*|\d[\d.,]*\s*(euro|eur)\b/g,' ')
+  .replace(/(?:max(?:imaal)?\.?|tot(?: maximaal)?|onder|hooguit|budget(?: van)?|niet meer dan|ongeveer|rond|circa)\s*(?:van\s*)?€?\s*\d[\d.,]*\s*(euro|eur)?/g,' ').replace(/€\s*\d[\d.,]*|\d[\d.,]*\s*(euro|eur)\b|\d[\d.,]*\s*€/g,' ')
   .replace(/\bmaat\s*\S+/g,' ').replace(/over\s+(\d+|een|twee|drie|vier|vijf|zes)\s+(dag|dagen|week|weken|maand|maanden)/g,' ').replace(/\b\d{1,2}\s+(januari|jan|februari|feb|maart|mrt|april|apr|mei|juni|jun|juli|jul|augustus|aug|september|sept|sep|oktober|okt|november|nov|december|dec)\b/g,' ')
   .replace(/\b(geen|niet|zonder)\s+(\w+\s+)?(wit|witte|zwart|zwarte|blauw|blauwe|rood|rode|groen|groene|roze|geel|gele|grijs|grijze|bruin|bruine|paars|paarse|oranje)\w*/g,' ')
   .replace(/^\s*(hoi|hallo|hey)[,!\s]+/,'').replace(/\b(ik|heb|heeft|en|een|de|het|voor|op|naar|zoek|zoeken|ben|wil|graag|nodig|kopen|koop|mooie?|leuke?|goede?|nieuwe?|zou|willen|hebben|aan|met|van|in|mijn|je|jij|volgende|week|straks|binnenkort|er|is|dus|ook|nog|wel|maar|gaan|ga)\b/g,' ')
@@ -11517,13 +11518,13 @@ DOG_SAY.idle=()=>{try{return WAKE.bubble(WAKE.last||WAKE.compute())}catch(e){ret
  try{const r=WAKE.compute();WAKE.last=r;
   h=h.replace(/(<div class="h3-say h4-say" data-dog-say data-dog-auto>)[\s\S]*?(<\/div>)/,(x,a,b)=>a+WAKE.bubble(r)+b);
   const st=WAKE.state(r);if(st!=='idle')h=h.replace(/(<div class="h4-dog">[\s\S]*?class="dogx[^"]*" data-state=")idle"/,`$1${st}"`);
-  const c=WAKE.card(r);if(c)h=h.replace('<div class="h3-ask h4-ask">',c+'<div class="h3-ask h4-ask">');
+  const c=WAKE.card(r);if(c)h=h.indexOf('<button class="h4-exq"')>0?h.replace('<button class="h4-exq"',c+'<button class="h4-exq"'):h.replace(/(<div class="h3-ask h4-ask">[\s\S]*?<\/div>)/,'$1'+c);
   if(ME.paused())h=h.replace('<div class="h3-ask h4-ask">','<button class="link wk-wake" data-a="me-mode" data-arg="actief">Wakker worden</button><div class="h3-ask h4-ask">');
  }catch(e){console.warn('WATCHDOG wakker worden:',e)}
  return h;
 }}
 /* na de controles bij openen: begroeting bijwerken (alleen op Home, alleen als er iets veranderde) */
-{const _c=liveDealCheck;liveDealCheck=function(x){const P=_c.apply(this,arguments);try{P.then(ok=>{if(ok){ME.st().lastCheck=Date.now();save();clearTimeout(WAKE._t);WAKE._t=setTimeout(()=>{if(route[0]==='home'||!route[0])refresh()},400)}})}catch(e){}return P}}
+{const _c=liveDealCheck;liveDealCheck=function(x){const P=_c.apply(this,arguments);try{P.then(ok=>{if(ok){ME.st().lastCheck=Date.now();save();clearTimeout(WAKE._t);WAKE._t=setTimeout(()=>{if(!(route[0]==='home'||!route[0]))return;/* nooit opnieuw tekenen terwijl iemand typt: alleen de ballon bijwerken */const a=document.activeElement,q=$('#hq');if((a&&/INPUT|TEXTAREA/.test(a.tagName))||(q&&q.value)){try{const r=WAKE.compute();WAKE.last=r;$$('.h4-say[data-dog-auto]').forEach(b=>{b.innerHTML=WAKE.bubble(r)})}catch(e){}return}refresh()},400)}})}catch(e){}return P}}
 
 /* =====================================================================
    7. WATCH-TRIGGERS + ANTI-SPAM + DEEP LINK (#/doel/<id>/<eventId>)
@@ -11674,6 +11675,129 @@ V.mij=function(){
 /* geluidsschakelaar ook hier bijwerken */
 {const _ds=ACT['dog-sound'];if(_ds)ACT['dog-sound']=function(){const r=_ds.apply(this,arguments);if(route[0]==='mij')setTimeout(refresh,30);return r}}
 setTimeout(()=>{try{ME.st();RADAR.feed();if(ME.st().mode==='pauze'&&!ME.paused()){ME.st().mode='actief';save()}}catch(e){}},1500);
+
+/* =====================================================================
+   V24 — GELD VRIJMAKEN: breed zoeken naar ruimte (niet alleen abonnementen)
+   Bronnen, in volgorde van "makkelijkst eerst":
+     1. goedkopere keuze voor hetzelfde product (live prijzen)
+     2. wat WATCHDOG al vond in jouw eigen gegevens (bevindingen, schatting)
+     3. abonnementen (bekend of nu genoemd) → gebruik navragen → pauzeren/aanpassen/opzeggen
+     4. geld dat je nog terugkrijgt (retour, tegoed, statiegeld, borg) — jouw schatting
+     5. een geplande aankoop uitstellen (actieve doelen)
+     6. spullen verkopen — jouw schatting
+     7. vaste lasten nalopen (energie, telefoon/internet, verzekeringen) — taken, geen verzonnen bedrag
+     8. regelingen en toeslagen — "mogelijk recht op", nooit meegeteld
+   Alleen meegeteld wat de gebruiker goedkeurt; WATCHDOG regelt niets zelf.
+   ===================================================================== */
+function MG_FINDINGS(){
+ try{if(!LEEG())return [];
+  return computeFindings().filter(f=>{const st=fs(f);return st!=='done'&&st!=='no'&&!f.warn&&f.w!=='subs'&&(fMonthly(f)>0||N(f.once)>0)})
+   .slice(0,3).map(f=>({id:f.id,title:f.title,why:f.why||'',amt:Math.round(fMonthly(f)>0?fMonthly(f):N(f.once)),monthly:fMonthly(f)>0}));
+ }catch(e){return []}
+}
+function MG_ALT(m){
+ const b=m.buy;if(!b||!b.alts||!b.price)return null;
+ const a=b.alts.filter(x=>x.price!=null&&x.price<=b.price-5&&x.url!==b.url).sort((x,y)=>x.price-y.price)[0];
+ return a?Object.assign({diff:Math.round((b.price-a.price)*100)/100},a):null;
+}
+const MG_LASTEN={
+ 'Energie':{go:'watch/energy',t:'Energie nalopen',s:'In de energie-check vergelijk ik je tarief met de actuele prijzen (live via EnergyZero). Een overstap levert meestal pas na een paar maanden op.'},
+ 'Telefoon en internet':{go:'watch/telecom',t:'Telefoon en internet nalopen',s:'Is je contract afgelopen of loopt het bijna af? Dan kun je vaak zonder kosten overstappen, bijvoorbeeld naar sim-only. Je einddatum staat bij je provider.'},
+ 'Verzekeringen':{go:'watch/insurance',t:'Verzekeringen nalopen',s:'Kijk of je iets dubbel verzekerd hebt en of een hoger eigen risico past. Na het eerste jaar kun je de meeste verzekeringen maandelijks opzeggen (de zorgverzekering alleen per jaar).'}
+};
+MG.startBuy=function(b){
+ const s=WDG.c&&WDG.c.slots||{};
+ const m={id:uid('mg'),amt:0,deadline:s.deadline||null,why:(s.product||b.q||'').slice(0,40),state:'actief',created:Date.now(),found:[],tasks:[],asked:{why:1},step:'amt',buy:b};
+ ME.st().money.unshift(m);save();this.c={id:m.id};this.log=[];
+ this.say(`<b>Hoeveel moet ik vrijmaken?</b>${esc(b.title?b.title.slice(0,60):b.q)} kost ${E2g(b.price)}. Heb je al een deel, noem dan het bedrag dat nog ontbreekt.`,{speak:true});
+ this.opts=[`Het hele bedrag (€ ${Math.ceil(b.price)})`,`Een deel: € ${Math.max(10,Math.round(b.price/2/5)*5)}`,'Ander bedrag'];
+ go('geld/'+m.id);
+};
+MG.scan=function(){
+ const m=this.cur();if(!m)return;if(!m.tasks)m.tasks=[];
+ const done=k=>m.found.some(f=>f.k===k)||m.asked[k];
+ const got=this.found(m);if(got>=m.amt)return this.reached();
+ const ask=(k,pend,t,opts)=>{m.asked[k]=1;save();this.pend=Object.assign({k:k},pend);this.say(t);this.opts=opts;return this.paint()};
+ /* 1. goedkopere keuze */
+ if(m.buy&&!done('alt')){const a=MG_ALT(m);if(a)return ask('alt',{alt:a},`<b>Eerst het makkelijkste: een goedkopere keuze.</b>${esc(a.title.slice(0,60))}${a.shop?' bij '+esc(a.shop):''} kost ${E2g(a.price)}. Dat is ${E2g(a.diff)} minder. Wil je dat meetellen?`,['Ja, tel mee','Nee, ik wil de andere'])}
+ /* 2. wat ik al vond in jouw gegevens */
+ for(const f of MG_FINDINGS()){const k='find:'+f.id;if(done(k))continue;return ask(k,{f:f},`<b>${esc(f.title)}</b>${f.why?esc(f.why)+' ':''}Op basis van wat je invulde is dat ongeveer ${E(f.amt)}${f.monthly?' per maand':''} (schatting). Zal ik het meetellen?`,['Ja, tel mee','Nee'])}
+ /* 3. abonnementen */
+ const subs=(S.subs||[]).filter(s=>!s.off&&!s.pause&&N(s.cost)>0);
+ if(!subs.length&&!done('subsask'))return ask('subsask',{},'<b>Heb je abonnementen?</b>Denk aan sport, streaming, muziek, apps, tijdschriften of een loterij. Noem ze met het bedrag per maand, bijvoorbeeld: “Netflix 13, sportschool 45”.',['Nee, geen abonnementen']);
+ for(const s of subs){const k='sub:'+s.id;if(done(k))continue;m.asked[k]=1;save();
+  if(s.last==='lang'||s.use==='nooit'){this.pend={k:k,s:s};this.say(`<b>${esc(s.n)}: ${E2(N(s.cost))} per maand.</b>Je gaf eerder aan dat je dit al meer dan een maand niet gebruikt. Zal ik kijken wat pauzeren, aanpassen of opzeggen betekent?`);this.opts=['Ja, laat zien','Nee, dat houd ik'];return this.paint()}
+  this.pend={k:k,s:s,ask:'use'};this.say(`<b>Ik zie ${E2(N(s.cost))} per maand voor ${esc(s.n)}.</b>Dat heb je zelf ingevuld. Gebruik je ${/sportschool|gym|fitness/i.test(s.n)?'die':'het'} nog?`);this.opts=['Regelmatig','Soms','Bijna nooit','Niet meer'];return this.paint()}
+ /* 4. geld dat je nog terugkrijgt */
+ if(!done('terug'))return ask('terug',{},'<b>Krijg je nog ergens geld van terug?</b>Bijvoorbeeld een retour, een cadeaubon of tegoed, statiegeld, borg of een terugbetaling. Noem je schatting.',['Ja, ongeveer € 20','Ja, ongeveer € 50','Nee']);
+ /* 5. geplande aankoop uitstellen */
+ for(const g of S.deals.filter(d=>d.goal&&d.active&&d.goal.slots&&d.goal.slots.budget)){const k='goal:'+g.id;if(done(k))continue;if(m.buy&&m.buy.q&&g.q===m.buy.q)continue;m.asked[k]=1;save();this.pend={k:k,g:g};
+  this.say(`<b>Je hebt ook een doel: ${esc(g.t)} (tot ${E(g.goal.slots.budget)}).</b>Als je die aankoop uitstelt, houd je dat geld voorlopig vrij. Wil je dat meenemen?`);this.opts=['Ja, dat kan wachten','Nee, die is belangrijk'];return this.paint()}
+ /* 6. verkopen */
+ if(!done('sell'))return ask('sell',{},'<b>Heb je iets dat je niet meer gebruikt en zou kunnen verkopen?</b>Bijvoorbeeld kleding, een oude telefoon, een fiets of een spelcomputer. Noem je schatting, dan reken ik het mee.',['Ja, ongeveer € 30','Ja, ongeveer € 75','Nee']);
+ /* 7. vaste lasten nalopen */
+ if(!done('lasten'))return ask('lasten',{},`<b>Zal ik ook je vaste lasten met je nalopen?</b>Daar zit vaak de meeste ruimte, al levert het meestal pas later op. Kies wat je wilt laten checken.`,Object.keys(MG_LASTEN).concat(['Nee, sla over']));
+ /* 8. regelingen en toeslagen */
+ if(!done('reg')){m.asked.reg=1;save();const G2=GEMREG.st(),n=S.profile.gemeente&&(G2.items||[]).length;this.pend={k:'reg'};
+  this.say(n?`<b>Bij gemeente ${esc(S.profile.gemeente)} vond ik ${n} ${plural(n,'regeling','regelingen')}</b>waar je mogelijk recht op hebt, bijvoorbeeld bijzondere bijstand. Of en hoeveel, hangt van je situatie af, dus ik tel het niet mee.`:'<b>Heb je al gekeken naar toeslagen en regelingen?</b>Misschien heb je recht op huur-, zorg- of kindertoeslag of een regeling van je gemeente. Ik tel het niet mee, want dat hangt van je situatie af.');
+  this.opts=['Zet op mijn lijst','Verder'];return this.paint()}
+ /* klaar met wat ik kan */
+ m.step='end';save();const miss=Math.max(0,m.amt-got),nt=m.tasks.length;
+ this.say(got?`<b>We hebben mogelijk ${E(got)} gevonden. We missen nog ${E(miss)}.</b>${nt?`Daarnaast staan er ${nt} ${plural(nt,'ding','dingen')} op je lijst om te checken. `:''}Meer kan ik met wat ik nu van je weet niet vinden. Zal ik dit doel voor je bewaren?`:`<b>Met wat ik nu van je weet, vind ik nog geen zekere ruimte.</b>${nt?`Er staan wel ${nt} ${plural(nt,'ding','dingen')} op je lijst om te checken. `:''}Je spaargeld stel ik niet voor, tenzij je daar zelf om vraagt.`);
+ this.opts=['Bewaar dit doel','Stop dit doel'];this.paint();
+};
+{const _ans=MG.answer;MG.answer=function(t,src){
+ const m=this.cur(),P=this.pend||{},lo=String(t||'').trim().toLowerCase();
+ if(!m)return _ans.apply(this,arguments);
+ if(m.step==='amt'&&m.buy){this.user(t,src);const n=+(lo.replace(/[^\d]/g,''))||0;if(n>0){m.amt=n;m.step='start';save();return this.next()}this.say('<b>Typ het bedrag</b>dat je wilt vrijmaken, bijvoorbeeld 40.');this.opts=[];return this.paint()}
+ const k=P.k||'';
+ const nieuw=/^(alt|find:|subsask|terug|lasten|reg$)/.test(k);
+ if(!nieuw||m.step==='end'||m.step==='reached'||m.step==='resume')return _ans.apply(this,arguments);
+ this.user(t,src);
+ const skip=()=>{m.found.push({k:k,t:k,amt:0,ok:false});save();return setTimeout(()=>this.scan(),350)};
+ if(k==='alt'){if(/^ja/.test(lo)){const a=P.alt;m.found.push({k:'alt',t:`Goedkopere keuze: ${a.title.slice(0,40)}`,amt:a.diff,ok:true,src:'live prijzen',how:`Kies deze${a.shop?' bij '+a.shop:''}`});save();return this.progress()}return skip()}
+ if(/^find:/.test(k)){if(/^ja/.test(lo)){const f=P.f;m.found.push({k:k,t:f.title,amt:f.amt,ok:true,src:'jouw gegevens (schatting)',how:f.monthly?'Per maand; regel je zelf':'Regel je zelf'});save();return this.progress()}return skip()}
+ if(k==='subsask'){
+  const L=[];String(t).replace(/([a-zà-ü][a-zà-ü0-9 +&.'-]*?)\s*[:=-]?\s*€?\s*(\d{1,4}(?:[.,]\d{1,2})?)/gi,(x,n,c)=>{n=n.trim().replace(/\s+(voor|van|per|is|kost)$/i,'');if(n&&!/^(ja|nee|en|ik|euro|per maand)$/i.test(n))L.push({n:wdgCap(n),c:+c.replace(',','.')});return x});
+  if(L.length){L.forEach(x=>S.subs.push({id:uid('s'),n:x.n,cost:x.c,use:'onbekend',off:false}));save();this.say(`<b>Genoteerd:</b>${L.map(x=>esc(x.n)+' '+E2(x.c)).join(', ')}. Ik vraag je er zo naar.`,{speak:false});return setTimeout(()=>this.scan(),500)}
+  if(/^nee/.test(lo))return skip();
+  this.say('Noem ze met een bedrag, bijvoorbeeld “Spotify 11, sportschool 30”. Of tik op “Nee, geen abonnementen”.');this.opts=['Nee, geen abonnementen'];m.asked.subsask=1;return this.paint();
+ }
+ if(k==='terug'){const n=+(lo.replace(/[^\d]/g,''))||0;if(n>0&&!/^nee/.test(lo)){m.found.push({k:'terug',t:'Geld dat je nog terugkrijgt',amt:n,ok:true,src:'jouw schatting',how:'Retour, tegoed of terugbetaling aanvragen'});save();return this.progress()}return skip()}
+ if(k==='lasten'){
+  const L=MG_LASTEN[t.trim()];
+  if(L){if(!m.tasks.find(x=>x.go===L.go))m.tasks.push({t:L.t,go:L.go});save();const rest=Object.keys(MG_LASTEN).filter(x=>!m.tasks.find(y=>y.go===MG_LASTEN[x].go));this.say(`<b>${esc(L.t)}: op je lijst.</b>${L.s} ${rest.length?'Nog iets?':''}`);this.opts=rest.concat([rest.length?'Klaar':'Verder']);return this.paint()}
+  m.found.push({k:'lasten',t:'lasten',amt:0,ok:false});save();return this.scan();
+ }
+ if(k==='reg'){if(/lijst/.test(lo)){m.tasks.push({t:S.profile.gemeente?`Regelingen van ${S.profile.gemeente} bekijken`:'Toeslagen en regelingen checken',go:'watch/benefits'});save()}return this.scan()}
+ return _ans.apply(this,arguments);
+}}
+/* taken + terug naar de aankoop op de doelpagina */
+{const _vg=V.geld;V.geld=function(id){let h=_vg.apply(this,arguments);try{const m=ME.st().money.find(x=>x.id===id);if(!m)return h;
+ const tasks=(m.tasks||[]).length?`<div class="card mg-tasks"><h3>Om te checken</h3>${m.tasks.map(x=>`<button class="row" data-a="go" data-arg="${x.go}"><span class="grow"><b>${esc(x.t)}</b><small>Nog geen bedrag: dat blijkt pas als je het nakijkt</small></span><i class="chev">›</i></button>`).join('')}</div>`:'';
+ const back=m.buy&&SEARCH&&SEARCH.q===m.buy.q?`<button class="link mg-back" data-a="go" data-arg="zoek">‹ Terug naar ${esc((m.why||m.buy.q).slice(0,30))}</button>`:'';
+ h=h.replace('<div class="card wdg-card">',tasks+'<div class="card wdg-card">');if(back)h=h.replace('<div class="card mg-prog">',back+'<div class="card mg-prog">');
+ }catch(e){}return h}}
+/* in de zoekresultaten: één uitnodiging, breed, met toestemming vooraf */
+subPayCard=function(){
+ try{
+  const S_=SEARCH;if(!S_||!S_.results||S_.phase!=='found'||S_.fin==='nee')return '';
+  const C=WDG.c&&S_.wdg?WDG.c:null;
+  const x=(C&&C.chosen)||(C&&C.eval&&C.eval.top)||S_.results.find(r=>r.best&&r.price!=null)||S_.results.find(r=>r.price!=null);if(!x||x.price==null)return '';
+  const act=ME.st().money.find(m=>m.state==='actief'&&m.buy&&m.buy.q===S_.q);
+  if(act)return `<div class="card spc"><div class="spc-h"><span class="h4-cat-i" style="--c:#D97706;--bg:#FEF3C7">${RC_IC.euro}</span><span><b>We maken hier ruimte voor</b><small>${E(MG.found(act))} van ${E(act.amt)} mogelijk gevonden.</small></span></div><div class="btn-row"><button class="btn sm" data-a="mg-open" data-arg="${act.id}">Verder</button></div></div>`;
+  return `<div class="card spc"><div class="spc-h"><span class="h4-cat-i" style="--c:#D97706;--bg:#FEF3C7">${RC_IC.euro}</span><span><b>Zo kun je het betalen</b><small>Wil je dat ik uitzoek waar je ${E2g(x.price)} kunt vrijmaken? Ik kijk naar een goedkopere keuze, wat je al bij mij invulde, abonnementen, geld dat je nog terugkrijgt, spullen die je kunt verkopen, je vaste lasten en regelingen.</small></span></div>
+  <div class="btn-row"><button class="btn sm" data-a="pay-start">Ja, zoek ruimte</button><button class="btn sm ghost" data-a="sp-fin" data-arg="nee">Nee, alleen zoeken</button></div>
+  <small class="fine">Ik gebruik alleen wat jij me vertelt en live prijzen. Ik regel, pauzeer of zeg niets op zonder jou.</small></div>`;
+ }catch(e){console.warn('WATCHDOG betaalkaart:',e);return ''}
+};
+ACT['pay-start']=()=>{
+ const S_=SEARCH;if(!S_||!S_.results)return;const C=WDG.c&&S_.wdg?WDG.c:null;
+ const x=(C&&C.chosen)||(C&&C.eval&&C.eval.top)||S_.results.find(r=>r.best&&r.price!=null)||S_.results.find(r=>r.price!=null);if(!x)return;
+ const alts=S_.results.filter(r=>r.price!=null&&(C?r.rel&&!r.sizeX:(r.sc||0)>=.4)).slice(0,12).map(r=>({title:r.title,shop:r.shop,price:r.price,url:r.url}));
+ try{DOG_AUDIO.unlock()}catch(e){}
+ MG.startBuy({q:S_.q,price:x.price,title:x.title,shop:x.shop,url:x.url,alts:alts});
+};
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
