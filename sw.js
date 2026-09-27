@@ -11,9 +11,10 @@ self.addEventListener('notificationclick',e=>{
     if(self.clients.openWindow)await self.clients.openWindow(url);
   })());
 });
-/* voorbereid op echte server-push (volgende fase): toon de melding die de server stuurt */
+/* server-push (RC11): de server stuurt een versleutelde melding; tik = de exacte Watch-context */
 self.addEventListener('push',e=>{
   let d={};try{d=e.data?e.data.json():{}}catch(x){}
   if(!d.title)return;
-  e.waitUntil(self.registration.showNotification('🐶 WATCHDOG',{body:d.title+(d.message?'\n'+d.message:''),icon:d.icon,tag:d.tag,data:{url:d.url||'./'}}));
+  const body=d.title+((d.body||d.message)?'\n'+(d.body||d.message):'');
+  e.waitUntil(self.registration.showNotification('🐶 WATCHDOG',{body:body,icon:d.icon,badge:d.icon,tag:d.tag,renotify:true,data:{url:d.url||'./'},actions:[{action:'open',title:'Bekijk'}]}));
 });
