@@ -1902,6 +1902,7 @@ body[data-view="home"]{background:#F8F9FC}
 .h6-dog[data-state="pause"] .dogx-body{filter:saturate(.7) brightness(.97) drop-shadow(0 10px 18px rgba(80,60,20,.18))}
 .h3-hero:has(.h3-say-r){justify-content:flex-start}
 .h3-hero:has(.h3-say-r) .dogx{width:min(215px,53%)!important;max-width:none;margin-left:-2%}
+.fcc.unknown{border-color:#F1D48A}
 </style>
 </head>
 <body>
@@ -5756,14 +5757,16 @@ SBHOOK.fin=W=>{
  if(inc>0&&inc!==cur&&ad){const d=inc-cur,t=(ad.inc&&ad.inc[0]&&ad.inc[0].type)||'loondienst';ad.inc=[{id:'i'+Date.now(),type:t,label:'',net:Math.max(0,Math.round(adultInc(ad).total+d)),freq:'m',var:false}]}
  S.profile.buffer=N(a.finBuf);S.ui.finAsk=false;syncAll();save();return true;
 };
-const finConf=A=>confHTML(S.ui.finAsk?{l:'laag',r:'gebaseerd op voorbeeldwaarden die je nog niet hebt bevestigd',need:['je inkomen en spaargeld']}:A.own?{l:'hoog',r:'rekenwerk op je eigen ingevoerde cijfers'}:{l:'middel',r:'rekenwerk op je cijfers, maar de prijs of aannames zijn een DEMO-schatting'});
+const finConf=A=>confHTML(A&&A.noInc?{l:'laag',r:'je inkomen is nog niet ingevuld',need:['je netto inkomen']}:S.ui.finAsk?{l:'laag',r:'gebaseerd op voorbeeldwaarden die je nog niet hebt bevestigd',need:['je inkomen en spaargeld']}:A.own?{l:'hoog',r:'rekenwerk op je eigen ingevoerde cijfers'}:{l:'middel',r:'rekenwerk op je cijfers, maar de prijs of aannames zijn een DEMO-schatting'});
 /* LEGACY — STILL USED BY Smart Buy-formulieren (v1-financiële kaart). V12-gesprekken gebruiken finV2HTML. DO NOT EXTEND: nieuwe productfunctionaliteit hoort in de V12-motor (CATS/ProductProvider/Gate+Match, js19–js21). */
 function finCard(A){
- if(!A)return '';const F=fin(),buf=N(S.profile.buffer),s=A.spec||{},lv={ok:['Past','check','gr'],watch:['Opletten','alert','am'],risk:['Risico','alert','rd']}[A.level]||['Past','check','gr'];
+ if(!A)return '';const F=fin(),buf=N(S.profile.buffer),s=A.spec||{},lv={ok:['Past','check','gr'],watch:['Opletten','alert','am'],risk:['Risico','alert','rd'],unknown:['Nog onbekend','alert','am']}[A.level]||['Past','check','gr'];
  const tiles=A.tiles||[['Buffer nu',`${E(buf)} (${mFmt(F.bufMonths)} mnd)`],['Buffer na aankoop',s.oneOff>0?`${E(A.after)} (${mFmt(Math.max(0,A.afterM))} mnd)`:'geen effect'],['Vrije ruimte nu',E(F.left)],['Vrije ruimte na aankoop',E(F.left-(s.monthly||0))],[s.save?'Maandelijkse inleg':'Nieuwe maandlast',s.monthly>0?E(s.monthly):'geen extra']];
  return `<div class="card fcc ${A.level}"><div class="fcc-h"><b>Financiële check</b><span class="st ${lv[2]}">${I(lv[1])}Oordeel: ${lv[0]}</span></div><div class="hc-f">${tiles.map(t=>`<div><small>${t[0]}</small><b>${t[1]}</b></div>`).join('')}</div>${finConf(A)}<p class="hc-m">${A.msg}</p><small class="fine">WATCHDOG informeert. Jij beslist. Indicatieve berekening op je ingevoerde gegevens.</small></div>`;
 }
 function autoCostCheck(m){
+ /* geen inkomen bekend: geen percentage en geen oordeel verzinnen */
+ {const F0=fin();if(!(N(F0.income)>0))return {level:'unknown',own:true,noInc:true,tiles:[['Buffer nu',E(N(S.profile.buffer))],['Buffer na aankoop','geen effect (je bezit deze auto al)'],['Vrije ruimte nu','onbekend'],['Vrije ruimte na aankoop','geen effect (bestaande kosten)'],['Autokosten per maand',`${E(m)} (inkomen nog onbekend)`]],msg:`Je auto kost je ongeveer ${E(m)} per maand. Ik weet je netto inkomen nog niet, dus ik kan niet zeggen of dit bij je situatie past. Vul je inkomen in bij Mijn situatie, dan reken ik het voor je door.`}}
  const F=fin(),q=m/Math.max(1,F.income),buf=N(S.profile.buffer),level=q>.2?'risk':q>.15?'watch':'ok',pc=Math.round(q*100);
  return {level:level,own:true,tiles:[['Buffer nu',E(buf)],['Buffer na aankoop','geen effect (je bezit deze auto al)'],['Vrije ruimte nu',E(F.left)],['Vrije ruimte na aankoop','geen effect (bestaande kosten)'],['Autokosten per maand',`${E(m)} (${pc}% van je inkomen)`]],msg:level==='ok'?`Je autokosten zijn ${pc}% van je netto inkomen. Dat lijkt binnen je situatie te passen (indicatieve richtlijn van WATCHDOG, ongeveer 15%).`:`Je autokosten zijn ${pc}% van je netto inkomen. Boven ongeveer 15% kijkt WATCHDOG kritischer (indicatieve eigen richtlijn). Vergelijk daarom de alternatieven hieronder.`};
 }
