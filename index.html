@@ -9600,7 +9600,7 @@ function startSearch(raw){
 function zsPrepare(results,q){
  /* alleen een 'Beste deal' als duidelijk is wat jouw product is: minstens 3 vergelijkbare aanbiedingen die goed passen */
  const RK=liveRank(results,q);let best=RK.tier.length>=3?livePick(results,q):null;if(best&&liveScore(best,q)<1)best=null;
- const L=results.map((r,i)=>{const a=r.attributes||{};return {i:i,title:r.title||'',url:r.url||'',shop:r.source||'',img:r.image||null,price:a.price!=null&&a.price>0?a.price:null,note:a.priceNote||null,delivery:a.availability||null,rating:a.rating||null,reviews:a.reviews||null,best:r===best}});
+ const L=results.map((r,i)=>{const a=r.attributes||{};return {i:i,title:r.title||'',url:wdSafeUrl(r.url||'',r.source,r.title),shop:r.source||'',img:r.image||null,price:a.price!=null&&a.price>0?a.price:null,note:a.priceNote||null,delivery:a.availability||null,rating:a.rating||null,reviews:a.reviews||null,best:r===best}});
  const sc=results.map(r=>liveScore(r,q));L.forEach(x=>{x.sc=sc[x.i]});
  const b=L.filter(x=>x.best),rest=L.filter(x=>!x.best).sort((x,y)=>((x.price==null)-(y.price==null))||(y.sc-x.sc>.2?1:x.sc-y.sc>.2?-1:0)||((x.price||0)-(y.price||0)));
  return b.concat(rest);
@@ -10823,7 +10823,7 @@ const WDG={c:null,log:[],
   const C=this.c;if(!C)return;
   if(!C.slots.product){C.stage='ask';C.asking='product';this.say('<b>Wat zoek je precies?</b>Bijvoorbeeld een jurk, sneakers of een televisie.');this.draw();return}
   const P=WDG_CAT[C.cat]||WDG_CAT.generic;
-  const q=C.n<5?P.q.find(x=>C.slots[x.k]==null&&C.asked.indexOf(x.k)<0&&(!x.when||x.when(C.slots))&&!(x.k==='color'&&C.slots.brand&&C.cat==='schoenen'&&C.slots.color)):null;
+  const q=C.n<7?P.q.find(x=>C.slots[x.k]==null&&C.asked.indexOf(x.k)<0&&(!x.when||x.when(C.slots))&&!(x.k==='color'&&C.slots.brand&&C.cat==='schoenen'&&C.slots.color)):null;
   if(q){C.stage='ask';C.asking=q.k;C.n++;C.asked.push(q.k);this.say(`<b>${typeof q.t==='function'?q.t(C.slots):q.t}</b>`);this.draw();this.persist();return}
   C.asking=null;this.search();
  },
@@ -12873,13 +12873,14 @@ const VIDDOG={
  v:null,vb:null,okB:false,mix:0,mixT:0,lastHappy:0,lt:0,ok:false,failed:false,inst:[],raf:0,
  fmt(v,src){const mp4=v.canPlayType('video/mp4; codecs="avc1.4D401E"'),webm=v.canPlayType('video/webm; codecs="vp9"');if(!mp4&&!webm)throw new Error('geen geschikt videoformaat');return mp4?src:src.replace(/\.mp4$/,'.webm')},
  mk(src,loop){const v=document.createElement('video');v.muted=true;v.defaultMuted=true;v.loop=loop;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';v.src=this.fmt(v,src);
-  v.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;top:-10px';v.setAttribute('aria-hidden','true');document.body.appendChild(v);return v},
+  /* Safari pauzeert video's die niet in beeld zijn: klein, bijna doorzichtig, maar wél in beeld */v.style.cssText='position:fixed;right:0;bottom:0;width:4px;height:4px;opacity:0.01;pointer-events:none;z-index:-1';v.setAttribute('aria-hidden','true');document.body.appendChild(v);return v},
  boot(){
   if(this.v||this.failed)return;
   try{if(!window.WebGLRenderingContext)throw new Error('geen WebGL');
    const v=this.mk(this.src,true);
    v.addEventListener('error',()=>{this.failed=true;this.off()});
    v.addEventListener('loadeddata',()=>{this.ok=true;this.play();this.scan();this.bootB()});
+   v.addEventListener('pause',()=>{if(document.hidden||RM()||this.sleeping())return;clearTimeout(this._rp);this._rp=setTimeout(()=>{if(v.paused&&!document.hidden)this.play()},600)});
    this.v=v;
   }catch(e){this.failed=true}
  },
@@ -12888,7 +12889,7 @@ const VIDDOG={
  happy(){const b=this.vb;if(!b||!this.okB||RM()||document.hidden||this.sleeping())return false;const now=Date.now();if(now-this.lastHappy<7000||this.mixT>0)return false;
   this.lastHappy=now;try{b.currentTime=0;const p=b.play();if(p&&p.catch)p.catch(()=>{this.mixT=0})}catch(e){return false}this.mixT=1;this.kick();return true},
  play(){const v=this.v;if(!v||!this.ok)return;if(RM()||document.hidden||this.sleeping()){try{v.pause();this.vb&&this.vb.pause()}catch(e){}this.mixT=0;return}
-  const p=v.play();if(p&&p.catch)p.catch(()=>{/* bijv. iPhone-energiebesparing: wacht op een tik */this.blocked=true;this.off()})},
+  const p=v.play();if(p&&p.catch)p.catch(()=>{/* bijv. iPhone-energiebesparing: wacht op een tik */this.blocked=true;if(!this.inst.some(I=>I.drawn))this.off()})},
  sleeping(){try{return ME.paused()}catch(e){return false}},
  attach(d){
   const cv=document.createElement('canvas');cv.className='vd-cv';
@@ -12939,10 +12940,12 @@ const VIDDOG={
 {const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{VIDDOG.boot();VIDDOG.scan()}catch(e){}return r}}
 document.addEventListener('visibilitychange',()=>{try{if(document.hidden){VIDDOG.v&&VIDDOG.v.pause();VIDDOG.vb&&VIDDOG.vb.pause();VIDDOG.mixT=0}else{VIDDOG.play();VIDDOG.kick()}}catch(e){}});
 /* iPhone met energiebesparing: afspelen pas na een tik */
-['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{if(VIDDOG.blocked&&VIDDOG.v){const p=VIDDOG.v.play();if(p&&p.then)p.then(()=>{VIDDOG.blocked=false;VIDDOG.scan()}).catch(()=>{})}},{passive:true}));
+['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{if(VIDDOG.v&&(VIDDOG.blocked||VIDDOG.v.paused)&&!document.hidden&&!RM()){const p=VIDDOG.v.play();if(p&&p.then)p.then(()=>{VIDDOG.blocked=false;VIDDOG.scan()}).catch(()=>{})}},{passive:true}));
 /* slapen/pauze en minder beweging: video stil */
 {const _s=DOG.set;DOG.set=function(st){const r=_s.apply(this,arguments);try{VIDDOG.play();if(st==='found'||st==='barking')VIDDOG.happy()}catch(e){}return r}}
 setTimeout(()=>{try{VIDDOG.boot();VIDDOG.scan()}catch(e){}},50);
+/* reserve-hond (alleen als de video niet kan): rustiger, zodat hij niet vervormt */
+{const _lp35=lifePose;lifePose=function(I,P,st,t,tSt){_lp35(I,P,st,t,tSt);P.yw*=.55;P.ha*=.6;P.pt*=.6;P.hx*=.5;P.hy*=.5;P.el*=.7;P.er*=.7}}
 
 
 /* =====================================================================
@@ -13044,6 +13047,142 @@ h31Row=function(){return ''};
   else{const i=L.findIndex(x=>/^ks:/.test(x.k));if(i>=0)L[i]=Object.assign({},L[i],{t:'Zal ik kansen voor je zoeken?',s:'Vertel me je werk en woonplaats, dan zoek ik elke dag naar vacatures en regelingen.',btn:[['Ja, graag','go','kansen'],['Later','wake-later',L[i].k]]})}
  }catch(e){console.warn('WATCHDOG V36 items:',e)}
  return L.sort((a,b)=>b.p-a.p)}}
+
+
+/* =====================================================================
+   V38 — ZOEKEN: eerst vragen wat je precies zoekt (voor wie, maat, kleur, pasvorm …)
+   + nooit meer doorsturen naar kapotte Google-toestemmingspagina's
+   ===================================================================== */
+/* ---------- 1. veilige winkellinks ---------- */
+const WD_SHOPS=[[/bol(\.com)?/i,'https://www.bol.com/nl/nl/s/?searchtext='],[/coolblue/i,'https://www.coolblue.nl/zoeken?query='],[/media\s*markt/i,'https://www.mediamarkt.nl/nl/search.html?query='],[/amazon/i,'https://www.amazon.nl/s?k='],[/zalando/i,'https://www.zalando.nl/catalogus/?q='],[/wehkamp/i,'https://www.wehkamp.nl/zoeken/?term='],[/\bh\s*&\s*m\b/i,'https://www2.hm.com/nl_nl/search-results.html?q='],[/about\s*you/i,'https://www.aboutyou.nl/zoeken?term='],[/bijenkorf/i,'https://www.debijenkorf.nl/zoeken?SearchTerm='],[/intertoys/i,'https://www.intertoys.nl/search?q='],[/game\s*mania/i,'https://www.gamemania.nl/search?q='],[/\bblokker\b/i,'https://www.blokker.nl/zoeken?q='],[/\bhema\b/i,'https://www.hema.nl/zoeken?q='],[/\bikea\b/i,'https://www.ikea.com/nl/nl/search/?q='],[/decathlon/i,'https://www.decathlon.nl/search?Ntt='],[/douglas/i,'https://www.douglas.nl/nl/search?q='],[/kruidvat/i,'https://www.kruidvat.nl/search?q='],[/praxis/i,'https://www.praxis.nl/search?text='],[/gamma/i,'https://www.gamma.nl/assortiment/zoeken?text='],[/belsimpel/i,'https://www.belsimpel.nl/zoeken?q='],[/marktplaats/i,'https://www.marktplaats.nl/q/']];
+function wdIsGoogle(u){try{const h=new URL(u).hostname;return /(^|\.)google\.[a-z.]+$/i.test(h)}catch(e){return false}}
+function wdSafeUrl(u,shop,title){
+ if(!u||!wdIsGoogle(u))return u;
+ const t=String(title||'').replace(/\s+/g,' ').trim().slice(0,90),m=WD_SHOPS.find(x=>x[0].test(shop||''));
+ return m?m[1]+encodeURIComponent(t):'https://duckduckgo.com/?q='+encodeURIComponent(t+(shop?' '+shop:''));
+}
+/* vangnet: elke klik op een Google-Shopping-link wordt omgezet (ook oude, bewaarde resultaten) */
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a||!wdIsGoogle(a.href))return;
+ const box=a.closest('.zs-row,.zs-best,.row,.wdg-goal-best')||a;
+ const shop=(box.querySelector('.zs-shopb,.zs-shop,small')||{}).textContent||'';
+ const title=(box.querySelector('b,.zs-t')||a).textContent||a.textContent||'';
+ e.preventDefault();window.open(wdSafeUrl(a.href,shop,title),'_blank','noopener')},true);
+
+/* ---------- 2. categorieën: meer herkennen ---------- */
+WDG_CAT.kleding.re=/overhemd|\bhemd|shirt|polo\b|blouse|jurk|jurkje|broek|\bjas\b|\bjack\b|jasje|trui|sweater|coltrui|cardigan|vest\b|hoodie|jeans|kostuum|\bpak\b|colbert|blazer|mantel|parka|jumpsuit|jumper|\btop\b|\brok\b|legging|short\b|korte broek|pyjama|ondergoed|boxershort|\bbh\b|lingerie|sokken|zwembroek|bikini|badpak|kleding|\bmuts\b|sjaal|handschoenen/;
+WDG_CAT.schoenen.re=/sneaker|schoen|laars|laarzen|boots|pumps|sandaal|sandalen|slipper|air force|air max|\bloafers?\b|hakken|instappers|klompen/;
+
+const WDG_GENDER={k:'gender',when:s=>!s.gender,t:s=>`Voor wie ${/schoen|sneaker|laarzen|boots|sandalen|slippers|sokken/.test(s.product||'')?'zijn ze':'is het'}? Heren, dames of kinderen?`,chips:['Heren','Dames','Kinderen','Unisex']};
+const WDG_SIZE_K={k:'size',t:s=>s.gender==='kinderen'?'Welke maat? Bij kinderkleding is dat meestal de lengte in cm.':`Welke maat heb je?`,get chips(){const s=(WDG.c&&WDG.c.slots)||{};return s.gender==='kinderen'?['104','116','128','140','152']:/broek|jeans|pantalon/.test(s.product||'')?['W30','W32','W34','W36']:['S','M','L','XL','XXL']}};
+const WDG_SIZE_S={k:'size',t:s=>s.gender==='kinderen'?'Welke schoenmaat heeft je kind?':'Welke schoenmaat?',get chips(){const s=(WDG.c&&WDG.c.slots)||{};return s.gender==='kinderen'?['28','31','34','36']:s.gender==='dames'?['37','38','39','40']:['41','42','43','44','45']}};
+(function(){
+ const K=WDG_CAT.kleding.q;
+ const rm=k=>{const i=K.findIndex(q=>q.k===k);return i>=0?K.splice(i,1)[0]:null};
+ rm('size');const col=rm('color');const bud=rm('budget');
+ K.unshift(WDG_GENDER);
+ K.push({k:'fit',when:s=>/overhemd|hemd|blouse|jeans|broek|pantalon|colbert|blazer|pak\b|kostuum/.test(s.product||'')&&!s.fit,t:'Welke pasvorm vind je fijn?',chips:['Slim fit','Regular fit','Loose fit']});
+ K.push({k:'sleeve',when:s=>/overhemd|hemd|blouse|shirt|polo|jurk/.test(s.product||'')&&!/t-?shirt|polo/.test(s.product||'')&&!s.sleeve,t:'Lange of korte mouwen?',chips:['Lange mouw','Korte mouw']});
+ K.push(WDG_SIZE_K);
+ K.push(col?Object.assign(col,{t:s=>/overhemd|hemd|blouse/.test(s.product||'')?'Welke kleur? Wit en lichtblauw zijn het makkelijkst te combineren.':'Heb je een kleur in gedachten?',chips:['Wit','Zwart','Blauw','Grijs','Groen']}):{k:'color',t:'Heb je een kleur in gedachten?',chips:['Wit','Zwart','Blauw','Grijs']});
+ K.push(bud||{k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 50','€ 100','€ 200']});
+
+ const Sq=WDG_CAT.schoenen.q;const si=Sq.findIndex(q=>q.k==='size');if(si>=0)Sq.splice(si,1,WDG_SIZE_S);Sq.unshift(WDG_GENDER);
+
+ const P=WDG_CAT.parfum.q;P.unshift({k:'gender',when:s=>!s.gender,t:'Voor wie is het? Een herengeur, damesgeur of unisex?',chips:['Heren','Dames','Unisex']},{k:'ptype',when:s=>!s.ptype&&!/eau de|aftershave|cologne/.test(s.product||''),t:'Eau de parfum of eau de toilette?',chips:['Eau de parfum','Eau de toilette','Leg het verschil uit']});
+
+ WDG_CAT.tv.q.push({k:'brand',when:s=>!s.brand,t:'Heb je een voorkeursmerk?',chips:['Samsung','LG','Philips','Sony']});
+ WDG_CAT.tv.q.push({k:'cond',t:'Nieuw, of mag refurbished ook?',chips:['Nieuw','Refurbished mag']});
+ WDG_CAT.meubels.q.unshift({k:'dims',when:s=>/\bbank\b|tafel|\bkast\b|\bbed\b|matras|bureau/.test(s.product||'')&&!s.dims,t:s=>/\bbed\b|matras/.test(s.product||'')?'Welk formaat?':/\bbank\b/.test(s.product||'')?'Hoe groot mag hij zijn?':'Heb je een maat in gedachten?',get chips(){const s=(WDG.c&&WDG.c.slots)||{};return /\bbed\b|matras/.test(s.product||'')?['90x200','140x200','160x200','180x200']:/\bbank\b/.test(s.product||'')?['2-zits','3-zits','Hoekbank']:/tafel/.test(s.product||'')?['4 personen','6 personen','8 personen']:['Klein','Middel','Groot']}});
+ WDG_CAT.meubels.q.push({k:'cond',t:'Nieuw, of mag tweedehands ook?',chips:['Nieuw','Tweedehands mag']});
+})();
+/* nieuwe categorieën (vóór 'generic' gezet zodat ze eerder herkend worden) */
+(function(){
+ const gen=WDG_CAT.generic;delete WDG_CAT.generic;
+ Object.assign(WDG_CAT,{
+  telefoon:{re:/smartphone|\biphone|galaxy s|galaxy a|pixel \d|\bmobiel(tje)?\b|\btelefoon\b(?!\s*abonnement)/,n:'telefoon',q:[
+   {k:'brand',when:s=>!s.brand&&!/iphone|galaxy|pixel/.test(s.product||''),t:'Welk merk of besturingssysteem?',chips:['iPhone','Samsung','Google Pixel','Maakt niet uit']},
+   {k:'storage',t:'Hoeveel opslag heb je nodig?',chips:['128 GB','256 GB','512 GB']},
+   {k:'cond',t:'Nieuw, of mag refurbished ook? Dat scheelt vaak veel.',chips:['Nieuw','Refurbished mag']},
+   {k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 300','€ 600','€ 900']}]},
+  laptop:{re:/laptop|notebook|macbook|chromebook/,n:'laptop',q:[
+   {k:'use',when:s=>!s.use,t:'Waarvoor ga je hem vooral gebruiken?',chips:['School of kantoor','Gamen','Foto en video']},
+   {k:'screen',t:'Welk schermformaat?',chips:['13 inch','14 inch','15-16 inch']},
+   {k:'cond',t:'Nieuw, of mag refurbished ook?',chips:['Nieuw','Refurbished mag']},
+   {k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 500','€ 800','€ 1.200']}]},
+  audio:{re:/koptelefoon|headphone|oordopjes|earbuds|airpods|\bspeaker\b|soundbar/,n:'audio',q:[
+   {k:'atype',when:s=>/koptelefoon|headphone|oordopjes|earbuds/.test(s.product||'')&&!s.atype,t:'Over het oor of in het oor?',chips:['Over het oor','In het oor']},
+   {k:'anc',when:s=>!/speaker|soundbar/.test(s.product||'')&&!s.anc,t:'Moet hij geluid wegfilteren (noise cancelling)?',chips:['Ja, noise cancelling','Niet nodig']},
+   {k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 50','€ 150','€ 300']}]},
+  witgoed:{re:/wasmachine|droger|vaatwasser|koelkast|vriezer|oven|magnetron|stofzuiger|airfryer|koffiemachine|espresso/,n:'witgoed',q:[
+   {k:'wtype',when:s=>!s.wtype&&/wasmachine|koelkast|vaatwasser|oven|droger/.test(s.product||''),t:'Vrijstaand of inbouw?',chips:['Vrijstaand','Inbouw']},
+   {k:'energy',when:s=>/wasmachine|droger|vaatwasser|koelkast|vriezer/.test(s.product||'')&&!s.energy,t:'Hoe zuinig moet hij zijn? Een zuinig apparaat is duurder, maar scheelt stroom.',chips:['Zo zuinig mogelijk','Maakt niet uit']},
+   {k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 300','€ 500','€ 800']}]},
+  fiets:{re:/\bfiets|e-bike|ebike|mountainbike|racefiets|bakfiets/,n:'fiets',q:[
+   {k:'gender',when:s=>!s.gender,t:'Voor wie is de fiets?',chips:['Heren','Dames','Kinderen']},
+   {k:'ftype',when:s=>!s.ftype&&!/e-bike|ebike|mountainbike|racefiets|bakfiets/.test(s.product||''),t:'Wat voor fiets?',chips:['Stadsfiets','Elektrisch','Sportief']},
+   {k:'frame',t:s=>s.gender==='kinderen'?'Welke wielmaat?':'Hoe lang ben je ongeveer? Dan kies ik de framemaat.',get chips(){const s=(WDG.c&&WDG.c.slots)||{};return s.gender==='kinderen'?['16 inch','20 inch','24 inch']:['Onder 1,70 m','1,70–1,85 m','Boven 1,85 m']}},
+   {k:'cond',t:'Nieuw, of mag tweedehands ook?',chips:['Nieuw','Tweedehands mag']},
+   {k:'budget',t:'Wat wil je maximaal uitgeven?',chips:['€ 400','€ 1.000','€ 2.000']}]},
+  generic:{re:null,n:'product',q:[
+   {k:'spec',when:s=>!s.brand&&!s.spec&&!s.url,t:s=>`Waar moet ${esc(s.product||'het')} vooral aan voldoen? Denk aan merk, type, maat of kleur.`,chips:['Een bekend merk','Zo goedkoop mogelijk','Zo goed mogelijk']},
+   {k:'cond',when:s=>!s.cond,t:'Nieuw, of mag tweedehands of refurbished ook?',chips:['Nieuw','Tweedehands mag']},
+   ...gen.q.filter(q=>q.k==='budget')]}
+ });
+})();
+
+/* ---------- 3. antwoorden begrijpen ---------- */
+const WDG_NEWK={
+ gender:lo=>/unisex/.test(lo)?'unisex':/dame|vrouw|meisje/.test(lo)?'dames':/here|\bman|mannen|jongen/.test(lo)?'heren':/kind|kinder/.test(lo)?'kinderen':null,
+ fit:lo=>/slim/.test(lo)?'slim fit':/regular|normaal|gewoon/.test(lo)?'regular fit':/loose|ruim|wijd/.test(lo)?'loose fit':null,
+ sleeve:lo=>/kort/.test(lo)?'korte mouw':/lang/.test(lo)?'lange mouw':null,
+ ptype:lo=>/verschil|uitleg/.test(lo)?'?':/parfum/.test(lo)?'eau de parfum':/toilette|edt/.test(lo)?'eau de toilette':null,
+ storage:lo=>{const m=lo.match(/(\d{2,4})\s*(gb|tb)?/);return m?m[1]+' '+(m[2]||'gb').toUpperCase():null},
+ screen:lo=>/15|16/.test(lo)?'15,6 inch':/14/.test(lo)?'14 inch':/13/.test(lo)?'13 inch':null,
+ use:null,
+ atype:lo=>/over/.test(lo)?'over-ear':/in/.test(lo)?'in-ear':null,
+ anc:lo=>/^ja|noise/.test(lo)?'noise cancelling':'nee',
+ wtype:lo=>/inbouw/.test(lo)?'inbouw':/vrij/.test(lo)?'vrijstaand':null,
+ energy:lo=>/zuinig/.test(lo)?'zuinig':'nee',
+ ftype:lo=>/elektr|e-?bike/.test(lo)?'elektrische fiets':/sport|race|mountain/.test(lo)?'sportief':/stad|gewoon|normaal/.test(lo)?'stadsfiets':lo.slice(0,20),
+ frame:lo=>lo.slice(0,20),dims:lo=>lo.slice(0,20),spec:lo=>/goedkoop/.test(lo)?'goedkoop':/zo goed/.test(lo)?'kwaliteit':/bekend merk/.test(lo)?'merk':lo.slice(0,40)
+};
+{const _a=WDG.answer;WDG.answer=function(text,src){
+ try{const C=this.c,t=String(text||'').trim(),lo=t.toLowerCase();
+  if(C&&C.stage==='ask'&&C.asking&&!/^(maakt niet uit|weet ik niet|kies jij|overslaan|geen voorkeur|maakt me niet uit|nee)$/i.test(t)){
+   const k=C.asking;
+   if(k==='ptype'&&/verschil|uitleg/.test(lo)){this.user(t,src);this.say('<b>Het verschil in het kort:</b><b>Eau de parfum</b> is sterker en blijft langer hangen (vaak de hele dag). <b>Eau de toilette</b> is lichter en frisser en meestal goedkoper per flesje. Welke wil je?');this.draw();return true}
+   if(k==='use'&&C.cat==='laptop'){C.laptopUse=/gam/.test(lo)?'gaming':/foto|video/.test(lo)?'creatief':'kantoor'}
+   else if(k==='brand'&&C.cat!=='gaming'){const b=/iphone|apple/.test(lo)?'apple':/pixel/.test(lo)?'google pixel':lo.replace(/[^a-z0-9 ]/g,'').trim().slice(0,20);if(b)C.slots.brand=b}
+   else if(WDG_NEWK[k]){const v=WDG_NEWK[k](lo);if(v)C.slots[k]=v}
+   if(k==='size'&&C.slots.size==null){const m=lo.match(/\b(w\d{2}|\d{2,3}|xxs|xs|s|m|l|xl|xxl|3xl)\b/i);if(m)C.slots.size=m[1].toUpperCase()}
+  }
+ }catch(e){}
+ return _a.apply(this,arguments)}}
+/* ook als je het meteen typt: "wit slim fit overhemd heren maat L lange mouw" */
+{const _p=wdgParse;wdgParse=function(text){const s=_p.apply(this,arguments),t=String(text||'').toLowerCase();
+ if(/\bunisex\b/.test(t))s.gender='unisex';
+ if(/slim[\s-]?fit/.test(t))s.fit='slim fit';else if(/regular[\s-]?fit/.test(t))s.fit='regular fit';
+ if(/korte mouw/.test(t))s.sleeve='korte mouw';else if(/lange mouw/.test(t))s.sleeve='lange mouw';
+ if(/eau de parfum|\bedp\b/.test(t))s.ptype='eau de parfum';else if(/eau de toilette|\bedt\b/.test(t))s.ptype='eau de toilette';
+ let m=t.match(/\b(\d{3,4})\s*gb\b|\b(\d)\s*tb\b/);if(m)s.storage=m[1]?m[1]+' GB':m[2]+' TB';
+ m=t.match(/\bmaat\s*(w\d{2}|\d{3})\b/i);if(m)s.size=m[1].toUpperCase();
+ if(s.product){s.product=s.product.replace(/\b(slim|regular|loose)[\s-]?fit\b|\b(korte|lange) mouw(en)?\b|\bunisex\b/g,' ').replace(/\s+/g,' ').trim();if(!s.product)delete s.product}
+ return s}}
+
+/* ---------- 4. meenemen in de zoekopdracht en in "Ik heb genoteerd" ---------- */
+{const _q=WDG.query;WDG.query=function(){let q=_q.apply(this,arguments);try{const s=this.c.slots,x=[];
+ if(s.gender==='unisex')q=q.replace(/\bunisex\b/,'').trim();
+ if(s.fit)x.push(s.fit);if(s.sleeve)x.push(s.sleeve);if(s.ptype&&s.ptype!=='?')x.push(s.ptype);if(s.storage)x.push(s.storage);if(s.screen)x.push(s.screen);
+ if(this.c.cat==='laptop'){q=q.replace(/\b\d{2}\s*inch\b/g,'');if(this.c.laptopUse==='gaming')x.push('gaming')}
+ if(/^(meubels|fiets|generic|witgoed)$/.test(this.c.cat))q=q.replace(/\brefurbished\b/,'');if(s.atype)x.push(s.atype);if(s.anc==='noise cancelling')x.push('noise cancelling');
+ if(s.wtype==='inbouw')x.push('inbouw');if(s.spec&&!/^(goedkoop|kwaliteit|merk)$/.test(s.spec))x.push(s.spec);if(s.energy==='zuinig'&&this.c.cat==='witgoed')x.push('energieklasse A');if(s.ftype&&this.c.cat==='fiets'&&!/fiets/.test(s.product||''))x.push(s.ftype);else if(s.ftype==='elektrische fiets')x.push('elektrisch');
+ if(/\bbed\b|matras/.test(s.product||'')&&/\d+x\d+/.test(s.dims||''))x.push(s.dims);else if(/\bbank\b/.test(s.product||'')&&s.dims)x.push(s.dims);
+ if(this.c.cat==='kleding'&&s.size&&/^(XXS|XS|S|M|L|XL|XXL|3XL|W\d{2})$/.test(s.size))x.push('maat '+s.size);
+ x.forEach(w=>{if(q.toLowerCase().indexOf(w.toLowerCase())<0)q+=' '+w})}catch(e){}return q.replace(/\s+/g,' ').trim()}}
+{const _k=WDG.known;WDG.known=function(){let t=_k.apply(this,arguments);try{const s=this.c.slots,x=[];
+ if(s.fit)x.push(s.fit);if(s.sleeve)x.push(s.sleeve);if(s.ptype&&s.ptype!=='?')x.push(s.ptype);if(s.storage)x.push(s.storage);if(s.screen)x.push(s.screen);if(s.atype)x.push(s.atype);if(s.anc==='noise cancelling')x.push('noise cancelling');if(s.wtype)x.push(s.wtype);if(s.energy==='zuinig')x.push('zuinig');if(s.ftype)x.push(s.ftype);if(s.frame)x.push(s.frame);if(s.dims)x.push(esc(s.dims));
+ t=t.replace(/, maakt niet uit(?=[,.])/,', nieuw of tweedehands');if(this.c.laptopUse)x.push({gaming:'om te gamen',creatief:'voor foto en video',kantoor:'voor school of kantoor'}[this.c.laptopUse]);
+ if(x.length){t=t?t.replace(/\.$/,', '+x.join(', ')+'.'):'Ik heb genoteerd: '+x.join(', ')+'.'}}catch(e){}return t}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
