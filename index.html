@@ -12867,36 +12867,48 @@ lifePose=function(I,P,st,t,tSt){
    dan blijft de bewegende foto (V33/V34) gewoon werken. Minder beweging: de video staat stil.
    ===================================================================== */
 const VIDDOG={
- src:'pup-rust.mp4',key:[234/255,243/255,251/255],v:null,ok:false,failed:false,inst:[],raf:0,
+ src:'pup-rust.mp4',key:[234/255,243/255,251/255],
+ /* tweede filmpje: blij (bij een vondst of blaf), witte achtergrond; speelt één keer en gaat zacht terug naar rust */
+ srcB:'pup-blij.mp4',keyB:[252/255,252/255,252/255],
+ v:null,vb:null,okB:false,mix:0,mixT:0,lastHappy:0,lt:0,ok:false,failed:false,inst:[],raf:0,
+ fmt(v,src){const mp4=v.canPlayType('video/mp4; codecs="avc1.4D401E"'),webm=v.canPlayType('video/webm; codecs="vp9"');if(!mp4&&!webm)throw new Error('geen geschikt videoformaat');return mp4?src:src.replace(/\.mp4$/,'.webm')},
+ mk(src,loop){const v=document.createElement('video');v.muted=true;v.defaultMuted=true;v.loop=loop;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';v.src=this.fmt(v,src);
+  v.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;top:-10px';v.setAttribute('aria-hidden','true');document.body.appendChild(v);return v},
  boot(){
   if(this.v||this.failed)return;
   try{if(!window.WebGLRenderingContext)throw new Error('geen WebGL');
-   const v=document.createElement('video');v.muted=true;v.defaultMuted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';const mp4=v.canPlayType('video/mp4; codecs="avc1.4D401E"'),webm=v.canPlayType('video/webm; codecs="vp9"');if(!mp4&&!webm)throw new Error('geen geschikt videoformaat');v.src=mp4?this.src:this.src.replace(/\.mp4$/,'.webm');
-   v.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;top:-10px';v.setAttribute('aria-hidden','true');
+   const v=this.mk(this.src,true);
    v.addEventListener('error',()=>{this.failed=true;this.off()});
-   v.addEventListener('loadeddata',()=>{this.ok=true;this.play();this.scan()});
-   document.body.appendChild(v);this.v=v;
+   v.addEventListener('loadeddata',()=>{this.ok=true;this.play();this.scan();this.bootB()});
+   this.v=v;
   }catch(e){this.failed=true}
  },
- play(){const v=this.v;if(!v||!this.ok)return;if(RM()||document.hidden||this.sleeping()){try{v.pause()}catch(e){}return}
+ bootB(){if(this.vb)return;try{const b=this.mk(this.srcB,false);b.addEventListener('loadeddata',()=>{this.okB=true});b.addEventListener('error',()=>{this.okB=false});
+  b.addEventListener('timeupdate',()=>{if(b.duration&&b.currentTime>b.duration-.6)this.mixT=0});b.addEventListener('ended',()=>{this.mixT=0});this.vb=b}catch(e){}},
+ happy(){const b=this.vb;if(!b||!this.okB||RM()||document.hidden||this.sleeping())return false;const now=Date.now();if(now-this.lastHappy<7000||this.mixT>0)return false;
+  this.lastHappy=now;try{b.currentTime=0;const p=b.play();if(p&&p.catch)p.catch(()=>{this.mixT=0})}catch(e){return false}this.mixT=1;this.kick();return true},
+ play(){const v=this.v;if(!v||!this.ok)return;if(RM()||document.hidden||this.sleeping()){try{v.pause();this.vb&&this.vb.pause()}catch(e){}this.mixT=0;return}
   const p=v.play();if(p&&p.catch)p.catch(()=>{/* bijv. iPhone-energiebesparing: wacht op een tik */this.blocked=true;this.off()})},
  sleeping(){try{return ME.paused()}catch(e){return false}},
- /* canvas + shader per hond */
  attach(d){
   const cv=document.createElement('canvas');cv.className='vd-cv';
   const gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false})||cv.getContext('experimental-webgl');if(!gl)return null;
   const vs='attribute vec2 p;varying vec2 v;void main(){v=vec2((p.x+1.0)*.5,1.0-(p.y+1.0)*.5);gl_Position=vec4(p,0.0,1.0);}';
-  const fs='precision mediump float;varying vec2 v;uniform sampler2D t;uniform vec3 k;void main(){vec3 c=texture2D(t,v).rgb;float d=distance(c,k);float warm=max(0.0,c.r-c.b);float a=smoothstep(.07,.17,d+warm*.7);'+
-   /* randpixels zijn een mengsel van vacht en achtergrond: achtergrond eruit rekenen (geen lichte rand) */'vec3 f=max(c-(1.0-a)*k,vec3(0.0));gl_FragColor=vec4(f,a);}';
+  /* per filmpje de achtergrond eruit halen (keying + randcorrectie), daarna zacht mengen */
+  const fs='precision mediump float;varying vec2 v;uniform sampler2D t0;uniform sampler2D t1;uniform vec3 k0;uniform vec3 k1;uniform float m;'+
+   'vec4 key(vec3 c,vec3 k){float d=distance(c,k);float warm=max(0.0,c.r-c.b);float a=smoothstep(.07,.17,d+warm*.7);return vec4(max(c-(1.0-a)*k,vec3(0.0)),a);}'+
+   'void main(){vec4 a=key(texture2D(t0,v).rgb,k0);if(m<=0.001){gl_FragColor=a;return;}vec4 b=key(texture2D(t1,v).rgb,k1);gl_FragColor=mix(a,b,m);}';
   const sh=(ty,src)=>{const s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s};
   try{const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
    const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
    const pl=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(pl);gl.vertexAttribPointer(pl,2,gl.FLOAT,false,0,0);
-   const tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);[gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.CLAMP_TO_EDGE));gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-   gl.uniform3f(gl.getUniformLocation(pr,'k'),this.key[0],this.key[1],this.key[2]);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+   const tex=[0,1].map(u=>{const tx=gl.createTexture();gl.activeTexture(gl.TEXTURE0+u);gl.bindTexture(gl.TEXTURE_2D,tx);[gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T].forEach(p=>gl.texParameteri(gl.TEXTURE_2D,p,gl.CLAMP_TO_EDGE));gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));return tx});
+   gl.uniform1i(gl.getUniformLocation(pr,'t0'),0);gl.uniform1i(gl.getUniformLocation(pr,'t1'),1);
+   gl.uniform3f(gl.getUniformLocation(pr,'k0'),this.key[0],this.key[1],this.key[2]);gl.uniform3f(gl.getUniformLocation(pr,'k1'),this.keyB[0],this.keyB[1],this.keyB[2]);
+   const um=gl.getUniformLocation(pr,'m');gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
    const body=d.querySelector('.dogx-body');if(!body)return null;body.appendChild(cv);
    const r=d.getBoundingClientRect(),dpr=Math.min(2.5,window.devicePixelRatio||1);cv.width=Math.max(120,Math.round(r.width*dpr));cv.height=Math.round(cv.width*432/560);
-   const I={d:d,cv:cv,gl:gl,drawn:false};this.inst.push(I);d.classList.add('vid-on');return I;
+   const I={d:d,cv:cv,gl:gl,tex:tex,um:um,drawn:false};this.inst.push(I);d.classList.add('vid-on');return I;
   }catch(e){console.warn('WATCHDOG video-hond:',e.message);cv.remove();return null}
  },
  scan(){
@@ -12905,25 +12917,31 @@ const VIDDOG={
   $$('.dogx:not(.vid-on)').forEach(d=>{if(!d.querySelector('.dogx-body'))return;this.attach(d)});
   this.kick();
  },
- kick(){if(!this.raf&&this.inst.length)this.raf=requestAnimationFrame(()=>this.frame())},
- frame(){
-  this.raf=0;const v=this.v;this.inst=this.inst.filter(I=>I.cv.isConnected);if(!this.inst.length||!v)return;
+ kick(){if(!this.raf&&this.inst.length)this.raf=requestAnimationFrame(t=>this.frame(t))},
+ frame(t){
+  this.raf=0;const v=this.v,b=this.vb;this.inst=this.inst.filter(I=>I.cv.isConnected);if(!this.inst.length||!v)return;
+  const now=t||performance.now(),dt=Math.min(.1,this.lt?(now-this.lt)/1000:.016);this.lt=now;
+  this.mix+=(this.mixT-this.mix)*Math.min(1,dt*5);if(Math.abs(this.mix-this.mixT)<.003)this.mix=this.mixT;
+  if(this.mix===0&&b&&!b.paused&&this.mixT===0){try{b.pause()}catch(e){}}
+  const useB=this.mix>0.001&&b&&b.readyState>=2;
   if(v.readyState>=2){this.inst.forEach(I=>{if(I.cv.offsetParent===null)return;const gl=I.gl;try{
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,v);
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,I.tex[0]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,v);
+    if(useB){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,I.tex[1]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,b)}
+    gl.uniform1f(I.um,useB?this.mix:0);
     gl.viewport(0,0,I.cv.width,I.cv.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
     if(!I.drawn){I.drawn=true;I.d.classList.add('vid-drawn');const c=I.d.querySelector('.dogx-cv');if(c)c.remove()}}catch(e){console.warn('WATCHDOG video-hond:',e.message);this.failed=true;this.off()}})}
-  if(!document.hidden)this.raf=requestAnimationFrame(()=>this.frame());
+  if(!document.hidden)this.raf=requestAnimationFrame(x=>this.frame(x));
  },
  /* terug naar de bewegende foto */
  off(){this.inst.forEach(I=>{try{I.cv.remove()}catch(e){}I.d.classList.remove('vid-on','vid-drawn','gl-on','gl-drawn');I.d.removeAttribute('data-gl')});this.inst=[];try{DOGGL.scan()}catch(e){}}
 };
 /* na elke pagina-opbouw de nieuwe honden koppelen */
 {const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{VIDDOG.boot();VIDDOG.scan()}catch(e){}return r}}
-document.addEventListener('visibilitychange',()=>{try{if(document.hidden){VIDDOG.v&&VIDDOG.v.pause()}else{VIDDOG.play();VIDDOG.kick()}}catch(e){}});
+document.addEventListener('visibilitychange',()=>{try{if(document.hidden){VIDDOG.v&&VIDDOG.v.pause();VIDDOG.vb&&VIDDOG.vb.pause();VIDDOG.mixT=0}else{VIDDOG.play();VIDDOG.kick()}}catch(e){}});
 /* iPhone met energiebesparing: afspelen pas na een tik */
 ['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{if(VIDDOG.blocked&&VIDDOG.v){const p=VIDDOG.v.play();if(p&&p.then)p.then(()=>{VIDDOG.blocked=false;VIDDOG.scan()}).catch(()=>{})}},{passive:true}));
 /* slapen/pauze en minder beweging: video stil */
-{const _s=DOG.set;DOG.set=function(){const r=_s.apply(this,arguments);try{VIDDOG.play()}catch(e){}return r}}
+{const _s=DOG.set;DOG.set=function(st){const r=_s.apply(this,arguments);try{VIDDOG.play();if(st==='found'||st==='barking')VIDDOG.happy()}catch(e){}return r}}
 setTimeout(()=>{try{VIDDOG.boot();VIDDOG.scan()}catch(e){}},50);
 
 
