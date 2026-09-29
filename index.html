@@ -1858,6 +1858,29 @@ body[data-view="home"],body[data-view="zoek"],body[data-view="watches"]{backgrou
 .dogx.vid-drawn .dogx-img,.dogx.vid-drawn .dogx-cv{visibility:hidden!important}
 .dogx.vid-on .dogx-body{animation:none!important;transform:none!important}
 .dogx.vid-drawn .dogx-loep{z-index:4}
+/* V36 — Kansen = vondsten */
+.k36-l{display:flex;flex-direction:column;gap:10px}
+.k36{padding:14px}
+.k36-btn{width:100%;text-align:left;cursor:pointer;border:1px solid #E7E9F4}
+.k36-h{display:flex;align-items:center;gap:12px}
+.k36-h>svg{width:22px;height:22px;color:#475569}
+.k36-h b{display:block;color:#0E1B4D;font-size:15px}.k36-h small{display:block;color:#64748B;font-size:12px;margin-top:2px}
+.k36-h .h31-i{flex:none}
+.k36-r{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #EEF0F6;text-decoration:none;color:inherit}
+.k36-r:first-of-type{margin-top:10px}
+.k36-r b{display:block;font-size:14px;color:#0E1B4D}.k36-r small{display:block;font-size:12px;color:#64748B;margin-top:1px}
+.k36-amt{text-align:right;flex:none}.k36-amt b{font-size:13.5px}.k36-amt small{font-weight:800}
+.k36-amt.up small{color:#047857}
+.k36 .btn-row{margin-top:10px;flex-wrap:wrap;gap:8px}
+.k36 .fine{margin-top:8px}
+.k36-ask b{font-size:16px;color:#0E1B4D}
+.k36-ask .btn{width:100%}
+.k36-none p{line-height:1.5;margin:0}
+.k36-me{margin:10px 2px 0}
+.k36-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.k36-tool{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;background:#fff;border:1px solid #E7E9F4;border-radius:14px;cursor:pointer}
+.k36-tool b{font-size:12.5px;color:#0E1B4D;text-align:center}
+.k36-tool .h31-i{width:34px;height:34px}
 </style>
 </head>
 <body>
@@ -12576,7 +12599,7 @@ ACT['v31-unwatch']=id=>JOBS.unwatch(id);
    const d=x.due?days31(x.due):null;
    L.push({k:k,p:p,t:strip31(x.t)+(d!=null?(d<=0?' · vandaag':` · nog ${d} ${plural(d,'dag','dagen')}`):''),s:strip31(x.s),btn:[x.act?[x.act[0],x.act[1],x.act[2]||x.id]:x.kind==='contract'?['Vergelijk','t31-cmp',x.link||'']:['Bekijk','go','termijnen'],['Later','wake-later',k]]})});
   const sg=KANS.suggest().filter(x=>!sn('ks:'+x.id))[0];
-  if(sg)L.push({k:'ks:'+sg.id,p:1,t:{verdienen:'Kun je elders meer verdienen?',huur:'Betaal je niet te veel huur?',woz:'Klopt je WOZ-waarde?',spaar:'Levert je spaargeld genoeg op?',vertraging:'Vertraging gehad?'}[sg.id]||sg.t,s:sg.s+'.',btn:[['Bekijk','go','kans/'+sg.id],['Later','wake-later','ks:'+sg.id]]});
+  if(sg)L.push({k:'ks:'+sg.id,p:1,t:{verdienen:'Kun je elders meer verdienen?',huur:'Betaal je niet te veel huur?',woz:'Klopt je WOZ-waarde?',spaar:'Levert je spaargeld genoeg op?',vertraging:'Vertraging gehad?'}[sg.id]||sg.t,s:({verdienen:'Ik zoek vacatures en reken uit wat je netto overhoudt.',huur:'Met de officiële Huurprijscheck zie je het in 10 minuten.',woz:'Bezwaar maken is gratis en kan je elk jaar geld schelen.',spaar:'Ik reken uit wat overstappen oplevert.',vertraging:'Bij 3 uur of meer vertraging heb je vaak recht op geld terug.'}[sg.id]||sg.s),btn:[['Bekijk','go','kans/'+sg.id],['Later','wake-later','ks:'+sg.id]]});
  }catch(e){console.warn('WATCHDOG V31 items:',e)}
  return L.sort((a,b)=>b.p-a.p)}}
 {const _c=WAKE.card.bind(WAKE);WAKE.card=function(r){const h=_c(r);return h?h.replace('<div class="card wk" aria-live="polite">','<div class="card wk wk31" aria-live="polite"><h3 class="wk31-h">Vandaag voor jou</h3>'):h}}
@@ -12699,7 +12722,8 @@ ACT['k32-vast']=()=>{go('home');setTimeout(()=>{const k=$('.h30-kies');if(k)k.sc
   weights(x,y){
    const hw=e(x,y,355,238,268,218);
    const jaw=e(x,y,385,384,108,50)*sm_(347,359,y);
-   return [hw,e(x,y,112,268,84,138),e(x,y,562,172,74,138),
+   const face=Math.max(e(x,y,370,292,125,110),e(x,y,256,170,52,44),e(x,y,426,127,52,44),e(x,y,365,228,70,56));
+   return [hw,e(x,y,112,268,84,138)*(1-face),e(x,y,562,172,74,138)*(1-face),
     e(x,y,256,170,40,31),e(x,y,426,127,40,31),jaw,e(x,y,378,362,54,31),
     e(x,y,365,228,62,48),e(x,y,370,292,125,110),
     e(x,y,250,130,46,22)*(1-e(x,y,256,170,30,22)),e(x,y,420,88,46,22)*(1-e(x,y,426,127,30,22)),
@@ -12724,7 +12748,7 @@ ACT['k32-vast']=()=>{go('home');setTimeout(()=>{const k=$('.h30-kies');if(k)k.sc
    if(w[2]>0){const r=rot(x,y,505,58,Q.cr,Q.sr);x+=w[2]*(r[0]-x);y+=w[2]*(r[1]-y)}
    /* kop draaien (links/rechts) en knikken (op/neer): diepte-effect */
    const yw=P.yw||0,pt=P.pt||0;
-   if(yw||pt){const d=.22*w[0]+.5*w[8]+.3*(w[3]+w[4])+.35*w[7];x+=yw*42*d-yw*11*(w[1]+w[2])+yw*6*w[13];y+=pt*26*(.18*w[0]+.5*w[8]+.35*w[7]+.25*(w[3]+w[4]))}
+   if(yw||pt){const d=.22*w[0]+.5*w[8]+.3*(w[3]+w[4])+.35*w[7];x+=yw*38*d-yw*6*(w[1]+w[2])+yw*6*w[13];y+=pt*26*(.18*w[0]+.5*w[8]+.35*w[7]+.25*(w[3]+w[4]))}
    /* kop kantelen + verschuiven */
    if(w[0]>0){const r=rot(x,y,PIV[0],PIV[1],Q.ca,Q.sa);x+=w[0]*(r[0]+Q.hx*K-x);y+=w[0]*(r[1]+Q.hy*K-y)}
    /* poten */
@@ -12783,7 +12807,7 @@ lifePose=function(I,P,st,t,tSt){
     case 'nod':P.pt+=.45*s(u*Math.PI*2)*g;break;
     case 'sniff':P.pt+=.2*e;P.ns=Math.abs(s(t*36))*e;P.ey+=4*e;break;
     case 'paw':if(d<0)P.pl=Math.max(0,s(u*Math.PI*2))*g;else P.pr=Math.max(0,s(u*Math.PI*2))*g;P.yw+=d*.2*e;break;
-    case 'shake':{const f=(1-u);P.yw+=s(u*Math.PI*7)*.9*f*g;P.ha+=s(u*Math.PI*7)*4*f*g;P.bl=Math.max(P.bl,.5*e);break}
+    case 'shake':{const f=(1-u);P.yw+=s(u*Math.PI*7)*.6*f*g;P.ha+=s(u*Math.PI*7)*3*f*g;P.bl=Math.max(P.bl,.5*e);break}
     case 'yawn':{const y2=Math.max(0,s(Math.PI*Math.min(1,u*1.15)));P.jaw+=18*y2;P.bl=Math.max(P.bl,.9*y2);P.pt-=.3*y2;P.brow-=.3*y2;P.tg+=.3*y2;break}
     case 'blink2':{const bb=Math.max(0,s(u*Math.PI*4));P.bl=Math.max(P.bl,bb);break}
    }}}
@@ -12810,9 +12834,9 @@ lifePose=function(I,P,st,t,tSt){
  const dha=(P.ha-sp.ph)/dt,dyw=(P.yw-sp.py)/dt;sp.ph=P.ha;sp.py=P.yw;
  const kick=Math.max(-400,Math.min(400,dha*.9+dyw*14));
  sp.lv+=(-140*sp.l-11*sp.lv-kick)*dt;sp.l+=sp.lv*dt;sp.rv+=(-140*sp.r-11*sp.rv-kick)*dt;sp.r+=sp.rv*dt;
- sp.l=Math.max(-16,Math.min(16,sp.l));sp.r=Math.max(-16,Math.min(16,sp.r));
+ sp.l=Math.max(-9,Math.min(9,sp.l));sp.r=Math.max(-9,Math.min(9,sp.r));
  P.el+=sp.l*g;P.er+=sp.r*g;
- P.ex=Math.max(-13,Math.min(13,P.ex));P.ey=Math.max(-9,Math.min(9,P.ey));P.yw=Math.max(-1,Math.min(1,P.yw));P.pt=Math.max(-.6,Math.min(.6,P.pt));P.tg=Math.max(0,Math.min(1.2,P.tg));
+ P.ex=Math.max(-13,Math.min(13,P.ex));P.ey=Math.max(-9,Math.min(9,P.ey));P.yw=Math.max(-.75,Math.min(.75,P.yw));P.ha=Math.max(-11,Math.min(11,P.ha));P.el=Math.max(-12,Math.min(12,P.el));P.er=Math.max(-12,Math.min(12,P.er));P.pt=Math.max(-.6,Math.min(.6,P.pt));P.tg=Math.max(0,Math.min(1.2,P.tg));
 };
 /* oren, tong en ogen moeten snel reageren: die waarden niet naslepen */
 {const _e2=DOGGL.ease;DOGGL.ease=function(I,P,dt,st){const r=_e2.call(this,I,P,dt,st);try{['el','er','tg','ns','pl','pr','ex','ey','jaw'].forEach(k=>{if(k in P){const f=k==='ex'||k==='ey'?.35:k==='jaw'?.6:1;r[k]+=(P[k]-r[k])*f}})}catch(e){}return r}}
@@ -12901,6 +12925,107 @@ document.addEventListener('visibilitychange',()=>{try{if(document.hidden){VIDDOG
 /* slapen/pauze en minder beweging: video stil */
 {const _s=DOG.set;DOG.set=function(){const r=_s.apply(this,arguments);try{VIDDOG.play()}catch(e){}return r}}
 setTimeout(()=>{try{VIDDOG.boot();VIDDOG.scan()}catch(e){}},50);
+
+
+/* =====================================================================
+   V36 — KANSEN = WAT WATCHDOG VOOR JOU GEVONDEN HEEFT
+   Home = jij vraagt. Kansen = de hond brengt je iets.
+   Echte bronnen: vacatures (Google Jobs via de WATCHDOG-server), regelingen van jouw gemeente
+   (overheid.nl via de server), je bewaakte prijzen, je termijnen en de uitkomsten van je eigen checks.
+   Is er (nog) niets gevonden, dan zegt de hond dat eerlijk. Niets verzonnen.
+   ===================================================================== */
+const K36={
+ me(){const J=JOBS.st(),p=J.prefs;return {q:p.q||'',loc:p.loc||'',gem:S.profile&&S.profile.gemeente||''}},
+ /* automatisch zoeken: hooguit 1× per dag per onderwerp (spaart de zoeklimiet) */
+ auto(){const J=JOBS.st(),p=J.prefs;
+  if(p.q&&!J.busy&&(!J.last||J.last.q!==p.q||Date.now()-J.last.at>24*3600e3)&&(!J.autoAt||Date.now()-J.autoAt>10*60e3)){J.autoAt=Date.now();save();JOBS.search()}
+  try{GEMREG.tick()}catch(e){}},
+ jobs(){const J=JOBS.st(),L=J.last;if(!L||!L.jobs||!L.jobs.length)return null;const p=J.prefs,now=JOBS.netNow();
+  const rows=L.jobs.map(j=>{const g=gross31(j.salary,p.hours),n=g?net31(g):null;return {j:j,n:n,diff:n&&now?n.m-now:null}});
+  rows.sort((a,b)=>((b.n&&b.n.m)||0)-((a.n&&a.n.m)||0));
+  const better=rows.filter(r=>r.diff!=null&&r.diff>0);return {L:L,rows:rows,better:better,now:now}},
+ regs(){const G=GEMREG.st(),g=S.profile&&S.profile.gemeente;if(!g)return null;return {g:g,items:G.g===g?(G.items||[]):[],busy:GEMREG.busy,err:G.err,at:G.at}},
+ prices(){return (S.deals||[]).filter(d=>d.active&&d.live&&d.cur!=null&&d.max&&d.cur<=d.max)},
+ checks(){return KAN32.all.filter(x=>KAN32.fits(x)&&KAN32.status(x.id)!=='done').map(x=>({x:x,v:KAN32.value(x.id)})).filter(o=>o.v)},
+ soon(){return TERM.all().filter(x=>!x.demo&&x.due&&days31(x.due)<=30)},
+ count(){const j=this.jobs(),r=this.regs();return (j?1:0)+(r&&r.items.length?1:0)+this.prices().length+this.checks().length+this.soon().length}
+};
+function k36Jobs(){const J=JOBS.st(),o=K36.jobs(),p=J.prefs;
+ if(J.busy)return `<div class="card k36"><div class="k36-h">${KIC.briefcase}<b>Vacatures</b></div><p class="note"><i class="wl6-dots"><i></i><i></i><i></i></i> Even snuffelen naar vacatures als ${esc(p.q)}…</p></div>`;
+ if(J.err&&!o)return `<div class="card k36"><div class="k36-h">${KIC.briefcase}<b>Vacatures</b></div><p class="note">${esc(J.err)}</p><button class="btn sm ghost" data-a="k36-jobs">Probeer opnieuw</button></div>`;
+ if(!o)return '';
+ const {L,rows,better,now}=o;
+ const head=better.length?`${better.length} ${plural(better.length,'vacature','vacatures')} die netto meer ${plural(better.length,'oplevert','opleveren')}`:`${L.jobs.length} ${plural(L.jobs.length,'vacature','vacatures')} als ${esc(L.q)}`;
+ return `<div class="card k36"><div class="k36-h"><span class="h31-i" style="--c:#047857;--bg:#D1FAE5">${KIC.briefcase}</span><span class="grow"><b>${head}</b><small>${esc(L.q)}${L.loc?' · '+esc(L.loc):''} · ${esc(L.source||'Google Jobs')} · ${evAgo(L.at)}</small></span></div>
+ ${rows.slice(0,3).map(r=>`<a class="k36-r" href="${esc(r.j.url)}" target="_blank" rel="noopener nofollow"><span class="grow"><b>${esc(r.j.title)}</b><small>${esc(r.j.company||'')}${r.j.location?' · '+esc(r.j.location):''}${r.j.salary?'':' · geen salaris vermeld'}</small></span>${r.n?`<span class="k36-amt ${r.diff>0?'up':''}"><b>± ${E(r.n.m)}</b><small>${r.diff!=null?(r.diff>0?'+':'−')+E(Math.abs(r.diff))+' p/m':'netto p/m'}</small></span>`:''}</a>`).join('')}
+ <div class="btn-row"><button class="btn sm" data-a="go" data-arg="verdienen">Alle vacatures</button>${J.watches.length?'':`<button class="btn sm ghost" data-a="v31-watch">Meld nieuwe vacatures</button>`}</div>
+ ${!now?'<p class="fine">Vul bij Meer verdienen je huidige netto in, dan zie ik welke vacatures meer opleveren.</p>':''}</div>`}
+function k36Regs(){const o=K36.regs();if(!o)return '';
+ if(o.busy&&!o.items.length)return `<div class="card k36"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note"><i class="wl6-dots"><i></i><i></i><i></i></i> Even snuffelen in de regelingen van ${esc(o.g)}…</p></div>`;
+ if(o.err&&!o.items.length)return `<div class="card k36"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note">${esc(o.err)}</p><button class="btn sm ghost" data-a="gr-load">Probeer opnieuw</button></div>`;
+ if(!o.items.length)return '';
+ return `<div class="card k36"><div class="k36-h"><span class="h31-i" style="--c:#B45309;--bg:#FEF3C7">${KIC.doc}</span><span class="grow"><b>${o.items.length} ${plural(o.items.length,'regeling','regelingen')} van gemeente ${esc(o.g)}</b><small>Officiële bron (overheid.nl)${o.at?' · '+evAgo(o.at):''}</small></span></div>
+ ${o.items.slice(0,3).map(x=>`<a class="k36-r" href="${esc(x.url)}" target="_blank" rel="noopener"><span class="grow"><b>${esc(x.title)}</b><small>${esc(x.hint||'')}</small></span><i class="h4-chev">›</i></a>`).join('')}
+ <p class="fine">Je hebt hier <b>mogelijk</b> recht op; dat hangt af van je inkomen en situatie. Lees de regeling of vraag het na bij je gemeente.</p>
+ ${o.items.length>3?`<button class="btn sm ghost" data-a="t31-reg">Alle ${o.items.length} regelingen</button>`:''}</div>`}
+function k36Prices(){return K36.prices().map(d=>`<button class="card k36 k36-btn" data-a="go" data-arg="doel/${d.id}"><div class="k36-h"><span class="h31-i" style="--c:#1D4ED8;--bg:#DBEAFE">${KIC.trophy}</span><span class="grow"><b>${esc(d.t)} is onder je grens</b><small>Nu ${E2g(d.cur)}${d.shop?' bij '+esc(d.shop):''} · jouw grens ${E2g(d.max)}</small></span><i class="h4-chev">›</i></div></button>`).join('')}
+function k36Checks(){return K36.checks().map(o=>`<button class="card k36 k36-btn" data-a="go" data-arg="${o.x.go||'kansen'}"><div class="k36-h"><span class="h31-i" style="--c:${o.x.c};--bg:${o.x.bg}">${KIC[o.x.ic]||''}</span><span class="grow"><b>${o.v.t}</b><small>Uit jouw ${o.x.t.toLowerCase()} · nog niet geregeld</small></span><i class="h4-chev">›</i></div></button>`).join('')}
+V.kansen=function(){
+ const me=K36.me(),tot=WINS.total(),n=K36.count(),soon=K36.soon(),J=JOBS.st();
+ setTimeout(()=>{try{K36.auto()}catch(e){}},0);
+ const pot=KAN32.all.map(x=>KAN32.status(x.id)!=='done'&&KAN32.value(x.id)).filter(Boolean).reduce((a,v)=>a+v.y,0);
+ const need=!me.q||!me.gem;
+ const busy=J.busy||GEMREG.busy;
+ const say=soon.length&&days31(soon[0].due)<=7?`<b>Let op!</b>${strip31(soon[0].t)}: nog ${Math.max(0,days31(soon[0].due))} ${plural(Math.max(0,days31(soon[0].due)),'dag','dagen')}.`
+  :busy?'<b>Even snuffelen…</b>Ik zoek kansen voor je.'
+  :n?`<b>Ik heb ${n===1?'iets':n+' dingen'} voor je gevonden!</b>Kijk maar hieronder.`
+  :need?'<b>Ik heb nog niets gevonden.</b>Vertel me twee dingen, dan ga ik voor je zoeken.'
+  :'<b>Nog niets nieuws.</b>Ik blijf voor je zoeken en meld het als ik iets vind.';
+ const ask=need?`<div class="card k36-ask"><b>Vertel me wie je bent</b><p class="note">Dan zoek ik elke dag naar vacatures en regelingen die bij jou passen. Dit blijft op je telefoon; naar de server gaat alleen je functie en woonplaats.</p>
+  <label class="f"><span>Wat voor werk doe je (of zoek je)?</span><input id="k36q" type="text" maxlength="80" value="${esc(me.q)}" placeholder="Bijv. monteur, verpleegkundige, kassamedewerker"></label>
+  <label class="f"><span>Woonplaats of postcode</span><input id="k36l" type="text" maxlength="40" value="${esc(me.loc||me.gem)}" placeholder="Bijv. Utrecht of 3511 AB" autocomplete="postal-code"></label>
+  <label class="f"><span>Je netto per maand nu (optioneel)</span><input id="k36n" type="number" inputmode="decimal" value="${N(J.prefs.netNow)||''}" placeholder="Dan zie ik wat meer oplevert"></label>
+  <button class="btn" data-a="k36-go" style="margin-top:12px">Zoek kansen voor mij</button></div>`:'';
+ const found=[soon.slice(0,3).map(t31Row).join(''),k36Jobs(),k36Regs(),k36Prices(),k36Checks()].join('');
+ const tools=KAN32.all.filter(x=>KAN32.fits(x)&&x.id!=='regelingen'&&x.id!=='vastelasten');
+ const wins=WINS.st();
+ return `<div class="wrap k32 k36p">${topbar('Kansen',{sub:'Wat WATCHDOG voor jou gevonden heeft'})}
+ <section class="h3-hero k32-hero">${DOG.el('md',busy?'searching':n?'found':'idle','zit')}<div class="h3-say h3-say-r" data-dog-say>${say}</div></section>
+ <div class="k32-tot"><div class="k32-t ok"><small>Opgeleverd met WATCHDOG</small><b>${E(tot)}</b><span>${tot>0?'bevestigd door jou':'nog niets bevestigd'}</span></div><div class="k32-t"><small>Mogelijk nog te halen</small><b>${pot>0?E(pot):'–'}</b><span>${pot>0?'per jaar, uit jouw checks':'nog niet berekend'}</span></div></div>
+ ${ask}
+ ${found?`${sec('Gevonden voor jou')}<div class="k36-l">${found}</div>`:(!need&&!busy?`<div class="card k36-none"><p>Ik heb nog niets gevonden dat nu voor jou geld oplevert. Ik zoek ${me.q?'dagelijks naar vacatures als '+esc(me.q):''}${me.q&&me.gem?' en ':''}${me.gem?'naar regelingen in '+esc(me.gem):''}.</p></div>`:'')}
+ ${!need?`<p class="fine k36-me">Ik zoek voor: <b>${esc(me.q||'—')}</b>${me.gem?' · gemeente <b>'+esc(me.gem)+'</b>':''} · <button class="link" data-a="k36-edit">wijzig</button></p>`:''}
+ ${sec('Zelf checken')}<div class="k36-tools">${tools.map(x=>`<button class="k36-tool" ${k32Open(x)}><span class="h31-i" style="--c:${x.c};--bg:${x.bg}">${KIC[x.ic]||''}</span><b>${x.t}</b></button>`).join('')}<button class="k36-tool" data-a="go" data-arg="termijnen"><span class="h31-i" style="--c:#B45309;--bg:#FEF3C7">${KIC.clock}</span><b>Termijnen</b></button></div>
+ ${wins.length?`${sec('Geregeld',`<button class="link" data-a="win-sheet">+ Toevoegen</button>`)}<div class="card list">${wins.map(w=>`<div class="row"><span class="grow"><b>${esc(w.t)}</b><small>${evAgo(w.ts)}</small></span><span class="amt">${E(N(w.m)*12+N(w.o))}</span></div>`).join('')}</div>`:`<button class="link k32-add" data-a="win-sheet">Iets geregeld met hulp van WATCHDOG? Noteer wat het opleverde ›</button>`}
+ <p class="fine">WATCHDOG verdient niets aan je keuze. Ik raad nooit iets aan omdat het ons geld oplevert.</p></div>`;
+};
+ACT['k36-go']=async()=>{const q=(($('#k36q')||{}).value||'').trim(),l=(($('#k36l')||{}).value||'').trim(),n=N(($('#k36n')||{}).value);
+ if(!q&&!l){toast('Vul je werk of je woonplaats in');return}
+ const J=JOBS.st();if(q)J.prefs.q=q;if(n>0)J.prefs.netNow=n;
+ try{DOG_AUDIO.unlock()}catch(e){}
+ if(l){J.prefs.loc=/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(l)?'':l.replace(/^Gemeente\s+/i,'');save();
+  try{const g=await GEMREG.gemeenteVan(l);if(g){S.profile.gemeente=g;if(!J.prefs.loc)J.prefs.loc=g;save();GEMREG.load({paint:true,slow:true})}else toast('Die plaats kon ik niet vinden; probeer je postcode')}catch(e){}}
+ save();J.autoAt=0;J.last=J.last&&J.last.q===J.prefs.q?J.last:null;refresh();K36.auto()};
+ACT['k36-save2']=async()=>{const q=(($('#k36q2')||{}).value||'').trim(),l=(($('#k36l2')||{}).value||'').trim();closeSheet();
+ const J=JOBS.st();J.prefs.q=q;J.last=null;J.autoAt=0;
+ if(l&&l!==S.profile.gemeente){try{const g=await GEMREG.gemeenteVan(l);if(g){S.profile.gemeente=g;J.prefs.loc=/^[1-9][0-9]{3}/.test(l)?g:l;GEMREG.load({paint:true,slow:true})}}catch(e){}}
+ save();refresh();K36.auto()};
+ACT['k36-jobs']=()=>{const J=JOBS.st();J.autoAt=0;J.err=null;J.last=null;save();K36.auto()};
+ACT['k36-edit']=()=>{sheet('Wijzig waar ik voor zoek',`<label class="f"><span>Werk</span><input id="k36q2" type="text" maxlength="80" value="${esc(K36.me().q||'')}"></label><label class="f"><span>Woonplaats of postcode</span><input id="k36l2" type="text" maxlength="40" value="${esc(S.profile.gemeente||'')}"></label><button class="btn" data-a="k36-save2" style="margin-top:12px">Opslaan</button>`)};
+/* als zoeken klaar is: Kansen bijwerken */
+{const _s=JOBS.search.bind(JOBS);JOBS.search=async function(){const r=await _s();try{if(route[0]==='kansen')refresh()}catch(e){}return r}}
+
+/* ---------------- Home: kaler; "Vandaag voor jou" toont de belangrijkste vondst ---------------- */
+h31Row=function(){return ''};
+{const _it=WAKE.items.bind(WAKE);WAKE.items=function(){const L=_it();
+ try{const m=ME.st(),sn=k=>(m.wake.snooze[k]||0)>Date.now()||m.wake.done[k];
+  const o=K36.jobs();if(o&&o.better.length&&!sn('kj:'+o.L.at)){L.push({k:'kj:'+o.L.at,p:2,t:`${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}`,s:`Tot ${E(Math.max.apply(null,o.better.map(r=>r.diff)))} per maand meer dan nu. Ik vond ze via ${o.L.source||'Google Jobs'}.`,btn:[['Bekijk','go','kansen'],['Later','wake-later','kj:'+o.L.at]]})}
+  const r=K36.regs();if(r&&r.items.length&&!sn('kr:'+r.g+r.items.length)){L.push({k:'kr:'+r.g+r.items.length,p:1,t:`${r.items.length} ${plural(r.items.length,'regeling','regelingen')} van gemeente ${esc(r.g)}`,s:'Waar je mogelijk recht op hebt. Officiële bron.',btn:[['Bekijk','go','kansen'],['Later','wake-later','kr:'+r.g+r.items.length]]})}
+  /* de algemene "kun je meer verdienen?"-vraag alleen zolang ik je werk nog niet weet */
+  if(K36.me().q){for(let i=L.length-1;i>=0;i--)if(L[i].k==='ks:verdienen')L.splice(i,1)}
+  else{const i=L.findIndex(x=>/^ks:/.test(x.k));if(i>=0)L[i]=Object.assign({},L[i],{t:'Zal ik kansen voor je zoeken?',s:'Vertel me je werk en woonplaats, dan zoek ik elke dag naar vacatures en regelingen.',btn:[['Ja, graag','go','kansen'],['Later','wake-later',L[i].k]]})}
+ }catch(e){console.warn('WATCHDOG V36 items:',e)}
+ return L.sort((a,b)=>b.p-a.p)}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
