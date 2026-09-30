@@ -2080,6 +2080,30 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .s45-sub{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:#64748B}.s45-sub select{font:inherit;font-size:12.5px;border:1px solid #E2E8F0;border-radius:8px;padding:4px 6px;min-height:32px;background:#fff}
 .s45-amt{display:flex;align-items:center;gap:3px;font-weight:800;color:#0E1B4D}.s45-amt input{width:76px;font:inherit;font-weight:800;text-align:right;border:1px solid #E2E8F0;border-radius:10px;padding:8px;min-height:40px;box-sizing:border-box}
 .s45-tot{display:flex;justify-content:space-between;gap:10px;padding:12px 0 2px;border-top:2px solid #EDE9FE;margin-top:6px;color:#0E1B4D}
+
+/* ===== V46 — overslaan, niet ingevuld, opslaan ===== */
+.sc-seg i.ok46{background:#10B981!important}.sc-seg i.skip46{background:#F59E0B!important}
+.sc-f{display:flex;gap:8px}.sc-f .btn{flex:1}.sd46-skip{flex:0 0 auto!important;min-width:110px}
+.sd46-now{display:block;margin:12px auto 0;text-align:center;color:#6D28D9;font-weight:800}
+.sd46-sum{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.sd46-r{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:#fff;border:1px solid #EEF2F7}
+.sd46-r b{display:block;font-size:14.5px;color:#0E1B4D}.sd46-r small{display:block;font-size:13px;color:#475569}
+.sd46-r.no{background:#FFFBEB;border-color:#FDE68A}.sd46-r.no small{color:#B45309;font-weight:800}
+.sd46-i{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:#10B981}.sd46-r.no .sd46-i{background:#F59E0B}
+.sd46-note{margin:12px 2px 0;font-size:13.5px;color:#B45309}.sd46-note.ok{color:#047857}
+.sd46-miss{border:1px solid #FDE68A;background:#FFFBEB}.sd46-miss b{display:flex;align-items:center;gap:6px;color:#92400E}.sd46-miss b .i{width:18px;height:18px}.sd46-miss small{display:block;color:#92400E;margin:2px 0 8px}
+.sd46-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sv46{position:fixed;left:12px;right:12px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#0E1B4D;color:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 14px 30px -12px rgba(14,27,77,.6);font-weight:700;font-size:14px}
+.sv46 span{display:flex;align-items:center;gap:6px}.sv46 .i{width:17px;height:17px}.sv46.ok{background:#047857}
+@media (min-width:900px){.sv46{left:auto;right:24px;bottom:24px;max-width:380px}}
+.sd46-note{margin-bottom:110px}
+/* ===== V47 ===== */
+.sd46-note{margin-bottom:110px}
+.p47{border:1px solid #DDD6FE;background:linear-gradient(160deg,#fff,#F5F3FF)}
+.p47 h3{display:flex;align-items:center;gap:8px}.p47 h3 .i{width:20px;height:20px;color:#7C3AED}
+.p47-r{display:flex;gap:10px;padding:8px 0}.p47-r b{display:block;font-size:14.5px;color:#0E1B4D}.p47-r small{display:block;font-size:13px;color:#475569;line-height:1.4}
+.p47-i{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;background:#7C3AED}
+.p47-warn{display:flex;gap:10px;align-items:flex-start;background:#FFFBEB;border:1px solid #FDE68A}.p47-warn .i{width:22px;height:22px;color:#B45309;flex:0 0 22px}.p47-warn b{display:block;color:#92400E}.p47-warn small{display:block;color:#92400E}
 </style>
 </head>
 <body>
@@ -14122,6 +14146,182 @@ function s45Items(){const r=S.shot;if(!r)return [];const L=[],m=ME.st(),sn=k=>(m
 /* stap "bankafschrift" en "Waar ik zoek" tellen screenshots ook mee */
 {const _st=G40.steps.bind(G40);G40.steps=function(){const L=_st();try{const b=L.find(s=>s.id==='bank');if(b){if(S.shot)b.done=true;b.t='Laat me je bankgegevens zien';b.s='Een bankafschrift (CSV) of schermafbeeldingen van “Terugkerende uitgaven” in je bankapp. Alles blijft op je telefoon.';b.b='Kies'}}catch(e){}return L}}
 {const _w=w42Sources;w42Sources=function(){const L=_w();try{const b=L.find(x=>x.ic==='bank');if(b){b.t='Je bankgegevens';b.src='Bankafschrift (CSV) of schermafbeeldingen uit je bankapp';if(S.shot&&!S.imp){b.st='app';b.how=`Schermafbeeldingen gelezen op ${new Date(S.shot.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})} · maak elke maand nieuwe`;b.b=['Nieuwe schermafbeeldingen','go','import']}}}catch(e){}return L}}
+
+
+/* =====================================================================
+   V46 — MONEY SCAN: OVERSLAAN, "NIET INGEVULD" EN OPSLAAN
+   1. Elke stap kan worden overgeslagen. Wat je niet invult, blijft leeg (geen voorbeeldbedragen meer).
+   2. Het overzicht aan het eind toont per onderdeel wat je invulde of "Niet ingevuld" + "Invullen".
+   3. "Tussentijds opslaan" kan altijd; wat je later invult vul je aan.
+   4. Formulieren elders (Mijn situatie, checks): na een wijziging verschijnt een duidelijke "Opslaan"-knop.
+   ===================================================================== */
+const SD46={
+ NUM:['income','extra','housing','energy','energyDays','carPrice','carLoan','carIns','carMrb','carFuel','carMaint','carParking','health','otherIns','telecom','loans','other','buffer','saveMonthly','rate','plannedAmt','a1i','a2i','a3i','a4i'],
+ TXT:['plannedName'],
+ SEL:['hh','own','carType','solar','label','works','hhk'],
+ ARR:['subsSel','goals'],
+ STEP:{0:['hh','hhk','kids','own','adults','a1n','a1s','a2s','a3s','a4s'],1:['a1i','a2i','a3i','a4i','income'],2:['housing','energy','energyDays','solar','label'],3:['carType','carPrice','carLoan','carFuel','carIns','carMrb','carMaint','carParking'],4:['health','telecom','otherIns'],5:['subsSel','other','loans'],6:['buffer','saveMonthly','goals','rate','plannedName','plannedAmt']},
+ NAME:{0:'Jij en je huishouden',1:'Inkomen',2:'Wonen en energie',3:'Vervoer',4:'Verzekeringen en telecom',5:'Abonnementen en leningen',6:'Sparen en doelen'},
+ conf(){if(!S.ui.sdConf&&S.ui.scanned&&!S.ui.sdMigr){/* wie de scan al eerder afrondde: zijn gegevens tellen als ingevuld */S.ui.sdConf={};Object.values(this.STEP).flat().forEach(k=>S.ui.sdConf[k]=1);S.ui.sdMigr=1}return S.ui.sdConf||(S.ui.sdConf={})},
+ filled(idx){const D=SC.D,T=SC.touched||{},C=this.conf();if(SC.skip&&SC.skip[idx])return false;
+  const ks=this.STEP[idx]||[];if(idx===0)return true;
+  if(idx===3)return !!(T.carType||C.carType)&&D.carType!=='';
+  return ks.some(k=>(T[k]||C[k])&&(Array.isArray(D[k])?D[k].length>0:D[k]!==''&&D[k]!=null&&!(this.NUM.indexOf(k)>=0&&N(D[k])===0&&!T[k])))}
+};
+/* concept: alleen wat jij eerder bevestigde; de rest leeg */
+{const _d=scanDraft;scanDraft=function(){const d=_d.apply(this,arguments),C=SD46.conf();
+ SD46.NUM.concat(SD46.TXT).forEach(k=>{if(!C[k])d[k]=''});
+ SD46.SEL.forEach(k=>{if(!C[k])d[k]=''});SD46.ARR.forEach(k=>{if(!C[k])d[k]=[]});
+ if(!C.kids)d.kids='';for(let i=1;i<=4;i++){if(!C['a'+i+'s'])d['a'+i+'s']=i===1?'':d['a'+i+'s']}
+ if(!C.a1n&&/^(sam|jij|volwassene 1)$/i.test(String(d.a1n||'')))d.a1n='';
+ return d}}
+{const _o=scanOpen;scanOpen=function(){const r=_o.apply(this,arguments);if(SC){SC.touched={};SC.skip={}}return r}}
+{const _s=scanSet;scanSet=function(t){const r=_s.apply(this,arguments);try{const k=t.dataset.sd;SC.touched=SC.touched||{};SC.touched[k]=1;if(t.type==='number'&&t.value==='')SC.D[k]='';
+ const idx=SC.order[SC.step];if(SC.skip)delete SC.skip[idx]}catch(e){}return r}}
+{const _t=ACT['sd-toggle'];ACT['sd-toggle']=function(a){const k=String(a).split(':')[0];SC.touched=SC.touched||{};SC.touched[k]=1;return _t.apply(this,arguments)}}
+/* lege keuzelijsten: "Kies…" als eerste optie */
+function sd46Fix(d){
+ $$('select[data-sd]',d).forEach(s=>{const k=s.dataset.sd;if(SC.D[k]===''||SC.D[k]==null){if(!s.querySelector('option[value=""]')){const o=document.createElement('option');o.value='';o.textContent='Kies…';s.insertBefore(o,s.firstChild)}s.value=''}});
+ $$('input[data-sd][type="number"]',d).forEach(i=>{if(SC.D[i.dataset.sd]===''){i.value='';if(!i.placeholder)i.placeholder='Niet ingevuld'}});
+}
+{const _r=scanRender;scanRender=function(top){const r=_r.apply(this,arguments);try{const d=$('#scanov');if(!d||!SC||SC.run)return r;sd46Fix(d);
+  const idx=SC.order[SC.step],last=SC.step===SC.order.length-1,refine=SC.mode==='refine';
+  /* stappenbalk: groen = ingevuld, oranje = overgeslagen */
+  $$('.sc-seg i',d).forEach((e,i)=>{const ix=SC.order[i];if(i<SC.step){e.classList.add(SD46.filled(ix)?'ok46':'skip46')}});
+  const nx=d.querySelector('[data-a="sd-next"]');
+  if(nx&&!last&&!refine){nx.textContent='Opslaan en verder';nx.insertAdjacentHTML('beforebegin',`<button class="btn ghost sd46-skip" data-a="sd-skip">Overslaan</button>`)}
+  if(nx&&last&&!refine)nx.textContent='Opslaan en analyseren';
+  if(!last&&!refine){const f=d.querySelector('.sc-f');if(f)f.insertAdjacentHTML('afterend',`<button class="link sd46-now" data-a="sd-savenow">Nu opslaan en later verder</button>`)}
+ }catch(e){console.warn('SD46',e)}return r}}
+ACT['sd-skip']=()=>{if(!SC)return;const idx=SC.order[SC.step];SC.skip=SC.skip||{};SC.skip[idx]=true;
+ (SD46.STEP[idx]||[]).forEach(k=>{if(!(SC.touched||{})[k]&&!SD46.conf()[k]){if(SD46.ARR.indexOf(k)>=0)SC.D[k]=[];else if(k!=='adults'&&!/^a\dn$/.test(k))SC.D[k]=''}});
+ if(SC.step<SC.order.length-1){SC.step++;scanRender(true)}};
+ACT['sd-goto']=i=>{if(!SC)return;const s=SC.order.indexOf(+i);if(s>=0){SC.step=s;scanRender(true)}};
+/* Volgende: niet meer vastlopen op lege velden */
+{const _n=ACT['sd-next'];ACT['sd-next']=function(){if(!SC)return;const D=SC.D,idx=SC.order[SC.step];
+ if(idx===0&&!String(D.a1n||'').trim())D.a1n='Jij';
+ if(idx===0){if(D.hh===''&&!(SC.touched||{}).hh)D.hh='alleenstaand';if(D.own==='')D.own=D.own;if(!D.a1s)D.a1s='loondienst'}
+ if(idx===1){let t=0;for(let i=1;i<=Math.max(1,Math.min(4,N(D.adults)));i++)if(D['a'+i+'s']!=='geen')t+=N(D['a'+i+'i']);
+  if(t<=0){SC.skip=SC.skip||{};const allNone=[1,2,3,4].slice(0,Math.max(1,N(D.adults))).every(i=>D['a'+i+'s']==='geen');if(!allNone)SC.skip[1]=true;D.income='';if(SC.mode==='refine'){scanClose();return}if(SC.step<SC.order.length-1){SC.step++;scanRender(true);return}}}
+ return _n.apply(this,arguments)}}
+/* laatste stap: overzicht met wat wel en niet is ingevuld */
+SCS[7]=Object.assign({},SCS[7],{why:'Controleer je gegevens. Wat je niet invulde, blijft leeg: WATCHDOG vult daar geen voorbeeldbedragen in.',h:()=>{
+ const D=SC.D,v=x=>x===''||x==null?null:x,e=x=>v(x)==null?null:E(N(x));
+ const rows=[
+  [0,'Huishouden',[D.hh?cap(D.hh):null,D.kids!==''&&D.kids!=null?N(D.kids)+' '+plural(N(D.kids),'kind','kinderen'):null,D.own?(D.own==='koop'?'koopwoning':'huurwoning'):null].filter(Boolean).join(' · ')||null],
+  [1,'Inkomen',SD46.filled(1)?e(D.income)+' netto per maand':null],
+  [2,'Wonen en energie',SD46.filled(2)?[v(D.housing)!=null?'wonen '+e(D.housing):null,v(D.energy)!=null?'energie '+e(D.energy):null].filter(Boolean).join(' · '):null],
+  [3,'Vervoer',SD46.filled(3)?(D.carType==='geen'?'Geen auto':cap(D.carType)+' · '+E(N(D.carLoan)+N(D.carIns)+N(D.carMrb)+N(D.carFuel)+N(D.carMaint)+N(D.carParking))+' per maand'):null],
+  [4,'Verzekeringen en telecom',SD46.filled(4)?[v(D.health)!=null?'zorg '+e(D.health):null,v(D.telecom)!=null?'telecom '+e(D.telecom):null].filter(Boolean).join(' · '):null],
+  [5,'Abonnementen en leningen',SD46.filled(5)?[D.subsSel.length?D.subsSel.length+' '+plural(D.subsSel.length,'abonnement','abonnementen'):null,v(D.other)!=null?'overig '+e(D.other):null,v(D.loans)!=null&&N(D.loans)>0?'leningen '+e(D.loans):null].filter(Boolean).join(' · '):null],
+  [6,'Sparen en doelen',SD46.filled(6)?[v(D.buffer)!=null?'spaargeld '+e(D.buffer):null,D.goals.length?D.goals.length+' '+plural(D.goals.length,'doel','doelen'):null].filter(Boolean).join(' · '):null]
+ ].filter(r=>SC.order.indexOf(r[0])>=0||r[0]<=2);
+ const miss=rows.filter(r=>!r[2]);
+ return `<div class="sd46-sum">${rows.map(r=>`<div class="sd46-r ${r[2]?'ok':'no'}"><span class="sd46-i" aria-hidden="true">${r[2]?'✓':'!'}</span><div class="grow"><b>${r[1]}</b><small>${r[2]?esc(r[2]):'Niet ingevuld'}</small></div>${SC.order.indexOf(r[0])>=0?`<button class="btn sm ${r[2]?'ghost':''}" data-a="sd-goto" data-arg="${r[0]}">${r[2]?'Wijzig':'Invullen'}</button>`:''}</div>`).join('')}</div>
+ ${miss.length?`<p class="sd46-note">${miss.length} ${plural(miss.length,'onderdeel','onderdelen')} niet ingevuld. Dat mag: WATCHDOG rekent daar niet mee en vraagt het later nog eens.</p>`:'<p class="sd46-note ok">Alles ingevuld. Top!</p>'}`}});
+/* opslaan: alleen wat is ingevuld; de rest blijft leeg en wordt onthouden als "niet ingevuld" */
+function sd46Commit(D,reachedAll){
+ const C=SD46.conf(),T=SC.touched||{},skip=[];
+ Object.keys(SD46.STEP).forEach(ix=>{ix=+ix;const reached=reachedAll||SC.order.indexOf(ix)<=SC.step;if(ix>0&&(!reached||!SD46.filled(ix)))skip.push(ix)});
+ Object.keys(T).forEach(k=>{if(D[k]!==''&&D[k]!=null&&!(Array.isArray(D[k])&&!D[k].length))C[k]=1});
+ if(D.carType==='')D.carType='geen';
+ SD46.NUM.forEach(k=>{if(D[k]==='')D[k]=0});['hh','own','solar','label','works','hhk'].forEach(k=>{if(D[k]==='')D[k]={hh:'alleenstaand',own:'huur',solar:'nee',label:'C',works:'ja',hhk:'alleen'}[k]});
+ return {C:C,skip:skip}}
+{const _as=applyScan;applyScan=function(D){const r=sd46Commit(D,true),ct=D.carType;_as.apply(this,arguments);try{if(ct&&ct!=='geen'){S.car.has=true;if(S.w&&S.w.auto)S.w.auto.on=true}}catch(e){}S.ui.sdConf=r.C;S.ui.sdSkip=r.skip.filter(ix=>ix!==3||!r.C.carType);S.ui.sdMigr=1;save()}}
+ACT['sd-savenow']=()=>{if(!SC)return;const D=SC.D;if(!String(D.a1n||'').trim())D.a1n='Jij';
+ let t=0;for(let i=1;i<=Math.max(1,Math.min(4,N(D.adults)));i++)if(D['a'+i+'s']!=='geen')t+=N(D['a'+i+'i']);D.income=t||'';
+ const r=sd46Commit(D,false),C=r.C;const _run=SC;const step=SC.step,order=SC.order;
+ try{applyScan0_46(D)}catch(e){console.warn(e)}
+ S.ui.sdConf=C;S.ui.sdSkip=r.skip;S.ui.sdMigr=1;save();scanClose();try{Object.keys(CUV).forEach(k=>delete CUV[k])}catch(e){}go('home');render(true);
+ toast(`Opgeslagen. ${r.skip.length?`Nog niet ingevuld: ${r.skip.map(i=>SD46.NAME[i]).join(', ')}. Je kunt later verder.`:'Alles is ingevuld.'}`,false,true)};
+function applyScan0_46(D){/* gebruikt dezelfde opslag als de analyse, zonder de analyse-animatie */const keep=SC;applyScan(D)}
+/* Mijn situatie: laat zien wat nog niet is ingevuld */
+function sd46Missing(){const L=(S.ui&&S.ui.sdSkip)||[];if(!L.length)return '';
+ return `<div class="card sd46-miss"><b>${I('alert')} Nog niet ingevuld</b><small>Hier rekent WATCHDOG nog niet mee. Vul het in wanneer je wilt.</small><div class="sd46-chips">${L.map(i=>`<button class="chip" data-a="refine" data-arg="${i}">${SD46.NAME[i]} ›</button>`).join('')}</div></div>`}
+{const _p=V.plan;V.plan=function(){let h=_p.apply(this,arguments);try{const m=sd46Missing();if(m)h=h.replace(/(<div class="chips tabs")/,m+'$1')}catch(e){}return h}}
+/* verfijnen van één onderdeel: dat onderdeel telt daarna als ingevuld */
+{const _ar=applyRefine;applyRefine=function(k,D){const r=_ar.apply(this,arguments);try{const C=SD46.conf();Object.keys(SC.touched||{}).forEach(x=>C[x]=1);if(SD46.filled(k))S.ui.sdSkip=(S.ui.sdSkip||[]).filter(i=>i!==k);save()}catch(e){}return r}}
+
+/* ---------- Opslaan-knop bij formulieren (Mijn situatie, checks, kansen) ---------- */
+const SAVE46={dirty:false,
+ show(){if($('#sv46'))return;const b=document.createElement('div');b.id='sv46';b.className='sv46';b.setAttribute('role','status');
+  b.innerHTML=`<span>${I('pencil')} Je hebt iets gewijzigd</span><button class="btn sm w41-pb" data-a="sv46-save">Opslaan</button>`;document.body.appendChild(b)},
+ hide(){const b=$('#sv46');if(b)b.remove();this.dirty=false}};
+document.addEventListener('input',e=>{const t=e.target;if(!t||$('#scanov')||$('#ov'))return;
+ if(t.closest&&t.closest('#main')&&(t.dataset.b!==undefined||t.dataset.kf!==undefined)){SAVE46.dirty=true;SAVE46.show()}},true);
+ACT['sv46-save']=()=>{try{save();try{syncAll()}catch(e){}const y=window.scrollY;refresh();window.scrollTo(0,y)}catch(e){}const b=$('#sv46');if(b){b.classList.add('ok');b.innerHTML=`<span>${I('check')} Opgeslagen</span>`;setTimeout(()=>SAVE46.hide(),1400)}};
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);if(SAVE46.dirty&&SAVE46.route!==route[0]){/* andere pagina: toch bewaard, knop weg */SAVE46.hide()}SAVE46.route=route[0];return r}}
+
+
+/* =====================================================================
+   V47 — (1) bankgegevens: minimaal één maand + persoonlijke gegevens afschermen
+          (2) de hond praat en begeleidt: meldingen aanzetten, regelingen, vacatures, kansen checken
+   ===================================================================== */
+
+/* ---------- 1. bankgegevens ---------- */
+const PRIV47=`<div class="card p47"><h3>${I('shield')} Voordat je iets uploadt</h3>
+ <div class="p47-r"><span class="p47-i">1</span><div><b>Minimaal één volledige maand</b><small>Liever 3 tot 6 maanden. Dan zie ik welke betalingen elke maand terugkomen en of iets duurder wordt.</small></div></div>
+ <div class="p47-r"><span class="p47-i">2</span><div><b>Scherm je persoonlijke gegevens af</b><small>Je naam, adres, rekeningnummer en saldo heb ik niet nodig. In een CSV-bestand maskeer ik rekeningnummers zelf. Bij schermafbeeldingen: snijd saldo en rekeningnummer eraf (Bewerk → Bijsnijden).</small></div></div>
+ <div class="p47-r"><span class="p47-i">3</span><div><b>Alles blijft op je telefoon</b><small>Het bestand of de foto wordt hier gelezen en niet verstuurd of bewaard. Alleen de uitkomst blijft op dit toestel.</small></div></div></div>`;
+{const _sv=impStartView;impStartView=function(){return PRIV47+_sv.apply(this,arguments)}}
+/* te korte periode in een CSV: eerlijk waarschuwen */
+{const _rv=impReviewView;impReviewView=function(M){let h=_rv.apply(this,arguments);try{const r=M&&M.res;if(r&&r.first&&r.last){const d=Math.round((new Date(r.last)-new Date(r.first))/864e5)+1;
+ if(d<28)h=`<div class="card p47-warn">${I('alert')}<div><b>Dit bestand beslaat maar ${d} ${plural(d,'dag','dagen')}</b><small>Upload minimaal één volledige maand. Anders kan ik terugkerende betalingen en prijsverhogingen niet goed herkennen.</small></div></div>`+h}}catch(e){}return h}}
+/* schermafbeeldingen: regels met rekeningnummer of saldo worden nooit gelezen of bewaard */
+{const _p=shotParse;shotParse=function(text){const t=String(text||'').split('\n').filter(l=>!/\bNL\s?\d{2}\s?[A-Z]{4}\s?\d|\bIBAN\b|saldo|beschikbaar|rekeningnummer/i.test(l)).join('\n');return _p(t)}}
+{const _st=s45Start;s45Start=function(){return _st.apply(this,arguments).replace('Saldo en rekeningnummer hoeven er niet op.','Kies een <b>hele maand</b> (bijvoorbeeld 1 sep – 30 sep). Snijd je saldo en rekeningnummer eraf; die heb ik niet nodig.')}}
+
+/* ---------- 2. de hond begeleidt ---------- */
+const GUIDE47={
+ standaloneIOS(){const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);return {ios:ios,home:!!(window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches))}},
+ pushOn(){try{return 'Notification' in window&&Notification.permission==='granted'&&!!ME.st().pushOn}catch(e){return false}},
+ tasks(){const L=[],now=Date.now(),U=S.ui||{};
+  /* meldingen aanzetten */
+  if(!this.pushOn()&&!(U.g47no||{}).push){const x=this.standaloneIOS();
+   if(x.ios&&!x.home)L.push({id:'push',p:8,t:'Zet me op je beginscherm, dan kan ik je waarschuwen als ik iets vind. Ook als de app dicht is.',b:['Zo doe je dat','g47-home','']});
+   else L.push({id:'push',p:8,t:'Zet meldingen aan. Dan blaf ik ook als de app dicht is en ik iets vind.',b:['Meldingen aanzetten','push-on','']})}
+  /* regelingen die je nog niet bekeek */
+  try{const o=K36.regs();if(o&&o.items.length&&(U.regSeen||0)<(GEMREG.st().at||0)){const n=reg42List(o.items).A.length;if(n)L.push({id:'regs',p:7,t:`Ik vond ${n} ${plural(n,'regeling','regelingen')} bij gemeente ${o.g}. Controleer of ${n===1?'die':'ze'} voor jou ${n===1?'is':'zijn'}.`,b:['Regelingen bekijken','go','kansen']})}}catch(e){}
+  /* vacatures die je nog niet bekeek */
+  try{const o=K36.jobs();if(o&&o.better.length&&(U.jobSeen||0)<(o.L.at||0))L.push({id:'jobs',p:7,t:`Er ${o.better.length===1?'is 1 vacature':'zijn '+o.better.length+' vacatures'} die netto meer ${o.better.length===1?'oplevert':'opleveren'}. Bekijk ze even.`,b:['Vacatures bekijken','go','verdienen']})}catch(e){}
+  /* toeslagen */
+  try{const a=AUTO42.items().find(x=>x.a42&&x.a42.cat==='toeslag');if(a)L.push({id:'toes',p:6,t:`${strip40(a.t)}. Doe de proefberekening, dan weet je het zeker.`,b:['Wat moet ik doen?','k42-open',a.a42.id]})}catch(e){}
+  /* bankgegevens verouderd */
+  try{const ts=Math.max((S.imp&&S.imp.ts)||0,(S.shot&&S.shot.ts)||0);if(ts&&now-ts>30*864e5)L.push({id:'bank',p:5,t:'Je bankgegevens zijn ouder dan een maand. Lees de nieuwe maand in, dan zie ik of iets duurder is geworden.',b:['Bankgegevens inlezen','go','import']})}catch(e){}
+  /* wekelijks: kansen checken */
+  if(now-(U.kansSeen||0)>7*864e5)L.push({id:'kans',p:4,t:'Check je kansen van deze week. Ik heb vacatures, regelingen en toeslagen voor je doorzocht.',b:['Kansen checken','go','kansen']});
+  /* praten */
+  try{if(wdgMode()!=='praten'&&!(U.g47no||{}).talk&&window.speechSynthesis)L.push({id:'talk',p:2,t:'Wil je dat ik hardop met je praat? Dan vertel ik je zelf wat je kunt doen.',b:['Ja, praat met me','g47-talk','']})}catch(e){}
+  return L.sort((a,b)=>b.p-a.p)}
+};
+/* volgende stap: dringend → je geld invullen → begeleiding → overige stappen → vondsten */
+{const _n=G40.next.bind(G40);G40.next=function(items){const n=_n(items);try{if(n.t==='Even opletten.')return n;
+  const steps=G40.steps(),geldOpen=steps[0]&&!steps[0].done;if(geldOpen)return n;
+  const T=GUIDE47.tasks();const hi=T.find(t=>t.p>=6);if(hi)return {t:'Tip van je waakhond.',s:hi.t,b:hi.b,g47:hi.id};
+  if(n.step)return n;
+  const lo=T[0];if(lo&&(!items.length||lo.p>=4))return {t:'Tip van je waakhond.',s:lo.t,b:lo.b,g47:lo.id};
+ }catch(e){console.warn('G47',e)}return n}}
+/* tips in de ballon: alle begeleidingstaken wisselen elkaar af */
+{const _l=DTIP.list.bind(DTIP);DTIP.list=function(){const L=_l();try{const T=GUIDE47.tasks().slice(0,4).map(t=>({t:esc(t.t),sel:'.w41-next',go:()=>{const a=t.b;if(ACT[a[1]])ACT[a[1]](a[2])}}));const i=L.findIndex(x=>x.next);L.splice(i>=0?i+1:0,0,...T)}catch(e){}return L}}
+/* gezien = niet meer als tip */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{const U=S.ui;
+ if(route[0]==='kansen'){U.kansSeen=Date.now();U.regSeen=GEMREG.st().at||Date.now();try{const o=K36.jobs();if(o)U.jobSeen=o.L.at}catch(e){}save()}
+ if(route[0]==='verdienen'){try{const o=K36.jobs();if(o)U.jobSeen=o.L.at}catch(e){}save()}}catch(e){}return r}}
+ACT['g47-home']=()=>sheet('WATCHDOG op je beginscherm',`<ol class="g40-ol"><li>Open WATCHDOG in <b>Safari</b>.</li><li>Tik onderaan op de <b>deelknop</b> (vierkantje met pijl omhoog).</li><li>Kies <b>Zet op beginscherm</b> en tik op <b>Voeg toe</b>.</li><li>Open WATCHDOG vanaf je beginscherm en tik op <b>Meldingen aanzetten</b>.</li></ol><p class="note">Op de iPhone kunnen meldingen alleen vanuit de app op je beginscherm.</p><div class="btn-row"><button class="btn" data-a="close">Begrepen</button><button class="btn ghost" data-a="g47-no" data-arg="push">Niet nu</button></div>`);
+ACT['g47-no']=k=>{S.ui.g47no=S.ui.g47no||{};S.ui.g47no[k]=Date.now();save();closeSheet();refresh()};
+ACT['g47-talk']=()=>{S.settings.talk='praten';save();try{voiceUnlock()}catch(e){}GUIDE47.say('Fijn! Vanaf nu praat ik met je. Zet me op Tekst als je liever leest.',true);refresh()};
+
+/* ---------- de hond praat (alleen in de stand "Praten") ---------- */
+GUIDE47.last='';
+GUIDE47.say=function(text,force){try{if(!force&&wdgMode()!=='praten')return;if(typeof VOICE!=='undefined'&&VOICE.on)return;if(document.hidden)return;
+ const t=String(text||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();if(!t||(!force&&t===this.last))return;this.last=t;
+ const P=VOICEP.browser;if(!P||!P.capability||!P.capability().speak)return;P.cancelSpeech();P.speak(t,()=>{});try{PUP.talk(Math.min(9000,t.length*65))}catch(e){}}catch(e){}};
+/* Home: zegt de volgende stap hardop (één keer per nieuwe boodschap) */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{if((route[0]||'home')==='home'&&wdgMode()==='praten'){clearTimeout(GUIDE47.tm);GUIDE47.tm=setTimeout(()=>{const n=W41.cur||(W41.next&&W41.next());if(n)GUIDE47.say(`${n.t} ${n.s}`)},900)}}catch(e){}return r}}
+/* blaf → daarna zegt hij wat hij vond */
+{const _b=BARK44.bark.bind(BARK44);BARK44.bark=function(fresh,urgent){const r=_b(fresh,urgent);try{const t=BARK44.text(fresh,urgent);setTimeout(()=>GUIDE47.say(t),1100)}catch(e){}return r}}
+/* iPhone: praten mag pas na een tik; de eerste tik ontgrendelt de stem */
+document.addEventListener('pointerdown',()=>{if(!GUIDE47.unl&&wdgMode()==='praten'){GUIDE47.unl=1;try{voiceUnlock()}catch(e){}}},{passive:true,capture:true});
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
