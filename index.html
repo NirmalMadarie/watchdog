@@ -2008,6 +2008,34 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .w41-hb:active .w41-nb{transform:scale(.96)}
 @media (prefers-reduced-motion:no-preference){.w41-nb{animation:w41Beat 2.8s ease-in-out 1s infinite}}
 @keyframes w41Beat{0%,80%,100%{transform:none}86%{transform:scale(1.06)}92%{transform:none}}
+/* ===== V42 — Waar ik zoek + automatische kansen ===== */
+.k42-src{margin:6px 0 16px;padding:14px;border-radius:22px;background:#fff;border:1px solid #D1FAE5;box-shadow:0 14px 30px -24px rgba(4,120,87,.6)}
+.k42-sh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.k42-sh b{display:block;font-size:17px;color:#0E1B4D}.k42-sh small{display:block;font-size:12.5px;color:#64748B}
+.k42-sh .btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10B981,#047857)!important}
+.k42-sh .btn .i{width:16px;height:16px}
+.k42-row{display:flex;align-items:center;gap:10px;padding:10px 0}
+.k42-row+.k42-row{border-top:1px solid #F1F5F9}
+.k42-i{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--c);background:var(--bg)}.k42-i .i{width:19px;height:19px}
+.k42-row b{display:block;font-size:14.5px;color:#0E1B4D}
+.k42-row small{display:block;font-size:12.5px;color:#64748B;line-height:1.35}
+.k42-how{margin-top:3px}.k42-how em{font-style:normal;font-weight:800;font-size:11px;color:var(--lc);background:var(--lb);border-radius:6px;padding:1px 6px;margin-right:4px}
+.k42-row .btn{flex:0 0 auto;max-width:44%;white-space:normal;line-height:1.2}
+.k42-a{text-align:left}
+.k42-a .w41-ic{flex:0 0 44px;height:44px}
+.k42-src2{color:#94A3B8!important;font-size:11.5px!important;margin-top:3px}
+.k42-why{margin:6px 0 10px;padding-left:18px;font-size:14px;line-height:1.5;color:#334155}
+.k42-reg .k42-off{color:#94A3B8!important;font-size:11.5px!important;margin-top:2px}
+.k42-tag{display:inline-block;font-style:normal;font-size:11px;font-weight:800;color:#7C2D12;background:#FFEDD5;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.k42-grp{margin:6px 0 8px;border:1px dashed #E2E8F0;border-radius:12px;padding:6px 10px}
+.k42-grp summary{cursor:pointer;font-weight:800;color:#475569;min-height:40px;display:flex;align-items:center}
+.k42-on{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:#047857;font-size:13.5px}.k42-on .i{width:16px;height:16px}
+.k42-cmp{font-size:12px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.5px;padding:10px 0 2px;border-top:1px dashed #E2E8F0;margin-top:4px}
+.k42-less{opacity:.75}
+@media (max-width:360px){.k42-sh{flex-wrap:wrap}.k42-row{flex-wrap:wrap}.k42-row .btn{max-width:none;margin-left:48px}}
+.k42-row{flex-wrap:wrap}
+.k42-row .grow{min-width:0;flex:1 1 200px}
+.k42-row .btn{max-width:none;margin-left:48px;min-height:40px}
 </style>
 </head>
 <body>
@@ -13608,6 +13636,176 @@ document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.tar
   d.innerHTML=`<div class="w41-head"><div class="w41-ht"><span class="w41-live on" aria-hidden="true"></span><div><b>Nu van belang</b><small>Tik op een melding voor alle informatie</small></div></div><div class="w41-n"><b>${L.length}</b><small>${L.length===1?'melding':'meldingen'}</small></div></div><div class="w41-list">${L.map(w41Row).join('')}</div>`;
   const a=$('#main .g41-page')||$('#main .top');if(a)a.insertAdjacentElement('afterend',d)}}}catch(e){console.warn(e)}
  return r}}
+
+
+/* =====================================================================
+   V42 — KANSEN OVERAL ZOEKEN
+   1. "Waar ik zoek": per bron zie je of WATCHDOG automatisch zoekt, wanneer het laatst was, en wat hij nog nodig heeft.
+   2. Automatische checks op jouw gegevens (landelijke toeslagen 2026, kwijtschelding, seizoenskansen).
+      Dit zijn indicaties op officiële grenzen, geen berekening van je bedrag.
+   3. Regelingen in gewone taal, gesorteerd: "waarschijnlijk voor jou" en "voor een bepaalde groep".
+   4. Vacatures: eerst wat méér oplevert; minder = "ter vergelijking".
+   5. Nieuwe regelingen melden via de server (RC13), alleen als jij dat aanzet.
+   6. Bedragen kloppen overal hetzelfde (Home en Kansen).
+   ===================================================================== */
+
+/* ---------- gegevens die WATCHDOG van je weet ---------- */
+const ME42={
+ netto(){let n=0;try{n=N(fin().income)}catch(e){}if(!(n>0)){try{n=N(JOBS.st().prefs.netNow)}catch(e){}}return n>0?n:0},
+ partner(){try{return (S.hh&&S.hh.adults&&S.hh.adults.length>1)||(S.tc&&S.tc.partner==='ja')}catch(e){return false}},
+ kids(){try{return (S.hh&&S.hh.kids&&S.hh.kids.length)||0}catch(e){return 0}},
+ huur(){const p=S.profile||{};if(p.own==='koop')return 0;const t=N(S.tc&&S.tc.huur);return t>0?t:N(p.housing)},
+ own(){return (S.profile||{}).own||''},
+ verm(){const t=S.tc&&S.tc.verm;return t!=null&&t!==''?N(t):N((S.profile||{}).buffer)},
+ known(){return this.netto()>0||N(S.tc&&S.tc.bruto)>0},
+ /* bruto per jaar: wat je zelf invulde, anders geschat uit je netto (met de belastingtarieven 2026) */
+ bruto(){const b=N(S.tc&&S.tc.bruto);if(b>0)return {v:b,est:false};const n=this.netto();if(!(n>0))return null;
+  let lo=0,hi=20000;try{for(let i=0;i<40;i++){const m=(lo+hi)/2;(net31(m).m<n)?lo=m:hi=m}}catch(e){return null}
+  return {v:Math.round(lo*12*1.08),est:true}}
+};
+
+/* ---------- automatische checks ---------- */
+const TOES_URL='https://www.belastingdienst.nl/wps/wcm/connect/nl/toeslagen/toeslagen';
+const AUTO42={
+ all(){const L=[],now=new Date(),m=now.getMonth()+1,d=now.getDate();
+  const br=ME42.bruto(),partner=ME42.partner(),verm=ME42.verm(),huur=ME42.huur(),kids=ME42.kids(),net=ME42.netto();
+  const Z=TSL2026.zorg,H=TSL2026.huur,est=br&&br.est?' (geschat uit je netto inkomen)':'';
+  const why=(rows)=>`<ul class="k42-why">${rows.map(r=>`<li>${r}</li>`).join('')}</ul>`;
+  const steps=`<ol class="g40-ol"><li>Doe de <a href="${TSL2026.proef}" target="_blank" rel="noopener">proefberekening van Dienst Toeslagen</a> (10 minuten). Dan zie je je echte bedrag.</li><li>Heb je recht? Vraag het aan via <a href="${TOES_URL}" target="_blank" rel="noopener">Mijn toeslagen</a>. Dat kan tot 1 september van het jaar erna, dus ook met terugwerkende kracht.</li><li>Geef wijzigingen (inkomen, huur, samenwonen) op tijd door, anders moet je terugbetalen.</li></ol>`;
+  /* zorgtoeslag */
+  if(br){const zi=partner?Z.inkPartner:Z.inkAlleen,zv=partner?Z.vermPartner:Z.vermAlleen;
+   if(br.v<=zi&&verm<=zv)L.push({id:'zorgt',cat:'toeslag',t:'Je hebt mogelijk recht op zorgtoeslag',s:`Tot ${E(partner?Z.maxPartner:Z.maxAlleen)} per maand. Hoe lager je inkomen, hoe meer.`,eurMax:12*(partner?Z.maxPartner:Z.maxAlleen),
+    detail:why([`Jouw bruto jaarinkomen${est}: ongeveer ${E(br.v)}. Grens 2026: ${E(zi)}.`,`Jouw vermogen: ${E(verm)}. Grens: ${E(zv)}.`,partner?'Je hebt een toeslagpartner.':'Zonder toeslagpartner.'])+steps,src:'Officiële grenzen 2026 (Dienst Toeslagen) op jouw gegevens'})}
+  /* huurtoeslag */
+  if(br&&huur>0){const hv=partner?H.vermPartner:H.vermAlleen,zi=partner?Z.inkPartner:Z.inkAlleen;
+   if(verm<=hv&&br.v<=zi)L.push({id:'huurt',cat:'toeslag',t:'Je hebt mogelijk recht op huurtoeslag',s:'Je huurt en je inkomen en vermogen lijken binnen de grenzen te vallen. De hoogte hangt af van je huur en inkomen.',
+    detail:why([`Kale huur: ${E(huur)} per maand.`,`Jouw vermogen: ${E(verm)}. Grens: ${E(hv)}.`,`Bruto jaarinkomen${est}: ongeveer ${E(br.v)}.`,'Sinds 2026 is er geen maximale huur meer als voorwaarde.'])+steps,src:'Officiële grenzen 2026 (Dienst Toeslagen) op jouw gegevens'})}
+  /* kindgebonden budget */
+  if(kids>0&&br&&br.v<=(partner?70000:45000))L.push({id:'kgb',cat:'toeslag',t:'Check het kindgebonden budget',s:`Je hebt ${kids} ${plural(kids,'kind','kinderen')}. Met jouw inkomen is het de moeite waard om te checken.`,
+   detail:why(['Kindgebonden budget krijg je bovenop de kinderbijslag, afhankelijk van je inkomen en vermogen.',`Bruto jaarinkomen${est}: ongeveer ${E(br.v)}.`])+steps,src:'Dienst Toeslagen'});
+  /* kwijtschelding gemeentelijke belastingen: grove indicatie */
+  if(net>0&&net<=(partner?2300:1650)&&verm<=3000)L.push({id:'kwijt',cat:'gemeente',t:'Misschien hoef je gemeentelijke belastingen niet te betalen',s:'Met een laag inkomen en weinig spaargeld krijg je vaak kwijtschelding van afvalstoffenheffing en waterschapsbelasting.',
+   detail:why([`Jouw netto inkomen: ${E(net)} per maand.`,`Spaargeld: ${E(verm)}.`,'De precieze grens hangt af van je gemeente en je vaste lasten.'])+`<ol class="g40-ol"><li>Kijk op je aanslag gemeentelijke belastingen of waterschapsbelasting.</li><li>Vraag kwijtschelding aan bij je gemeente of belastingsamenwerking (staat op de aanslag). Vaak kan dat online.</li><li>Heb je bijstand? Dan krijg je het soms automatisch.</li></ol>`,src:'Grove indicatie op jouw gegevens'});
+  /* seizoenskansen */
+  if((m===11&&d>=12)||m===12)L.push({id:'zvw'+now.getFullYear(),cat:'seizoen',t:'Overstappen van zorgverzekering kan nu',s:'Tot en met 31 december kun je opzeggen. Vergelijk je premie en eigen risico voor volgend jaar.',
+   detail:`<ol class="g40-ol"><li>Kijk in de brief van je verzekeraar wat je premie volgend jaar wordt.</li><li>Vergelijk bij een onafhankelijke vergelijker; let op dekking, niet alleen de prijs.</li><li>Zeg vóór 1 januari op; sluit je nieuwe verzekering uiterlijk 31 januari af.</li><li>Check ook of je gemeente een collectieve zorgverzekering heeft (vaak goedkoper bij een laag inkomen).</li></ol>`,src:'Jaarlijks overstapmoment'});
+  if(m>=3&&m<=4)L.push({id:'aang'+now.getFullYear(),cat:'seizoen',t:'Doe je belastingaangifte: vaak krijg je geld terug',s:'Vóór 1 mei indienen. Zeker bij een bijbaan, studie, giften of hoge zorgkosten.',
+   detail:`<ol class="g40-ol"><li>Log in bij Mijn Belastingdienst; veel gegevens staan al ingevuld.</li><li>Controleer aftrekposten zoals zorgkosten en giften.</li><li>Vergeten? Je kunt tot 5 jaar terug alsnog aangifte doen en geld terugkrijgen.</li></ol>`,src:'Jaarlijkse aangifteperiode'});
+  if(m>=2&&m<=4&&ME42.own()==='koop'&&!(KANS.st().done||{}).woz)L.push({id:'woz'+now.getFullYear(),cat:'seizoen',t:'Klopt je WOZ-waarde?',s:'Te hoge WOZ = te veel belasting. Bezwaar maken is gratis, binnen 6 weken na je aanslag.',detail:'',go:'kans/woz',src:'Jaarlijkse WOZ-aanslag'});
+  return L},
+ items(){const m=ME.st(),sn=k=>(m.wake.snooze[k]||0)>Date.now()||m.wake.done[k];
+  return this.all().filter(x=>!sn('ka:'+x.id)&&!((S.ui.k42done||{})[x.id])).map(x=>({k:'ka:'+x.id,p:x.cat==='seizoen'?2:2,t:x.t,s:x.s,a42:x,eur:0,src:x.src,
+   btn:x.go?[['Bekijk','go',x.go],['Later','wake-later','ka:'+x.id]]:[['Wat moet ik doen?','k42-open',x.id],['Later','wake-later','ka:'+x.id]]}))}
+};
+/* in de meldingen-radar (Home en Meldingen) */
+{const _it=WAKE.items.bind(WAKE);WAKE.items=function(){const L=_it();try{L.forEach(x=>{if(/^kr:/.test(x.k)){const o=K36.regs();if(o&&o.items.length){const n=reg42List(o.items).A.length;x.t=`${n} ${plural(n,'regeling','regelingen')} van gemeente ${esc(o.g)} ${n===1?'kan':'kunnen'} voor jou zijn`}}})}catch(e){}
+ try{AUTO42.items().forEach(x=>{if(!L.some(y=>y.k===x.k))L.push(x)})}catch(e){console.warn('AUTO42',e)}return L.sort((a,b)=>b.p-a.p)}}
+{const _t=t41Of;t41Of=function(x){if(/^ka:/.test(x.k||''))return x.a42&&x.a42.cat==='seizoen'?'termijn':'kans';return _t(x)}}
+ACT['k42-open']=id=>{const x=AUTO42.all().find(a=>a.id===id);if(!x)return;const t=T41[x.cat==='seizoen'?'termijn':'kans'];
+ sheet(x.cat==='toeslag'?'Toeslag':x.cat==='gemeente'?'Gemeente':'Nu te doen',`<div class="w41-sd" style="--c:${t.c};--bg:${t.bg};--g:${t.g}">
+  <div class="w41-sdh"><span class="w41-ic" aria-hidden="true">${I(t.ic)}</span><div><b>${x.t}</b><small>Bron: ${esc(x.src)}</small></div></div>
+  <p class="w41-sds">${x.s}</p>${x.detail?`<div class="w41-sdx">${x.detail}</div>`:''}
+  <p class="fine">Dit is een indicatie, geen berekening van je bedrag. WATCHDOG vraagt niets aan namens jou.</p>
+  <div class="w41-btns"><button class="btn w41-pb" data-a="k42-done" data-arg="${x.id}">Geregeld / bekeken</button><button class="btn ghost" data-a="k42-no" data-arg="${x.id}">Niet voor mij</button></div></div>`)};
+{const _o=ACT['w41-open'];ACT['w41-open']=function(k){if(/^ka:/.test(k||'')){const id=k.slice(3),x=AUTO42.all().find(a=>a.id===id);if(x&&x.go){closeSheet();go(x.go);return}return ACT['k42-open'](id)}return _o.apply(this,arguments)}}
+ACT['k42-done']=id=>{S.ui.k42done=S.ui.k42done||{};S.ui.k42done[id]=Date.now();save();closeSheet();refresh();toast('Top! Kreeg je er geld door? Noteer het bij Kansen → Geregeld.')};
+ACT['k42-no']=id=>{S.ui.k42done=S.ui.k42done||{};S.ui.k42done[id]=-1;save();closeSheet();refresh();toast('Oké, die laat ik weg.')};
+
+/* ---------- regelingen in gewone taal ---------- */
+const REG42=[
+ [/kwijtschelding/i,'Kwijtschelding gemeentelijke belastingen','Je hoeft (een deel van) afvalstoffenheffing of andere gemeentelijke belastingen niet te betalen.'],
+ [/inkomenstoeslag/i,'Individuele inkomenstoeslag','Eén keer per jaar extra geld als je al langere tijd een laag inkomen hebt.'],
+ [/bijzondere bijstand.*medisch|medische kosten/i,'Bijzondere bijstand voor medische kosten','Vergoeding van noodzakelijke medische kosten die je zelf niet kunt betalen.'],
+ [/bijzondere bijstand/i,'Bijzondere bijstand','Vergoeding van noodzakelijke, onverwachte kosten die je zelf niet kunt betalen.'],
+ [/meedoen|participatie|stadspas|\bpas\b|minimaregeling|minimabeleid/i,'Meedoen-regeling (sport, cultuur, vereniging)','Vergoeding of pas voor sport, cultuur of lidmaatschappen bij een laag inkomen.'],
+ [/kindpakket|kindregeling|kinderen/i,'Regeling voor kinderen','Bijdrage voor schoolspullen, sport of een fiets voor je kinderen.'],
+ [/collectieve|zorgverzekering|ziektekosten/i,'Collectieve zorgverzekering met korting','Een goedkopere zorgverzekering via de gemeente bij een laag inkomen.'],
+ [/energie/i,'Energietoeslag of energiehulp','Hulp bij hoge energiekosten.'],
+ [/woonkosten|huur/i,'Woonkostentoeslag','Tijdelijke hulp als je woonlasten te hoog zijn.'],
+ [/schuld/i,'Schuldhulp','Gratis hulp bij schulden of geldzorgen.'],
+ [/duurzaam|isolatie|zonnepanel|stimuleringslening|energiebesparing|verduurzam/i,'Lening of subsidie voor verduurzamen','Voor isolatie, zonnepanelen of een warmtepomp.']
+];
+const REG42_GROEP=/18\s*t\/?m\s*20|jongeren|jongvolwassen|studenten|student|aow|65\+|ouderen|dak-\s*en\s*thuis|statushouder|zelfstandige|ondernemer|\binrichting\b|chronisch zieken|mantelzorg/i;
+function reg42(x){const r=REG42.find(z=>z[0].test(x.title))||null;
+ let naam=r?r[1]:String(x.title).replace(/\b(beleidsregels?|uitvoeringsregels?|nadere regels?|verordening|gemeentelijke|inzake|gemeente\s+\S+)\b/gi,' ').replace(/\s+/g,' ').trim();
+ const m=x.title.match(REG42_GROEP);const groep=m?m[0].replace(/t\/?m/,'t/m'):'';
+ if(groep&&/18\s*t\/?m\s*20/i.test(groep))naam+=' (18 t/m 20 jaar)';else if(groep&&/inrichting/i.test(groep)){}
+ const wonen=x.cat==='wonen',koop=ME42.own()==='koop';
+ return {x:x,naam:naam,wat:r?r[2]:(x.hint||''),groep:groep||(wonen&&!koop?'huiseigenaren':''),officieel:x.title}}
+function reg42List(items){const seen={},A=[],B=[];(items||[]).map(reg42).forEach(o=>{if(seen[o.naam])return;seen[o.naam]=1;(o.groep?B:A).push(o)});return {A:A,B:B}}
+k36Regs=function(){const o=K36.regs();if(!o)return '';
+ if(o.busy&&!o.items.length)return `<div class="card k36"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note"><i class="wl6-dots"><i></i><i></i><i></i></i> Even snuffelen in de regelingen van ${esc(o.g)}…</p></div>`;
+ if(o.err&&!o.items.length)return `<div class="card k36"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note">${esc(o.err)}</p><button class="btn sm ghost" data-a="gr-load">Probeer opnieuw</button></div>`;
+ if(!o.items.length)return '';
+ const {A,B}=reg42List(o.items),G=GEMREG.st();
+ const row=z=>`<a class="k36-r k42-reg" href="${esc(z.x.url)}" target="_blank" rel="noopener"><span class="grow"><b>${esc(z.naam)}</b><small>${esc(z.wat)}</small><small class="k42-off">Officieel: ${esc(z.officieel)}</small></span><i class="h4-chev">›</i></a>`;
+ return `<div class="card k36"><div class="k36-h"><span class="h31-i" style="--c:#B45309;--bg:#FEF3C7">${KIC.doc}</span><span class="grow"><b>${A.length} ${plural(A.length,'regeling','regelingen')} van gemeente ${esc(o.g)} ${A.length===1?'kan':'kunnen'} voor jou zijn</b><small>Officiële bron (overheid.nl)${o.at?' · '+evAgo(o.at):''}</small></span></div>
+  ${A.map(row).join('')}
+  ${B.length?`<details class="k42-grp"><summary>Voor een bepaalde groep (${B.length})</summary>${B.map(z=>row(z).replace('</b>',`</b><em class="k42-tag">Voor: ${esc(z.groep)}</em>`)).join('')}</details>`:''}
+  <p class="fine">Je hebt hier <b>mogelijk</b> recht op; dat hangt af van je inkomen en situatie. Tik op een regeling voor de voorwaarden, of vraag het na bij je gemeente.</p>
+  <div class="btn-row">${G.srv?`<span class="k42-on">${I('bell')} Ik meld nieuwe regelingen</span><button class="btn sm ghost" data-a="k42-regoff">Uitzetten</button>`:`<button class="btn sm" data-a="k42-regwatch">${I('bell')} Meld nieuwe regelingen</button>`}</div></div>`};
+
+/* regelingen op de server laten bewaken (RC13), alleen na jouw tik */
+ACT['k42-regwatch']=async()=>{const G=GEMREG.st(),g=S.profile.gemeente;if(!g||!GEMREG.base())return;
+ try{const j=await SRV.call('/api/watches',{method:'POST',slow:true,body:{watch:{type:'regeling',gemeente:g,seen:(G.items||[]).map(x=>x.id+'@'+x.version),clientRef:uid('rw')}}});
+  G.srv={id:j.watch.id,g:g,persistent:!!j.persistent,at:Date.now()};save();const h=await SRV.health(true)||{};
+  toast(h.cron==='actief'&&j.persistent?`Ik kijk elke dag bij gemeente ${g} en meld nieuwe regelingen, ook als de app dicht is.`:'Opgeslagen. De server controleert nog niet automatisch; ik kijk als je WATCHDOG opent.',false,true)}
+ catch(e){toast(/onvolledige|onbekend|Watch/i.test(e.message)?'De server moet eerst bijgewerkt worden (RC13).':'Dat lukte niet: '+e.message)}
+ refresh()};
+ACT['k42-regoff']=async()=>{const G=GEMREG.st(),w=G.srv;G.srv=null;save();refresh();if(w)try{await SRV.call('/api/watches/'+w.id+'/status',{method:'POST',body:{status:'deleted'}})}catch(e){}};
+{const _s=SRV.sync.bind(SRV);SRV.sync=async function(){
+ try{const G=GEMREG.st();if(G.srv&&GEMREG.base()){const j=await SRV.call('/api/events',{slow:true});const m=ME.st();m.srvSeen=m.srvSeen||{};const ack=[];let n=0;
+  for(const ev of j.events||[]){if(ev.type!=='regeling')continue;ack.push(ev.id);if(m.srvSeen[ev.id])continue;m.srvSeen[ev.id]=Date.now();
+   emit0({type:'reg',title:ev.title,message:ev.message,category:'KANS',priority:'medium',relatedWatch:'benefits',action:{label:'Bekijk regelingen',kind:'go',target:'kansen'},demo:false},{quiet:true});n++}
+  if(ack.length){save();SRV.call('/api/events/ack',{method:'POST',body:{ids:ack}}).catch(()=>{})}
+  if(n)try{GEMREG.load({slow:true})}catch(e){}}}catch(e){}
+ return _s()}}
+
+/* ---------- vacatures: eerst wat méér oplevert ---------- */
+{const _j=k36Jobs;k36Jobs=function(){const o=K36.jobs();if(!o||!o.better.length||o.better.length>=3)return _j.apply(this,arguments);
+ let h=_j.apply(this,arguments);try{const n=o.better.length,rows=h.split('<a class="k36-r"');if(rows.length>1+n){rows[n+1]='<div class="k42-cmp">Ter vergelijking: levert minder op</div><a class="k36-r k42-less"'+rows[n+1];for(let i=n+2;i<rows.length;i++)rows[i]='<a class="k36-r k42-less"'+rows[i];h=rows.slice(0,n+1).join('<a class="k36-r"')+rows.slice(n+1).join('')}}catch(e){}return h}}
+
+/* ---------- Waar ik zoek ---------- */
+function w42Ago(t){return t?g40Ago(t):'nog niet'}
+function w42Sources(){
+ const me=K36.me(),J=JOBS.st(),G=GEMREG.st(),br=ME42.bruto(),m=new Date().getMonth()+1,deals=(S.deals||[]).filter(d=>d.active&&d.live);
+ const jw=(J.watches||[]).some(w=>w.srv),rw=!!G.srv;
+ const S_=[];
+ S_.push({ic:'briefcase',c:'#7C3AED',bg:'#EDE9FE',t:'Vacatures',src:'Google Jobs: o.a. Indeed, LinkedIn, Nationale Vacaturebank',
+  st:me.q?(jw?'auto':'app'):'nodig',how:me.q?`${jw?'Elke 3 uur op de server + ':''}1× per dag in de app · laatst ${w42Ago(J.last&&J.last.at)}`:'Vertel me je werk',b:me.q?(jw?null:['Meld nieuwe vacatures','v31-watch','']):['Invullen','k36-edit','']});
+ S_.push({ic:'gift',c:'#B45309',bg:'#FEF3C7',t:'Regelingen van je gemeente',src:'Lokale regelgeving (overheid.nl)',
+  st:me.gem?(rw?'auto':'app'):'nodig',how:me.gem?`${rw?'Dagelijks op de server + ':''}1× per dag in de app · laatst ${w42Ago(G.at)}`:'Vertel me je woonplaats',b:me.gem?(rw?null:['Meld nieuwe regelingen','k42-regwatch','']):['Invullen','k36-edit','']});
+ S_.push({ic:'euro',c:'#059669',bg:'#D1FAE5',t:'Landelijke toeslagen',src:'Zorg-, huurtoeslag, kindgebonden budget · grenzen 2026',
+  st:br?'app':'nodig',how:br?`Elke keer als je gegevens veranderen${br.est?' · inkomen geschat uit je netto':''}`:'Heb je inkomen nodig',b:br?['Bekijk je check','go','watch/benefits']:['Vul je inkomen in','scan','']});
+ S_.push({ic:'house',c:'#0E7490',bg:'#CFFAFE',t:'Kwijtschelding belastingen',src:'Gemeente en waterschap · grove indicatie',st:ME42.netto()>0?'app':'nodig',how:ME42.netto()>0?'Op jouw inkomen en spaargeld':'Heb je inkomen nodig',b:ME42.netto()>0?null:['Vul je inkomen in','scan','']});
+ S_.push({ic:'calendar',c:'#2563EB',bg:'#DBEAFE',t:'Seizoenskansen',src:'Zorgverzekering (nov–dec) · aangifte (mrt–apr) · WOZ (feb–apr)',st:'app',how:m>=11?'Nu actief: zorgverzekering':m>=3&&m<=4?'Nu actief: belastingaangifte':`Volgende: ${m<=10?'zorgverzekering vanaf 12 november':'aangifte vanaf 1 maart'}`,b:null});
+ S_.push({ic:'bank',c:'#10B981',bg:'#D1FAE5',t:'Je bankafschrift',src:'Vergeten abonnementen, prijsverhogingen, dubbele betalingen',st:S.imp?'app':'nodig',how:S.imp?`Gelezen op ${new Date(S.imp.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})} · lees elke maand opnieuw in`:'Alleen als jij het inleest',b:['Bankafschrift inlezen','go','import']});
+ S_.push({ic:'tag',c:'#DB2777',bg:'#FCE7F3',t:'Prijzen die je bewaakt',src:'Google Shopping (live)',st:deals.length?'auto':'nodig',how:deals.length?`${deals.length} ${plural(deals.length,'product','producten')} · elke 3 uur op de server`:'Nog niets. Zoek iets en tik “Bewaak”',b:deals.length?null:['Zoek iets','go','zoek']});
+ S_.push({ic:'pencil',c:'#64748B',bg:'#F1F5F9',t:'Zelf checken',src:'Huur, WOZ, vertraging, spaarrente',st:'zelf',how:'Rekenhulpen: werken als jij ze invult',b:null});
+ return S_}
+function w42Card(){const L=w42Sources(),auto=L.filter(x=>x.st==='auto'||x.st==='app').length,need=L.filter(x=>x.st==='nodig');
+ const lab={auto:['Automatisch','#047857','#D1FAE5'],app:['Bij openen','#1D4ED8','#DBEAFE'],nodig:['Heeft info nodig','#B45309','#FEF3C7'],zelf:['Zelf doen','#475569','#F1F5F9']};
+ return `<section class="k42-src"><div class="k42-sh"><div><b>Waar ik voor je zoek</b><small>${auto} van ${L.length} bronnen actief${need.length?` · ${need.length} ${plural(need.length,'heeft','hebben')} nog iets van je nodig`:''}</small></div><button class="btn sm w41-pb" data-a="k42-now">${I('search')} Zoek nu overal</button></div>
+ ${L.map(x=>`<div class="k42-row" style="--c:${x.c};--bg:${x.bg}"><span class="k42-i" aria-hidden="true">${I(x.ic)}</span><div class="grow"><b>${x.t}</b><small>${esc(x.src)}</small><small class="k42-how"><em style="--lc:${lab[x.st][1]};--lb:${lab[x.st][2]}">${lab[x.st][0]}</em> ${esc(x.how)}</small></div>${x.b?`<button class="btn sm ${x.st==='nodig'?'w41-pb':'ghost'}" data-a="${x.b[1]}" data-arg="${esc(x.b[2])}">${esc(x.b[0])}</button>`:''}</div>`).join('')}
+ <p class="fine">“Automatisch” = de server kijkt ook als de app dicht is. “Bij openen” = ik kijk als je WATCHDOG opent. Ik zeg nooit dat ik zoek als dat niet zo is.</p></section>`}
+ACT['k42-now']=()=>{try{DOG_AUDIO.unlock();setDogState('searching')}catch(e){}
+ const J=JOBS.st();let n=0;if(J.prefs.q){J.autoAt=0;J.last=null;save();try{JOBS.search()}catch(e){}n++}
+ if(S.profile.gemeente){try{GEMREG.load({paint:true,slow:true})}catch(e){}n++}
+ try{SRV.sync()}catch(e){}
+ toast(n?'Ik zoek nu overal waar dat kan. Toeslagen en seizoenskansen heb ik al bijgewerkt.':'Toeslagen en seizoenskansen zijn bijgewerkt. Vertel me je werk en woonplaats, dan zoek ik ook vacatures en regelingen.',false,true);refresh()};
+
+/* ---------- Kansen-pagina ---------- */
+function k42Auto(){const L=AUTO42.items();if(!L.length)return '';
+ return L.map(x=>{const a=x.a42,t=T41[a.cat==='seizoen'?'termijn':'kans'];return `<button class="card k36 k36-btn k42-a" data-a="w41-open" data-arg="${x.k}" style="--c:${t.c};--bg:${t.bg};--g:${t.g}"><div class="k36-h"><span class="w41-ic" aria-hidden="true">${I(t.ic)}</span><span class="grow"><b>${a.t}</b><small>${a.s}</small><small class="k42-src2">${esc(a.src)}</small></span><i class="h4-chev">›</i></div></button>`}).join('')}
+{const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);
+ try{/* bedrag: zelfde als Home */const L=(()=>{try{return W41.items()}catch(e){return []}})(),pot=L.reduce((a,x)=>a+((x.eur>0&&!x.eurT)?x.eur:0),0)+KAN32.all.map(x=>KAN32.status(x.id)!=='done'&&KAN32.value(x.id)).filter(Boolean).reduce((a,v)=>a+v.y,0);
+  h=h.replace(/<div class="k32-t"><small>Mogelijk nog te halen<\/small><b>[^<]*<\/b><span>[^<]*<\/span><\/div>/,`<div class="k32-t"><small>Mogelijk nog te halen</small><b>${pot>0?E(Math.round(pot)):'–'}</b><span>${pot>0?'per jaar, uit wat ik vond':'nog niets berekend'}</span></div>`);
+  const au=k42Auto();
+  if(au){if(h.indexOf('<div class="k36-l">')>0)h=h.replace('<div class="k36-l">','<div class="k36-l">'+au);else h=h.replace(/(<div class="card k36-none">)/,`${sec('Gevonden voor jou')}<div class="k36-l">${au}</div>$1`)}
+  h=h.replace(/(<div class="k32-tot">[\s\S]*?<\/div><\/div>)/,'$1'+w42Card());
+ }catch(e){console.warn('V42 kansen',e)}
+ return h}}
+{const _c=K36.count.bind(K36);K36.count=function(){let n=_c();try{n+=AUTO42.items().length}catch(e){}return n}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
