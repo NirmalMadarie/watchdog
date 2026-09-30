@@ -2036,6 +2036,30 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .k42-row{flex-wrap:wrap}
 .k42-row .grow{min-width:0;flex:1 1 200px}
 .k42-row .btn{max-width:none;margin-left:48px;min-height:40px}
+/* ===== V43 — waakhond-agent ===== */
+.ag-box{margin:4px 0 18px;padding:14px;border-radius:22px;background:linear-gradient(135deg,#F5F3FF 0%,#FDF2F8 100%);border:1px solid #E9D5FF}
+.ag-bh{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.ag-bh b{display:block;font-size:16.5px;color:#0E1B4D}.ag-bh small{display:block;font-size:13px;color:#475569;line-height:1.35}
+.ag-bi{flex:0 0 44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#8B5CF6,#DB2777);box-shadow:0 8px 16px -10px #DB2777}.ag-bi .i{width:22px;height:22px}
+.ag-qs{display:flex;flex-direction:column;gap:8px}
+.ag-q{text-align:left;min-height:44px;padding:10px 14px;border-radius:14px;border:1px solid #E9D5FF;background:#fff;font:inherit;font-weight:700;font-size:14.5px;color:#5B21B6;cursor:pointer}
+.ag-q:active{background:#F5F3FF}
+.ag-busy{display:flex;align-items:center;gap:10px}.ag-sniff{font-weight:700;color:#5B21B6}
+.ag-steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ag-step{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#047857;background:#D1FAE5;border-radius:999px;padding:4px 9px}
+.ag-step .i{width:13px;height:13px}.ag-step.fail{color:#9A3412;background:#FFEDD5}
+.ag-ans{margin:2px 0 10px;line-height:1.45}
+.ag-card{margin:10px 0;border:1px solid #EEF2F7;border-radius:16px;padding:10px 12px;background:#fff}
+.ag-h{display:flex;align-items:center;gap:6px;font-size:14.5px;color:#0E1B4D;margin-bottom:4px}.ag-h .i{width:17px;height:17px;color:#7C3AED}
+.ag-r{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #F1F5F9;color:inherit;text-decoration:none}
+.ag-r b{display:block;font-size:14px;color:#0E1B4D}.ag-r small{display:block;font-size:12.5px;color:#64748B;line-height:1.35}
+.ag-amt{text-align:right;flex:0 0 auto}.ag-amt b{font-size:14px}.ag-amt small.up{color:#047857;font-weight:800}.ag-amt small.dn{color:#B45309;font-weight:800}
+.ag-st{font-style:normal;font-size:11.5px;font-weight:800;border-radius:8px;padding:3px 8px;flex:0 0 auto;max-width:48%;text-align:center}
+.ag-st.ok{color:#047857;background:#D1FAE5}.ag-st.no{color:#64748B;background:#F1F5F9}.ag-st.mid{color:#B45309;background:#FEF3C7}
+.ag-link{margin-top:8px;display:inline-flex}
+.ag-src{display:block;margin-top:6px;font-size:11.5px;color:#94A3B8}
+.ag-props{margin:10px 0;display:flex;flex-direction:column;gap:8px}.ag-props small{color:#475569;font-size:12.5px}
+.ag-prop{display:inline-flex;align-items:center;gap:6px;justify-content:center}.ag-prop .i{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -13806,6 +13830,78 @@ function k42Auto(){const L=AUTO42.items();if(!L.length)return '';
  }catch(e){console.warn('V42 kansen',e)}
  return h}}
 {const _c=K36.count.bind(K36);K36.count=function(){let n=_c();try{n+=AUTO42.items().length}catch(e){}return n}}
+
+
+/* =====================================================================
+   V43 — DE WAAKHOND-AGENT (Mistral met gereedschap, via /api/agent op RC14)
+   Je stelt een vraag; de hond zoekt ZELF op: vacatures, regelingen van je gemeente, prijzen,
+   toeslagen (grenzen 2026) en netto salaris. Wat je ziet komt uit de echte bronnen;
+   de AI schrijft alleen de uitleg. Bewaken stelt hij voor, jij tikt op "Ja".
+   Kan niets aanvragen, kopen, betalen of opzeggen.
+   ===================================================================== */
+const AG43={
+ labels:{zoek_vacatures:['briefcase','Vacatures gezocht'],regelingen_gemeente:['gift','Regelingen van je gemeente opgehaald'],zoek_prijs:['tag','Prijzen vergeleken'],toeslagen_check:['euro','Toeslagen gecheckt (grenzen 2026)'],netto_salaris:['coins','Netto uitgerekend'],stel_bewaking_voor:['eye','Bewaking voorgesteld']},
+ ctx(){let c={};try{c=AI_LIVE.ctx()}catch(e){}
+  try{const J=JOBS.st();if(J.prefs.q)c.werk=J.prefs.q;if(N(J.prefs.netNow)>0&&!(c.nettoInkomen>0))c.nettoInkomen=Math.round(N(J.prefs.netNow))}catch(e){}
+  try{if(S.profile.gemeente)c.gemeente=S.profile.gemeente;const br=ME42.bruto();if(br)c.brutoJaarinkomen=br.v+(br.est?' (geschat)':'');c.kaleHuur=ME42.huur()||0;c.toeslagpartner=ME42.partner();c.vermogen=Math.round(ME42.verm())}catch(e){}
+  return c},
+ ask(q){const b=LiveSearchProvider.backendUrl.replace(/\/$/,'');return srcFetch(b+'/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,context:this.ctx()})},70000)},
+ props:[]
+};
+function ag43Jobs(d){if(!d||!d.items||!d.items.length)return '';const now=(()=>{try{return JOBS.netNow()}catch(e){return 0}})();
+ const rows=d.items.map(j=>{let n=null,diff=null;try{const g=gross31(j.salarisData,JOBS.st().prefs.hours);n=g?net31(g):null;diff=n&&now?n.m-now:null}catch(e){}return {j,n,diff}}).sort((a,b)=>((b.n&&b.n.m)||0)-((a.n&&a.n.m)||0));
+ return `<div class="ag-card"><b class="ag-h">${I('briefcase')} ${d.items.length} vacatures${d.q?' als '+esc(d.q):''}${d.loc?' · '+esc(d.loc):''}</b>
+  ${rows.slice(0,4).map(r=>`<a class="ag-r" href="${esc(r.j.url||'#')}" target="_blank" rel="noopener nofollow"><span class="grow"><b>${esc(r.j.titel)}</b><small>${esc(r.j.bedrijf||'')}${r.j.plaats?' · '+esc(r.j.plaats):''}${r.j.salaris?'':' · geen salaris vermeld'}</small></span>${r.n?`<span class="ag-amt"><b>± ${E(r.n.m)}</b>${r.diff!=null?`<small class="${r.diff>0?'up':'dn'}">${r.diff>0?'+':'−'}${E(Math.abs(r.diff))} p/m</small>`:'<small>netto p/m</small>'}</span>`:''}</a>`).join('')}
+  <small class="ag-src">Bron: ${esc(d.source||'Google Jobs')} · netto is een indicatie (belasting 2026)</small></div>`}
+function ag43Regs(d){if(!d||!d.items||!d.items.length)return '';let L=[];try{L=reg42List(d.items.map(x=>({title:x.titel,hint:x.wat,url:x.url,cat:x.soort}))).A}catch(e){}
+ if(!L.length)return '';
+ return `<div class="ag-card"><b class="ag-h">${I('gift')} Regelingen van gemeente ${esc(d.g)}</b>${L.slice(0,4).map(z=>`<a class="ag-r" href="${esc(z.x.url)}" target="_blank" rel="noopener"><span class="grow"><b>${esc(z.naam)}</b><small>${esc(z.wat)}</small></span><i class="h4-chev">›</i></a>`).join('')}<small class="ag-src">Bron: overheid.nl · je hebt hier mogelijk recht op</small></div>`}
+function ag43Prices(d){if(!d||!d.items||!d.items.length)return '';
+ return `<div class="ag-card"><b class="ag-h">${I('tag')} Prijzen voor ${esc(d.q)}</b>${d.items.slice(0,3).map(x=>`<a class="ag-r" href="${esc(wdSafeUrl(x.url,x.winkel,x.titel))}" target="_blank" rel="noopener"><span class="grow"><b>${esc(x.titel)}</b><small>${esc(x.winkel||'')}</small></span><span class="ag-amt"><b>${E2(x.prijs)}</b></span></a>`).join('')}<small class="ag-src">Bron: ${esc(d.source||'Google Shopping')} · prijzen kunnen veranderen</small></div>`}
+function ag43Toes(d){if(!d||!d.toeslagen)return '';
+ return `<div class="ag-card"><b class="ag-h">${I('euro')} Toeslagen-check 2026</b>${d.toeslagen.map(t=>{const ok=/mogelijk recht/.test(t.status),no=/geen recht/.test(t.status);return `<div class="ag-r ag-t"><span class="grow"><b>${esc(t.naam.charAt(0).toUpperCase()+t.naam.slice(1))}</b><small>${t.maximaal_per_maand?'Maximaal '+E(t.maximaal_per_maand)+' per maand':t.reden?esc(t.reden):''}</small></span><em class="ag-st ${ok?'ok':no?'no':'mid'}">${esc(t.status)}</em></div>`}).join('')}
+  <a class="btn sm ghost ag-link" href="${esc(d.proefberekening||TSL2026.proef)}" target="_blank" rel="noopener">Doe de proefberekening ↗</a><small class="ag-src">Bron: Dienst Toeslagen, grenzen 2026 · indicatie, geen bedrag</small></div>`}
+function ag43HTML(d,i){
+ const steps=(d.steps||[]).filter((s,k,a)=>a.findIndex(z=>z.tool===s.tool)===k).map(s=>{const l=AG43.labels[s.tool]||['search',s.tool];return `<span class="ag-step${s.ok?'':' fail'}">${I(l[0])}${l[1]}${s.ok?'':' (lukte niet)'}</span>`}).join('');
+ const D=d.data||{},P=d.proposals||[];
+ const props=P.map((p,k)=>`<button class="btn sm w41-pb ag-prop" data-a="ag43-prop" data-arg="${i}:${k}">${I('eye')} Ja, bewaak ${p.soort==='prijs'?'de prijs van':p.soort==='vacature'?'vacatures als':'regelingen in'} ${esc(p.onderwerp)}</button>`).join('');
+ return `<div class="msg a ag-msg">${orb('ai')}<div class="bub">
+  ${steps?`<div class="ag-steps" aria-label="Wat ik heb gedaan">${steps}</div>`:''}
+  <div class="ag-ans">${aiFmt(d.answer||'')}</div>
+  ${ag43Jobs(D.jobs)}${ag43Regs(D.regs)}${ag43Toes(D.toeslagen)}${ag43Prices(D.prices)}
+  ${props?`<div class="ag-props"><small>Wil je dat ik dit voor je bewaak? Jij beslist.</small>${props}</div>`:''}
+  <span class="demo-tag" style="background:#EDE9FE;color:#5B21B6">WAAKHOND-AGENT</span><small class="ai-src">Gegevens uit echte bronnen${(d.sources||[]).length?': '+esc([...new Set(d.sources.map(s=>s.name))].join(', ')):''}. Uitleg door ${esc(d.source||'Mistral AI')}. Geen financieel advies; ik vraag niets aan en koop niets.</small>
+ </div></div>`}
+/* de live-AI gaat voortaan via de agent; lukt dat niet (oude server), dan de gewone AI */
+aiPushLive=function(q){
+ const box=$('#msgs');if(!box)return;const keep=!S.settings.noChat;
+ if(keep)S.chat.push({r:'u',t:q});box.insertAdjacentHTML('beforeend',bubble({r:'u',t:q}));
+ const tp=document.createElement('div');tp.className='msg a';tp.innerHTML=orb('ai')+'<div class="bub ag-busy"><span class="ag-sniff">Even snuffelen…</span><i class="wl6-dots"><i></i><i></i><i></i></i></div>';box.appendChild(tp);
+ CVSCROLL.to(box.lastElementChild,'legacy');try{setDogState('searching')}catch(e){}
+ const msgs=['Ik zoek in de echte bronnen…','Vacatures, regelingen, toeslagen…','Nog even, ik reken het na…'];let mi=0;const tk=setInterval(()=>{const s=tp.querySelector('.ag-sniff');if(s)s.textContent=msgs[mi++%msgs.length]},2200);
+ const done=(html,m)=>{clearInterval(tk);if(keep){S.chat.push(m);S.chat=S.chat.slice(-16);save()}if(tp.parentNode){tp.remove();box.insertAdjacentHTML('beforeend',html);CVSCROLL.to(box.lastElementChild,'legacy')}try{setDogState(m.ag&&(m.ag.data.jobs||m.ag.data.regs||m.ag.data.toeslagen)?'found':'idle')}catch(e){}};
+ AG43.ask(q).then(r=>{
+  if(r.ok&&r.data&&r.data.ok){const i=AG43.props.push(r.data.proposals||[])-1;const m={r:'a',ai:1,t:String(r.data.answer||''),src:(r.data.source||'Mistral AI')+' · waakhond-agent',ag:{data:r.data.data||{},steps:r.data.steps||[]}};return done(ag43HTML(r.data,i),m)}
+  /* oude server zonder /api/agent: gewone AI */
+  return AI_LIVE.ask(q).then(r2=>{let m;
+   if(r2.ok&&r2.data&&r2.data.ok)m={r:'a',ai:1,t:String(r2.data.answer||''),src:r2.data.source||'Mistral AI'};
+   else{const fb=aiAnswer(q);m={r:'a',b:{i:fb.i,w:fb.w,a:fb.a,e:fb.e},acts:fb.acts,note:'De AI was niet bereikbaar'+((r.data&&r.data.error)?' ('+r.data.error+')':'')+'. Dit is een antwoord met rekenregels.'}}
+   done(bubble(m),m)})
+ }).catch(()=>{const fb=aiAnswer(q),m={r:'a',b:{i:fb.i,w:fb.w,a:fb.a,e:fb.e},acts:fb.acts,note:'De AI was niet bereikbaar. Dit is een antwoord met rekenregels.'};done(bubble(m),m)});
+};
+/* voorstel bevestigen: pas nu wordt er iets aangemaakt */
+ACT['ag43-prop']=async a=>{const [i,k]=String(a).split(':').map(Number),p=(AG43.props[i]||[])[k];if(!p)return;
+ if(p.soort==='vacature'){const J=JOBS.st();J.prefs.q=p.onderwerp;if(p.plaats)J.prefs.loc=p.plaats;save();await JOBS.watch();return}
+ if(p.soort==='regeling'){if(p.plaats||p.onderwerp){try{const g=await GEMREG.gemeenteVan(p.plaats||p.onderwerp);if(g&&g!==S.profile.gemeente){S.profile.gemeente=g;save();await GEMREG.load({slow:true})}}catch(e){}}return ACT['k42-regwatch']()}
+ if(p.soort==='prijs'){go('zoek');setTimeout(()=>{try{WDG.c=null;WDG.start(p.onderwerp+(p.max_prijs?' max '+p.max_prijs+' euro':''),'typ')}catch(e){}},300)}};
+/* toestemming: eerlijk vermelden wat er nu meegaat */
+{const _s=sheet;sheet=function(title,html,cls){if(title==='Echte AI gebruiken?'&&typeof html==='string')html=html.replace('(inkomen, vaste lasten, buffer, schulden, aantal volwassenen en kinderen) naar Mistral.','(inkomen, vaste lasten, buffer, schulden, aantal volwassenen en kinderen) en, als je die hebt ingevuld, je <b>werk en woonplaats</b> naar Mistral. Daarmee kan de waakhond voor je <b>vacatures, regelingen, prijzen en toeslagen opzoeken</b>. Hij kan niets aanvragen, kopen of opzeggen.');return _s.apply(this,arguments)}}
+
+/* ---------- ingang op Home en Kansen: "Vraag de waakhond" ---------- */
+const AG43_Q=['Waar laat ik geld liggen?','Heb ik recht op toeslagen?','Zoek beter betaald werk voor mij'];
+function ag43Box(){return `<section class="ag-box"><div class="ag-bh"><span class="ag-bi" aria-hidden="true">${I('sparkle')}</span><div><b>Vraag het de waakhond</b><small>Hij zoekt zelf op in echte bronnen: vacatures, regelingen, prijzen en toeslagen.</small></div></div><div class="ag-qs">${AG43_Q.map(q=>`<button class="ag-q" data-a="ai-go" data-arg="${esc(q)}">${esc(q)} ›</button>`).join('')}</div></section>`}
+{const _c=WAKE.card;WAKE.card=function(){return _c.apply(this,arguments)+ag43Box()}}
+{const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);try{h=h.replace('<section class="k42-src">',ag43Box()+'<section class="k42-src">')}catch(e){}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
