@@ -2060,6 +2060,16 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .ag-src{display:block;margin-top:6px;font-size:11.5px;color:#94A3B8}
 .ag-props{margin:10px 0;display:flex;flex-direction:column;gap:8px}.ag-props small{color:#475569;font-size:12.5px}
 .ag-prop{display:inline-flex;align-items:center;gap:6px;justify-content:center}.ag-prop .i{width:16px;height:16px}
+/* ===== V44 — blaffen bij nieuws ===== */
+.b44-woef{animation:b44Pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes b44Pop{0%{transform:scale(.85);opacity:.4}100%{transform:none;opacity:1}}
+.w41-it.b44-new{background:linear-gradient(90deg,var(--bg),rgba(255,255,255,0) 70%)}
+.b44-badge{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:#F43F5E;border-radius:6px;padding:2px 6px;margin-right:6px;vertical-align:1px}
+@media (prefers-reduced-motion:no-preference){.w41-it.b44-new .w41-ic{animation:b44Ring 1.2s ease-out 2}
+ #nav .b44-shake{animation:b44Shake .6s ease-in-out}}
+@keyframes b44Ring{0%{box-shadow:0 0 0 0 var(--c)}100%{box-shadow:0 0 0 12px rgba(0,0,0,0)}}
+@keyframes b44Shake{0%,100%{transform:none}20%{transform:rotate(-8deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.b44-woef{animation:none}}
 </style>
 </head>
 <body>
@@ -13906,6 +13916,71 @@ function ag43Box(){return `<section class="ag-box"><div class="ag-bh"><span clas
 /* ---------- Money Scan: sluiten-knop werkte niet (handler ontbrak) ---------- */
 ACT['sd-close']=()=>{const had=!!(SC&&SC.step>0);scanClose();try{refresh()}catch(e){}toast(had?'Money Scan gesloten. Wat je invulde is nog niet opgeslagen; je kunt later opnieuw beginnen.':'Money Scan gesloten. Je kunt hem later starten via Mijn situatie.')};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#scanov')&&!$('#ov'))ACT['sd-close']()});
+
+
+/* =====================================================================
+   V44 — DE HOND BLAFT UIT ZICHZELF, ALS HIJ IETS VINDT
+   - Nieuwe vondst (sinds de vorige keer) → één blaf, ballon "Woef! …", nieuwe meldingen lichten op.
+   - Blije dubbele blaf bij geld/kansen; korte waarschuwingsblaf bij iets dringends (termijn, dubbele betaling).
+   - Nooit twee keer voor hetzelfde. Hooguit één blaf per 15 seconden.
+   - 's Nachts (22–8 uur), in "Stil", met de geluidsknop uit of tijdens een gesprek: alleen zichtbaar, geen geluid.
+   - iPhone: geluid kan pas na je eerste tik; tot dan blaft hij zichtbaar en klinkt de blaf bij je eerste tik.
+   ===================================================================== */
+const BARK44={
+ last:0,pend:null,timer:null,
+ st(){S.ui.bark44=S.ui.bark44||{seen:{},newAt:{}};return S.ui.bark44},
+ night(){const h=new Date().getHours();return h>=22||h<8},
+ quiet(){try{return wdgMode()==='stil'}catch(e){return false}},
+ busy(){try{return document.hidden||!!$('#scanov')||['listening','searching','thinking'].indexOf(DOG.state)>=0||(typeof VOICE!=='undefined'&&VOICE.on)}catch(e){return false}},
+ items(){try{return W41.items()}catch(e){return []}},
+ /* identiteit van een vondst: dezelfde vacatures of regelingen = geen nieuwe blaf, ook al is er opnieuw gezocht */
+ key(x){try{if(/^kj:/.test(x.k)){const o=K36.jobs();return 'kj:'+o.better.map(r=>r.j.id||r.j.title).sort().join(',')}
+  if(/^kr:/.test(x.k)){const o=K36.regs();return 'kr:'+o.g+':'+reg42List(o.items).A.map(z=>z.x.id).sort().join(',')}}catch(e){}return x.k},
+ check(){
+  if(this.busy())return;
+  const B=this.st(),L=this.items(),fresh=L.filter(x=>x.k&&!B.seen[this.key(x)]);
+  /* opruimen: wat niet meer bestaat hoeft niet onthouden */
+  const keys=new Set(L.map(x=>this.key(x)));Object.keys(B.seen).forEach(k=>{if(!keys.has(k)&&Date.now()-B.seen[k]>30*864e5)delete B.seen[k]});
+  if(!fresh.length)return;
+  if(Date.now()-this.last<15000){clearTimeout(this.timer);this.timer=setTimeout(()=>this.check(),15000-(Date.now()-this.last)+200);return}
+  const now=Date.now();fresh.forEach(x=>{const k=this.key(x);B.seen[k]=now;B.newAt[k]=now});save();
+  const urgent=fresh.filter(x=>x.p>=3||t41Of(x)==='letop');
+  this.bark(fresh,urgent.length>0);
+ },
+ text(fresh,urgent){const n=fresh.length,x=(urgent?fresh.filter(y=>y.p>=3||t41Of(y)==='letop'):fresh)[0],t=strip40(x.t);
+  if(urgent)return `<b>Woef! Let op.</b>${esc(t)}`;
+  return n===1?`<b>Woef! Ik heb iets gevonden.</b>${esc(t)}`:`<b>Woef! Ik heb ${n} nieuwe dingen voor je.</b>Kijk bij “WATCHDOG meldt”.`},
+ bark(fresh,urgent){
+  this.last=Date.now();const txt=this.text(fresh,urgent),snd=urgent?'attention':'watchFound';
+  /* geluid: alleen als het mag */
+  let r='off';
+  if(!this.night()&&!this.quiet()){try{r=playWatchdogSound(snd)}catch(e){}if(r==='pending'||r==='blocked')this.pend={snd:snd,at:Date.now()}}
+  /* zichtbaar: altijd */
+  try{setDogState('barking',{after:'found',ms:urgent?700:900})}catch(e){}
+  const home=(route[0]||'home')==='home',bubble=$('.h4-say[data-dog-auto],.h4-say');
+  if(home&&bubble){try{DTIP.clear&&DTIP.clear(bubble)}catch(e){}bubble.innerHTML=txt;[120,(urgent?700:900)+120,2000].forEach(ms=>setTimeout(()=>{const b=$('.h4-say');if(b&&(route[0]||'home')==='home'&&!b.dataset.tip)b.innerHTML=txt},ms));bubble.classList.add('b44-woef');setTimeout(()=>bubble.classList.remove('b44-woef'),1600);
+   try{const rad=$('.w41-radar');if(rad){w41Refresh44()}}catch(e){}}
+  else toast(txt.replace(/<b>(.*?)<\/b>/,'$1 ').replace(/<[^>]+>/g,''),false,true);
+  this.nav();
+  setTimeout(()=>{try{if(DOG.state==='found')setDogState('idle')}catch(e){}},7000);
+  return r},
+ nav(){try{const b=$('#nav [data-nav="home"]');if(!b)return;b.classList.remove('b44-shake');void b.offsetWidth;b.classList.add('b44-shake')}catch(e){}}
+};
+/* "NIEUW"-label op meldingen die net gevonden zijn (10 minuten) */
+{const _r=w41Row;w41Row=function(x){let h=_r.apply(this,arguments);try{const t=BARK44.st().newAt[BARK44.key(x)];if(t&&Date.now()-t<10*60e3)h=h.replace('class="w41-it"','class="w41-it b44-new"').replace('<span class="w41-lab">','<span class="b44-badge">Nieuw</span><span class="w41-lab">')}catch(e){}return h}}
+function w41Refresh44(){const rad=$('.w41-radar:not(.w41-all)');if(!rad)return;const d=document.createElement('div');d.innerHTML=w41Radar();const n=d.firstElementChild;if(n)rad.replaceWith(n)}
+/* iPhone: blaf die nog niet mocht klinken, klinkt bij je eerste tik (binnen 30 s) */
+document.addEventListener('pointerdown',()=>{const p=BARK44.pend;if(!p)return;BARK44.pend=null;if(Date.now()-p.at<30000&&!BARK44.night()&&!BARK44.quiet())setTimeout(()=>{try{playWatchdogSound(p.snd)}catch(e){}},60)},{passive:true,capture:true});
+/* wanneer kijkt hij? na elke pagina, als de app weer in beeld komt, en elke 20 s zolang je hem gebruikt */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);clearTimeout(BARK44.t0);BARK44.t0=setTimeout(()=>{try{BARK44.check()}catch(e){console.warn('BARK44',e)}},1200);return r}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{try{BARK44.check()}catch(e){}},1500)});
+setInterval(()=>{try{if(!document.hidden)BARK44.check()}catch(e){}},20000);
+/* na zoeken op de achtergrond meteen kijken */
+{const _s=JOBS.search.bind(JOBS);JOBS.search=async function(){const r=await _s.apply(this,arguments);setTimeout(()=>{try{BARK44.check()}catch(e){}},600);return r}}
+{const _l=GEMREG.load.bind(GEMREG);GEMREG.load=async function(){const r=await _l.apply(this,arguments);setTimeout(()=>{try{BARK44.check()}catch(e){}},600);return r}}
+{const _y=SRV.sync.bind(SRV);SRV.sync=async function(){const r=await _y.apply(this,arguments);setTimeout(()=>{try{BARK44.check()}catch(e){}},600);return r}}
+/* als een andere reactie al blafte (bijv. nieuwe regeling bij de gemeente): niet nog eens voor hetzelfde */
+{const _w=watchdogReact;watchdogReact=function(){const r=_w.apply(this,arguments);try{BARK44.last=Date.now();setTimeout(()=>{const B=BARK44.st(),now=Date.now();BARK44.items().forEach(x=>{const k=BARK44.key(x);if(!B.seen[k]){B.seen[k]=now;B.newAt[k]=now}});save()},800)}catch(e){}return r};window.watchdogReact=watchdogReact}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
