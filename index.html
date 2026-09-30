@@ -1981,6 +1981,23 @@ body[data-view="notifications"]{background:linear-gradient(180deg,#FCE7F3 0,#FDF
 /* bankafschrift: uitleg */
 .g40-how .g40-ol,.g40-ol{margin:6px 0 8px;padding-left:20px;line-height:1.5;font-size:14.5px}.g40-ol li{margin:4px 0}
 .w41-next{white-space:nowrap;max-width:100%;font-size:14.5px;padding:0 16px}
+/* melding aantikken */
+.w41-it[role="button"]{cursor:pointer;transition:background .15s}
+.w41-it[role="button"]:hover,.w41-it[role="button"]:focus-visible{background:var(--bg);outline:none}
+.w41-it[role="button"]:active{background:var(--bg)}
+.w41-more-i{float:right;font-size:12.5px;font-weight:800;color:var(--c);margin-top:2px}
+button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
+.w41-sd .w41-sdh{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.w41-sd .w41-sdh b{display:block;font-size:17px;line-height:1.3;color:#0E1B4D}
+.w41-sd .w41-sdh small{display:block;font-size:12.5px;color:#64748B;margin-top:2px}
+.w41-sds{font-size:15px;line-height:1.45;color:#334155;margin:4px 0 8px}
+.w41-sdx{margin:12px 0}
+.w41-sdx .card{box-shadow:none;border:1px solid #EEF2F7;margin:0}
+.w41-sdt{margin:14px 0 6px;font-size:15px;color:#0E1B4D}
+.w41-do{margin:0 0 12px;padding-left:20px;font-size:14.5px;line-height:1.5;color:#334155}.w41-do li{margin:3px 0}
+.w41-why{margin-top:10px;border:1px solid #EEF2F7;border-radius:12px;padding:8px 12px}.w41-why summary{cursor:pointer;font-weight:800;color:#6D28D9;min-height:32px;display:flex;align-items:center}
+.w41-sd .w41-btns .btn{min-height:46px}
+.w41-sd .w41-pb{background:var(--g)!important;color:#fff!important;border:0!important}
 </style>
 </head>
 <body>
@@ -13435,12 +13452,12 @@ if(window.WebGLRenderingContext&&!RM())document.documentElement.classList.add('v
    - Meer kleur: elke soort melding heeft een eigen kleur, elke pagina een eigen tint.
    ===================================================================== */
 const T41={
- letop:{lab:'Let op',c:'#EA580C',bg:'#FFEDD5',g:'linear-gradient(135deg,#FB923C,#F43F5E)',ic:'alert'},
- geld:{lab:'Geld',c:'#059669',bg:'#D1FAE5',g:'linear-gradient(135deg,#34D399,#059669)',ic:'coins'},
- kans:{lab:'Kans',c:'#7C3AED',bg:'#EDE9FE',g:'linear-gradient(135deg,#8B5CF6,#6D28D9)',ic:'sparkle'},
- termijn:{lab:'Termijn',c:'#0284C7',bg:'#E0F2FE',g:'linear-gradient(135deg,#38BDF8,#2563EB)',ic:'clock'},
- zoek:{lab:'Zoektocht',c:'#DB2777',bg:'#FCE7F3',g:'linear-gradient(135deg,#F472B6,#DB2777)',ic:'search'},
- info:{lab:'Melding',c:'#4F46E5',bg:'#E0E7FF',g:'linear-gradient(135deg,#818CF8,#4F46E5)',ic:'bell'}
+ letop:{pl:'let op',lab:'Let op',c:'#EA580C',bg:'#FFEDD5',g:'linear-gradient(135deg,#FB923C,#F43F5E)',ic:'alert'},
+ geld:{pl:'geld',lab:'Geld',c:'#059669',bg:'#D1FAE5',g:'linear-gradient(135deg,#34D399,#059669)',ic:'coins'},
+ kans:{pl:'kansen',lab:'Kans',c:'#7C3AED',bg:'#EDE9FE',g:'linear-gradient(135deg,#8B5CF6,#6D28D9)',ic:'sparkle'},
+ termijn:{pl:'termijnen',lab:'Termijn',c:'#0284C7',bg:'#E0F2FE',g:'linear-gradient(135deg,#38BDF8,#2563EB)',ic:'clock'},
+ zoek:{pl:'zoektochten',lab:'Zoektocht',c:'#DB2777',bg:'#FCE7F3',g:'linear-gradient(135deg,#F472B6,#DB2777)',ic:'search'},
+ info:{pl:'meldingen',lab:'Melding',c:'#4F46E5',bg:'#E0E7FF',g:'linear-gradient(135deg,#818CF8,#4F46E5)',ic:'bell'}
 };
 function t41Of(x){const k=x.k||'';
  if(/^imp:dbl/.test(k))return 'letop';
@@ -13473,17 +13490,17 @@ ACT['w41-next']=()=>{const n=W41.cur||W41.next();if(!n||!n.b)return;const [l,a,a
 
 /* ---------- 2. WATCHDOG meldt: de meldingen-radar ---------- */
 function w41Row(x){const t=T41[t41Of(x)],b=x.btn||[];
- return `<div class="w41-it" style="--c:${t.c};--bg:${t.bg};--g:${t.g}">
+ return `<div class="w41-it" role="button" tabindex="0" data-a="w41-open" data-arg="${esc(x.k)}" aria-label="Meer over: ${esc(strip40(x.t))}" style="--c:${t.c};--bg:${t.bg};--g:${t.g}">
   <span class="w41-ic" aria-hidden="true">${I(t.ic)}</span>
-  <div class="grow"><span class="w41-lab">${t.lab}</span><b>${x.t}</b>${x.s?`<small>${x.s}</small>`:''}
+  <div class="grow"><span class="w41-lab">${t.lab}</span><span class="w41-more-i" aria-hidden="true">Meer info ›</span><b>${x.t}</b>${x.s?`<small>${x.s}</small>`:''}
    ${x.eur>0?`<span class="w41-eur${x.eurT?' neg':''}">${x.eurT||'Tot '+E(Math.round(x.eur))+' per jaar'}</span>`:''}
    <div class="w41-btns">${b.slice(0,2).map((y,i)=>`<button class="btn sm ${i?'ghost':'w41-pb'}" data-a="${y[1]}" data-arg="${esc(y[2]||'')}">${esc(y[0])}</button>`).join('')}</div></div></div>`}
 function w41Radar(){
  const L=W41.items(),calm=(()=>{try{return ME.calm()||ME.paused()}catch(e){return false}})();
  const vis=calm?L.filter(x=>x.p>=3):L,st=G40.status(),tot=W41.sum(vis);
  const cnt={};vis.forEach(x=>{const k=t41Of(x);cnt[k]=(cnt[k]||0)+1});
- const chips=['letop','geld','kans','termijn'].filter(k=>cnt[k]).map(k=>`<span class="w41-chip" style="--c:${T41[k].c};--bg:${T41[k].bg}">${I(T41[k].ic)}${cnt[k]} ${T41[k].lab.toLowerCase()}</span>`).join('');
- const head=`<div class="w41-head"><div class="w41-ht"><span class="w41-live${st.n?' on':''}" aria-hidden="true"></span><div><b>WATCHDOG meldt</b><small>${st.n?`Ik bewaak ${st.n===1?'1 ding':st.n+' dingen'}`:'Ik bewaak nog niets'} · laatst gekeken ${g40Ago(st.lc)}</small></div></div><div class="w41-n"><b>${vis.length}</b><small>${vis.length===1?'melding':'meldingen'}</small></div></div>`;
+ const chips=['letop','geld','kans','termijn'].filter(k=>cnt[k]).map(k=>`<span class="w41-chip" style="--c:${T41[k].c};--bg:${T41[k].bg}">${I(T41[k].ic)}${cnt[k]} ${cnt[k]===1?T41[k].lab.toLowerCase():T41[k].pl}</span>`).join('');
+ const head=`<div class="w41-head"><div class="w41-ht"><span class="w41-live${st.n?' on':''}" aria-hidden="true"></span><div><b>WATCHDOG meldt</b><small>${st.n?`Ik bewaak ${st.n===1?'1 ding':st.n+' dingen'}`:'Ik bewaak nog niets'} · laatst gekeken ${g40Ago(st.lc)}</small></div></div><button class="w41-n" data-a="go" data-arg="notifications" aria-label="Bekijk alle meldingen"><b>${vis.length}</b><small>${vis.length===1?'melding':'meldingen'}</small></button></div>`;
  if(!vis.length)return `<section class="w41-radar" aria-live="polite">${head}<div class="w41-empty"><span class="w41-ok" aria-hidden="true">${I('check')}</span><div><b>Alles rustig.</b><small>Ik vond niets waar je nu iets mee moet. ${st.n?'Ik blijf opletten.':'Geef me iets om te bewaken, dan let ik op.'}</small></div></div>${st.n?'':`<button class="btn w41-cta" data-a="g40-watch">${I('eye')} Laat me iets bewaken</button>`}</section>`;
  return `<section class="w41-radar" aria-live="polite">${head}
   ${tot>0?`<div class="w41-pot">${I('coins')}<span>Hier ligt mogelijk <b>${E(Math.round(tot))} per jaar</b> voor je klaar.</span></div>`:''}
@@ -13534,6 +13551,52 @@ const G41_PAGE={
  return r}}
 function g40Ago(t){if(!t)return 'nog niet';const d=new Date(t),now=new Date(),hm=d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
  if(d.toDateString()===now.toDateString())return 'vandaag '+hm;if(d.toDateString()===new Date(Date.now()-864e5).toDateString())return 'gisteren '+hm;return d.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}
+
+/* ---------- 7. tik op een melding: alle informatie ---------- */
+const W41_DO={
+ kans:['Bekijk de vacatures en lees wat er gevraagd wordt.','Solliciteren doe je zelf, via de link van de werkgever.','Tip: laat me nieuwe vacatures melden, dan mis je niets.'],
+ geld:['Controleer of het klopt (brief, mail of je bankapp).','Vergelijk: is het ergens goedkoper of kun je het missen?','Opzeggen, overstappen of aanpassen doe jij. Ik doe niets zonder jouw ja.'],
+ letop:['Kijk snel, want dit kan geld kosten.','Volg de stappen hieronder.','Klaar? Tik op “Geregeld”, dan telt het als opgeleverd.'],
+ termijn:['Let op de datum: daarna kan het vaak niet meer.','Regel het op tijd, of zet een herinnering.'],
+ zoek:['Ga verder waar we gebleven waren; ik zoek opnieuw naar actuele prijzen.'],
+ info:['Lees de melding en kies wat je wilt doen.']
+};
+function w41Src(x){const k=x.k||'';
+ if(x.src)return 'Bron: '+x.src;
+ if(/^kj:/.test(k)){try{const o=K36.jobs();return 'Bron: '+(o.L.source||'Google Jobs')+' · gevonden '+evAgo(o.L.at)}catch(e){return 'Bron: Google Jobs'}}
+ if(/^kr:/.test(k))return 'Bron: officiële regelingen van je gemeente (overheid.nl)';
+ if(/^(tm|dl|ret):/.test(k))return 'Bron: wat jij hebt ingevuld';
+ if(/^task:/.test(k))return 'Bron: jouw zoekopdracht op dit toestel';
+ return 'Bron: WATCHDOG'}
+ACT['w41-open']=(k,el,e)=>{
+ const L=W41.items(),x=L.find(i=>i.k===k);if(!x){refresh();return}
+ if(/^ev:/.test(k)&&x.ev){try{markRead(x.ev);save()}catch(er){}evOpen(x.ev.id);return}
+ const tp=t41Of(x),t=T41[tp];let extra='';
+ try{
+  if(/^kj:/.test(k))extra=k36Jobs();
+  else if(/^kr:/.test(k))extra=k36Regs();
+  else if(/^imp:/.test(k)&&S.imp){const id=k.slice(4),ins=impInsights(S.imp).find(i=>i.id===id);
+   if(/^dbl:/.test(id)){const d=(S.imp.dups||[]).find(z=>'dbl:'+z.key+z.d2===id);if(d)extra=`<ol class="g40-ol"><li><b>Controleer</b> in je bankapp of het echt twee keer is afgeschreven.</li><li><b>Automatische incasso?</b> Die kun je binnen 8 weken zonder reden terugboeken (“terugboeken” of “storneren” in je bankapp).</li><li><b>Pin of iDEAL?</b> Vraag het geld terug bij ${esc(d.p)}. Lukt dat niet, bel je bank.</li></ol>`}
+   if(ins&&ins.why)extra+=`<details class="w41-why"><summary>Waarom zie ik dit?</summary>${whyHTML(ins.t,ins.why)}</details>`}
+ }catch(er){console.warn('w41-open',er)}
+ const b=(x.btn||[]).filter(y=>y[1]!=='wake-later');
+ sheet(t.lab,`<div class="w41-sd" style="--c:${t.c};--bg:${t.bg};--g:${t.g}">
+  <div class="w41-sdh"><span class="w41-ic" aria-hidden="true">${I(t.ic)}</span><div><b>${x.t}</b><small>${w41Src(x)}</small></div></div>
+  ${x.s?`<p class="w41-sds">${x.s}</p>`:''}
+  ${x.eur>0?`<span class="w41-eur${x.eurT?' neg':''}">${x.eurT||'Tot '+E(Math.round(x.eur))+' per jaar'}</span>`:''}
+  ${extra?`<div class="w41-sdx">${extra}</div>`:''}
+  <h4 class="w41-sdt">Wat kun je doen?</h4><ul class="w41-do">${(W41_DO[tp]||W41_DO.info).map(z=>`<li>${z}</li>`).join('')}</ul>
+  <div class="w41-btns">${b.map((y,i)=>`<button class="btn ${i?'ghost':'w41-pb'}" data-a="${y[1]}" data-arg="${esc(y[2]||'')}">${esc(y[0])}</button>`).join('')}<button class="btn ghost" data-a="w41-later" data-arg="${esc(k)}">Later</button></div>
+  <p class="fine">WATCHDOG doet nooit iets met je geld zonder jouw ja.</p></div>`);
+};
+ACT['w41-later']=k=>{try{ME.st().wake.snooze[k]=Date.now()+20*3600e3;save()}catch(e){}closeSheet();refresh();toast('Ik herinner je er morgen weer aan')};
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('w41-it')&&e.target.dataset.a){e.preventDefault();ACT['w41-open'](e.target.dataset.arg)}});
+/* Meldingen-pagina: bovenaan alles wat WATCHDOG nu meldt */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);
+ try{if(route[0]==='notifications'&&!$('#main .w41-all')){const L=W41.items();if(L.length){const d=document.createElement('section');d.className='w41-radar w41-all';
+  d.innerHTML=`<div class="w41-head"><div class="w41-ht"><span class="w41-live on" aria-hidden="true"></span><div><b>Nu van belang</b><small>Tik op een melding voor alle informatie</small></div></div><div class="w41-n"><b>${L.length}</b><small>${L.length===1?'melding':'meldingen'}</small></div></div><div class="w41-list">${L.map(w41Row).join('')}</div>`;
+  const a=$('#main .g41-page')||$('#main .top');if(a)a.insertAdjacentElement('afterend',d)}}}catch(e){console.warn(e)}
+ return r}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
