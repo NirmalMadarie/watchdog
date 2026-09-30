@@ -2070,6 +2070,16 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 @keyframes b44Ring{0%{box-shadow:0 0 0 0 var(--c)}100%{box-shadow:0 0 0 12px rgba(0,0,0,0)}}
 @keyframes b44Shake{0%,100%{transform:none}20%{transform:rotate(-8deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.b44-woef{animation:none}}
+
+/* ===== V45 — schermafbeeldingen van je bankapp ===== */
+.s45 h3{display:flex;align-items:center;gap:8px}.s45 h3 .i{width:20px;height:20px;color:#7C3AED}.s45 h3 small{font-weight:600;color:#94A3B8;font-size:12px}
+.s45-bar{height:10px;border-radius:6px;background:#EDE9FE;overflow:hidden;margin:10px 0}.s45-bar i{display:block;height:100%;background:linear-gradient(90deg,#8B5CF6,#DB2777);transition:width .3s}
+.s45-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #F1F5F9}
+.s45-chk input{width:22px;height:22px;accent-color:#7C3AED}
+.s45-in{width:100%;font:inherit;font-weight:700;font-size:14.5px;border:1px solid #E2E8F0;border-radius:10px;padding:8px 10px;min-height:40px;box-sizing:border-box}
+.s45-sub{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:#64748B}.s45-sub select{font:inherit;font-size:12.5px;border:1px solid #E2E8F0;border-radius:8px;padding:4px 6px;min-height:32px;background:#fff}
+.s45-amt{display:flex;align-items:center;gap:3px;font-weight:800;color:#0E1B4D}.s45-amt input{width:76px;font:inherit;font-weight:800;text-align:right;border:1px solid #E2E8F0;border-radius:10px;padding:8px;min-height:40px;box-sizing:border-box}
+.s45-tot{display:flex;justify-content:space-between;gap:10px;padding:12px 0 2px;border-top:2px solid #EDE9FE;margin-top:6px;color:#0E1B4D}
 </style>
 </head>
 <body>
@@ -13981,6 +13991,137 @@ setInterval(()=>{try{if(!document.hidden)BARK44.check()}catch(e){}},20000);
 {const _y=SRV.sync.bind(SRV);SRV.sync=async function(){const r=await _y.apply(this,arguments);setTimeout(()=>{try{BARK44.check()}catch(e){}},600);return r}}
 /* als een andere reactie al blafte (bijv. nieuwe regeling bij de gemeente): niet nog eens voor hetzelfde */
 {const _w=watchdogReact;watchdogReact=function(){const r=_w.apply(this,arguments);try{BARK44.last=Date.now();setTimeout(()=>{const B=BARK44.st(),now=Date.now();BARK44.items().forEach(x=>{const k=BARK44.key(x);if(!B.seen[k]){B.seen[k]=now;B.newAt[k]=now}});save()},800)}catch(e){}return r};window.watchdogReact=watchdogReact}
+
+
+/* =====================================================================
+   V45 — SCREENSHOTS VAN JE BANKAPP (in plaats van een bankafschrift)
+   Je maakt schermafbeeldingen van "Terugkerende uitgaven" of "Vaste lasten" in je bankapp.
+   WATCHDOG leest ze met tekstherkenning (Tesseract) OP JE TELEFOON. De foto's gaan nergens heen.
+   Eenmalig wordt de leesmotor (±4 MB) gedownload. Jij controleert alles voordat het wordt bewaard.
+   ===================================================================== */
+/* SHOT45.parse: OCR-tekst van een schermafbeelding uit een bankapp → posten */
+function shotParse(text){
+ const FREQ=/\b(maandelijks|per maand|elke maand|wekelijks|per week|elke week|per kwartaal|kwartaal|driemaandelijks|jaarlijks|per jaar|elk jaar|halfjaarlijks)\b/i;
+ const UI=/^(terugkerende uitgaven|betaalrekening|inzicht|stel in|hoogste uitgaven|bekijk alles|uitgaven|inkomsten|vind je dit handig|laat ons weten|overzicht|beleggen|producten|service|vaste lasten & huishouden|boodschappen & huishouden)\b/i;
+ const AMT=/(?:EUR|€)?\s*([-–−]?)\s*(\d{1,3}(?:\.\d{3})*,\d{2}|\d{1,3}(?:\.\d{3})+|\d{3,7})\s*$/;
+ const fq=s=>{const m=String(s).match(FREQ);if(!m)return null;const w=m[1].toLowerCase();return /week/.test(w)?'w':/kwartaal|drie/.test(w)?'q':/halfjaar/.test(w)?'h':/jaar/.test(w)?'j':'m'};
+ const num=s=>{if(/,\d{2}$/.test(s))return +s.replace(/\./g,'').replace(',','.');if(/\./.test(s))return +s.replace(/\./g,'');return +s/100};
+ const clean=s=>String(s).replace(/(?:EUR|€)\s*$/i,'').replace(/[|®©°»«”“"@<>{}\[\]_~^*]+/g,' ').replace(/\s+/g,' ').trim();
+ const dropJunk=s=>{let w=s.split(' ');while(w.length>1&&(w[0].length<=2&&!/^(ah|de|op|in)$/i.test(w[0])||!/[a-zA-ZÀ-ÿ]{2}/.test(w[0])))w.shift();return w.join(' ')};
+ const lines=String(text).split(/\n/).map(l=>l.trim()).filter(Boolean);
+ const out=[];let buf=[],cur=null;
+ for(let i=0;i<lines.length;i++){let l=lines[i];
+  if(i===0&&/^\d{1,2}[:.]\d{2}/.test(l))continue; /* statusbalk */
+  if(/\d{1,2}\s+\w{3,}\.?\s*[-–]\s*\d{1,2}\s+\w{3,}/.test(l))continue; /* periode 1 sep - 30 sep */
+  const amts=(l.match(/(?:EUR|€)?\s*[-–−]?\s*\d{1,3}(?:\.\d{3})*,\d{2}/g)||[]);
+  if(amts.length>1){buf=[];continue} /* twee kolommen door elkaar: overslaan */
+  const f=fq(l);
+  const m=l.match(AMT);
+  if(m&&(/,\d{2}$/.test(m[2])||/EUR|€/i.test(l)||l.replace(m[0],'').trim().length>2)){
+   let name=clean(l.slice(0,m.index).replace(FREQ,''));name=dropJunk(name);
+   const pre=buf.filter(b=>!UI.test(b));
+   if(name.length<2||!/[a-zA-Z]{2}/.test(name))name='';
+   const full=clean([pre.slice(-2).join(' '),name].filter(Boolean).join(' '));
+   const amount=num(m[2]);
+   const nextF=fq(lines[i+1]||'');
+   if(!name&&!f&&!nextF&&!fq(buf.join(' '))&&pre.length&&amount>0){out.push({naam:clean(dropJunk(pre.slice(-1)[0])),bedrag:amount,freq:null,soort:'totaal'});buf=[];cur=null;continue}
+   if(!full||!(amount>0)){ /* alleen een totaalbedrag onder een titel */ if(pre.length&&amount>0)out.push({naam:clean(dropJunk(pre.slice(-1)[0])),bedrag:amount,freq:null,soort:'totaal'});buf=[];cur=null;continue}
+   cur={naam:dropJunk(full),bedrag:amount,freq:f||fq(buf.join(' ')),soort:null};out.push(cur);buf=[];continue}
+  if(f&&cur&&!cur.freq){cur.freq=f;continue}
+  if(f){buf.push(l);continue}
+  const t=clean(l);if(!t||UI.test(t)||!/[a-zA-Z]{3}/.test(t)||t.length<3){if(UI.test(t))buf=[];continue}
+  buf.push(dropJunk(t));
+ }
+ out.forEach(x=>{if(!x.soort)x.soort=x.freq?'terugkerend':'categorie'});
+ return out.filter(x=>x.naam&&x.naam.length>=2);
+}
+
+const SHOT45={cur:null,
+ lib:null,
+ st(){return S.shot||null},
+ norm(n){return String(n||'').toLowerCase().replace(/\b(b\.?v\.?|n\.?v\.?)\b\.?/g,'').replace(/[^a-z0-9& ]/g,' ').replace(/\s+/g,' ').trim()},
+ async load(){if(window.Tesseract)return window.Tesseract;if(this.lib)return this.lib;
+  this.lib=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';s.onload=()=>ok(window.Tesseract);s.onerror=()=>{this.lib=null;no(new Error('laden'))};document.head.appendChild(s)});return this.lib},
+ async read(files){
+  files=[...files].filter(f=>/^image\//.test(f.type)||/\.(png|jpe?g|heic|webp)$/i.test(f.name)).slice(0,8);
+  if(!files.length){toast('Kies één of meer schermafbeeldingen');return}
+  this.cur={busy:true,n:files.length,i:0,prog:0,items:[],err:null};IMP=null;go('import');refresh();
+  try{const T=await this.load();
+   const w=await T.createWorker('nld',1,{langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/nld/4.0.0',logger:m=>{if(m.status==='recognizing text'&&this.cur){this.cur.prog=m.progress;const b=$('.s45-bar i');if(b)b.style.width=Math.round(((this.cur.i+m.progress)/this.cur.n)*100)+'%'}}});
+   const all=[];
+   for(let i=0;i<files.length;i++){this.cur.i=i;const r=await w.recognize(files[i]);all.push(...shotParse(r.data.text))}
+   await w.terminate();
+   this.cur={busy:false,items:this.merge(all),n:files.length};
+  }catch(e){console.warn('SHOT45',e);this.cur={busy:false,err:e&&e.message==='laden'?'De leesmotor kon niet worden geladen. Controleer je internet en probeer het opnieuw.':'Het lezen van de schermafbeeldingen lukte niet. Probeer een scherpere schermafbeelding.',items:[]}}
+  refresh();window.scrollTo(0,0)},
+ /* dubbelen samenvoegen (zelfde bedrag, naam lijkt op elkaar: "Basic Fi" = "Basic Fit") */
+ merge(L){const out=[];L.forEach(x=>{const k=this.norm(x.naam);const d=out.find(y=>y.soort===x.soort&&Math.abs(y.bedrag-x.bedrag)<.005&&(this.norm(y.naam).startsWith(k)||k.startsWith(this.norm(y.naam))));
+  if(d){if(x.naam.length>d.naam.length)d.naam=x.naam;if(!d.freq&&x.freq)d.freq=x.freq;return}out.push(Object.assign({aan:x.soort==='terugkerend'},x))});
+  out.forEach(x=>{if(x.soort==='terugkerend'){const c=impCat({p:x.naam,t:'',a:-x.bedrag,key:impKey({p:x.naam})});let cat=c.c;const s=x.naam.toLowerCase();
+   if(/\bgem\b.*belasting|gemeente|gemeentelijke|waterschap|belastingsamenwerking/.test(s))cat='wonen';
+   if(/mediahuis|dpg media|nrc|volkskrant|telegraaf|trouw|parool|\bad\b/.test(s))cat='abonnementen';
+   if(cat==='vrijetijd'&&x.freq==='m')cat='abonnementen';x.cat=cat}});
+  return out},
+ monthly(x){return x.freq==='w'?x.bedrag*52/12:x.freq==='q'?x.bedrag/3:x.freq==='h'?x.bedrag/6:x.freq==='j'?x.bedrag/12:x.bedrag},
+ save(){const C=this.cur;if(!C)return;const prev=S.shot||{items:[],hist:{}},hist=prev.hist||{},now=Date.now();
+  const items=C.items.filter(x=>x.soort==='terugkerend'&&x.aan).map(x=>{const key=this.norm(x.naam);const p=(prev.items||[]).find(y=>y.key===key);
+   const h=(hist[key]||[]).concat([{a:x.bedrag,ts:now}]).slice(-12);hist[key]=h;
+   return {key:key,naam:x.naam,bedrag:x.bedrag,freq:x.freq||'m',cat:x.cat||'onbekend',prev:p&&Math.abs(p.bedrag-x.bedrag)>=.5?p.bedrag:(p&&p.prev)||null,prevAt:p?p.at||prev.ts:null,at:now}});
+  const cats=C.items.filter(x=>x.soort!=='terugkerend').map(x=>({naam:x.naam,bedrag:x.bedrag,totaal:x.soort==='totaal'}));
+  const keep=(prev.items||[]).filter(y=>!items.some(z=>z.key===y.key));
+  snapshot();S.shot={ts:now,items:items.concat(keep),cats:cats.length?cats:(prev.cats||[]),hist:hist,n:C.n};this.cur=null;save();refresh();window.scrollTo(0,0);
+  toast('Bewaard. De schermafbeeldingen zelf zijn niet opgeslagen.',true,true)}
+};
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.id==='shot-file'){SHOT45.read(t.files||[]);t.value=''}
+ else if(t&&t.dataset&&t.dataset.s45!=null&&SHOT45.cur){const [i,k]=t.dataset.s45.split(':'),x=SHOT45.cur.items[+i];if(!x)return;if(k==='naam')x.naam=t.value.slice(0,60);else if(k==='bedrag'){const v=N(String(t.value).replace(/\./g,'').replace(',','.'));if(v>0)x.bedrag=v}else if(k==='freq')x.freq=t.value;else if(k==='aan')x.aan=t.checked}});
+ACT['s45-save']=()=>SHOT45.save();
+ACT['s45-cancel']=()=>{SHOT45.cur=null;refresh()};
+ACT['s45-del']=()=>{snapshot();S.shot=null;save();refresh();toast('Verwijderd',true)};
+ACT['s45-addsubs']=()=>{const r=S.shot;if(!r)return;snapshot();let n=0;
+ r.items.filter(x=>x.cat==='abonnementen'&&!S.subs.some(s=>SHOT45.norm(s.n)===x.key)).forEach(x=>{S.subs.push({id:uid('s'),n:x.naam,cost:Math.round(SHOT45.monthly(x)*100)/100,use:'soms',off:false,_shot:true});n++});
+ try{if(S.w.subs)S.w.subs.on=true;syncAll()}catch(e){}save();refresh();toast(`${n} ${plural(n,'abonnement','abonnementen')} toegevoegd. Geef bij elk aan hoe vaak je het gebruikt.`,true,true)};
+const E45=v=>'€'+Number(v).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
+const FQ45={m:'per maand',w:'per week',q:'per kwartaal',h:'per half jaar',j:'per jaar'};
+function s45Start(){return `<div class="card s45"><h3>${I('sparkle')} Geen bankafschrift? Maak schermafbeeldingen</h3>
+ <p class="note">Veel bankapps tonen je <b>terugkerende uitgaven</b> al. Maak daar schermafbeeldingen van; WATCHDOG leest ze voor je.</p>
+ <ol class="g40-ol"><li>Open je bankapp en zoek <b>Inzicht</b>, <b>Terugkerende uitgaven</b> of <b>Vaste lasten</b>. Tik op <b>Bekijk alles</b>.</li><li>Maak een schermafbeelding (zijknop + volume-omhoog). Scrol en maak er meer als de lijst langer is.</li><li>Kies ze hieronder (maximaal 8). Saldo en rekeningnummer hoeven er niet op.</li></ol>
+ <label class="btn pu" for="shot-file" style="cursor:pointer">${I('download')} Kies schermafbeeldingen</label><input id="shot-file" type="file" accept="image/*" multiple style="position:absolute;left:-9999px" aria-label="Kies schermafbeeldingen">
+ <small class="fine">De foto's worden <b>op je telefoon</b> gelezen en niet verstuurd of bewaard. De eerste keer wordt de leesmotor eenmalig gedownload (ongeveer 4 MB). Tekstherkenning kan fouten maken: je controleert alles voordat het wordt opgeslagen.</small></div>`}
+function s45Busy(C){return `${dogSay('Even snuffelen in je schermafbeeldingen… Ik lees ze op je telefoon.')}<div class="card s45"><b>Schermafbeelding ${Math.min(C.i+1,C.n)} van ${C.n}</b><div class="s45-bar"><i style="width:${Math.round(((C.i+(C.prog||0))/C.n)*100)}%"></i></div><small class="fine">De eerste keer duurt het wat langer (leesmotor laden).</small></div>`}
+function s45Review(C){const R=C.items.map((x,i)=>[x,i]),rec=R.filter(z=>z[0].soort==='terugkerend'),cat=R.filter(z=>z[0].soort!=='terugkerend');
+ if(!rec.length&&!cat.length)return `${dogSay('Ik kon op deze schermafbeeldingen geen bedragen vinden.')}<div class="card"><p class="note">Probeer een schermafbeelding van de lijst <b>Terugkerende uitgaven</b> of <b>Vaste lasten</b>, zonder in te zoomen.</p><div class="btn-row"><label class="btn" for="shot-file" style="cursor:pointer">Andere schermafbeeldingen</label><input id="shot-file" type="file" accept="image/*" multiple style="position:absolute;left:-9999px"><button class="btn ghost" data-a="s45-cancel">Annuleren</button></div></div>`;
+ const tot=rec.filter(z=>z[0].aan).reduce((a,z)=>a+SHOT45.monthly(z[0]),0);
+ return `${dogSay(`Ik vond ${rec.length} terugkerende ${plural(rec.length,'uitgave','uitgaven')}. Klopt het? Pas aan wat ik verkeerd las.`)}
+ ${rec.length?`<div class="card s45"><h3>Terugkerende uitgaven</h3>${rec.map(([x,i])=>`<div class="s45-row"><label class="s45-chk"><input type="checkbox" data-s45="${i}:aan" ${x.aan?'checked':''} aria-label="Meenemen"></label><div class="grow"><input class="s45-in" type="text" value="${esc(x.naam)}" data-s45="${i}:naam" aria-label="Naam"><div class="s45-sub"><span>${impCatN(x.cat||'onbekend')}</span><select data-s45="${i}:freq" aria-label="Hoe vaak">${Object.keys(FQ45).map(k=>`<option value="${k}"${(x.freq||'m')===k?' selected':''}>${FQ45[k]}</option>`).join('')}</select></div></div><label class="s45-amt">€<input type="text" inputmode="decimal" value="${String(x.bedrag.toFixed(2)).replace('.',',')}" data-s45="${i}:bedrag" aria-label="Bedrag"></label></div>`).join('')}
+  <div class="s45-tot"><span>Samen ongeveer</span><b>${E2(tot)} per maand</b></div></div>`:''}
+ ${cat.length?`<div class="card s45"><h3>Uitgaven per categorie <small>(ter info)</small></h3>${cat.map(([x])=>`<div class="row"><span class="grow">${esc(x.naam)}${x.soort==='totaal'?' <small>(totaal)</small>':''}</span><b>${E45(x.bedrag)}</b></div>`).join('')}</div>`:''}
+ <button class="btn pu" data-a="s45-save">Klopt, bewaar dit</button><button class="btn ghost" data-a="s45-cancel">Annuleren</button>
+ <p class="fine">Alleen de namen en bedragen worden bewaard, op dit toestel. Niet de schermafbeeldingen.</p>`}
+function s45Saved(){const r=S.shot;if(!r)return '';const tot=r.items.reduce((a,x)=>a+SHOT45.monthly(x),0);
+ return `<div class="card s45"><h3>${I('check')} Uit je bankapp-schermafbeeldingen</h3><small class="fine">Gelezen op ${new Date(r.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'long'})}. Maak elke maand nieuwe schermafbeeldingen, dan zie ik ook prijsverhogingen.</small>
+ ${r.items.map(x=>`<div class="row"><span class="grow"><b>${esc(x.naam)}</b><small>${impCatN(x.cat)} · ${FQ45[x.freq]||'per maand'}${x.prev?` · was ${E2(x.prev)}`:''}</small></span><b>${E2(x.bedrag)}</b></div>`).join('')}
+ <div class="s45-tot"><span>Samen</span><b>${E2(tot)} per maand · ${E(Math.round(tot*12))} per jaar</b></div>
+ <div class="btn-row"><label class="btn sm" for="shot-file" style="cursor:pointer">Nieuwe schermafbeeldingen</label><input id="shot-file" type="file" accept="image/*" multiple style="position:absolute;left:-9999px"><button class="btn sm ghost dng" data-a="s45-del">Verwijder</button></div></div>`}
+/* importpagina: screenshots als tweede route */
+{const _v=V.import;V.import=function(){const C=SHOT45.cur;
+ if(C)return `<div class="wrap">${topbar('Bankapp',{back:1,sub:'Schermafbeeldingen, gelezen op je telefoon'})}${C.busy?s45Busy(C):C.err?`${dogSay(esc(C.err))}<button class="btn" data-a="s45-cancel">Terug</button>`:s45Review(C)}</div>`;
+ let h=_v.apply(this,arguments).replace('<h1>Transactiebestand</h1>','<h1>Bankgegevens</h1>');
+ try{if(!IMP){const add=S.shot?s45Saved():s45Start();h=h.replace(/(<\/div>)\s*$/,add+'$1')}}catch(e){}
+ return h}}
+/* inzichten → meldingen (Home, Meldingen) */
+function s45Items(){const r=S.shot;if(!r)return [];const L=[],m=ME.st(),sn=k=>(m.wake.snooze[k]||0)>Date.now()||m.wake.done[k];
+ r.items.filter(x=>x.prev&&x.bedrag>x.prev).forEach(x=>{const k='shot:up:'+x.key+':'+x.bedrag;if(sn(k))return;const yr=(SHOT45.monthly(x)-SHOT45.monthly({bedrag:x.prev,freq:x.freq}))*12;
+  L.push({k:k,p:2,t:`${esc(x.naam)} is duurder geworden`,s:`Van ${E2(x.prev)} naar ${E2(x.bedrag)} ${FQ45[x.freq]||'per maand'}.`,eur:yr,eurT:`Kost je ${E(Math.round(yr))} per jaar extra`,src:'je bankapp-schermafbeeldingen',btn:[['Bekijk','go','import'],['Later','wake-later',k]]})});
+ const subs=r.items.filter(x=>x.cat==='abonnementen'&&!S.subs.some(s=>SHOT45.norm(s.n)===x.key));
+ if(subs.length&&!sn('shot:subs:'+subs.length)){const t=subs.reduce((a,x)=>a+SHOT45.monthly(x),0);L.push({k:'shot:subs:'+subs.length,p:1,t:`${subs.length} ${plural(subs.length,'abonnement','abonnementen')} uit je bankapp`,s:`${subs.map(x=>esc(x.naam)).join(', ')}: samen ${E2(t)} per maand. Gebruik je ze nog allemaal? Voeg ze toe, dan houd ik ze in de gaten.`,src:'je bankapp-schermafbeeldingen',btn:[['Toevoegen','s45-addsubs',''],['Later','wake-later','shot:subs:'+subs.length]]})}
+ const gem=r.items.find(x=>/belasting/i.test(x.naam)&&x.cat==='wonen'),net=ME42.netto();
+ if(gem&&net>0&&net<=(ME42.partner()?2300:1650)&&!sn('shot:gem')){L.push({k:'shot:gem',p:2,t:'Misschien hoef je je gemeentelijke belasting niet te betalen',s:`Je betaalt ${E2(gem.bedrag)} ${FQ45[gem.freq]||'per maand'} aan ${esc(gem.naam)}. Met jouw inkomen kun je mogelijk kwijtschelding krijgen.`,eur:SHOT45.monthly(gem)*12,src:'je bankapp-schermafbeeldingen',btn:[['Wat moet ik doen?','k42-open','kwijt'],['Later','wake-later','shot:gem']]})}
+ return L}
+{const _it=G40.items.bind(G40);G40.items=function(){const L=_it();try{s45Items().forEach(x=>{if(!L.some(y=>y.k===x.k))L.push(x)})}catch(e){console.warn('s45',e)}return L.sort((a,b)=>(b.p-a.p)||((b.eur||0)-(a.eur||0)))}}
+{const _t=t41Of;t41Of=function(x){if(/^shot:/.test(x.k||''))return /^shot:(up|gem)/.test(x.k)?'geld':'geld';return _t(x)}}
+/* stap "bankafschrift" en "Waar ik zoek" tellen screenshots ook mee */
+{const _st=G40.steps.bind(G40);G40.steps=function(){const L=_st();try{const b=L.find(s=>s.id==='bank');if(b){if(S.shot)b.done=true;b.t='Laat me je bankgegevens zien';b.s='Een bankafschrift (CSV) of schermafbeeldingen van “Terugkerende uitgaven” in je bankapp. Alles blijft op je telefoon.';b.b='Kies'}}catch(e){}return L}}
+{const _w=w42Sources;w42Sources=function(){const L=_w();try{const b=L.find(x=>x.ic==='bank');if(b){b.t='Je bankgegevens';b.src='Bankafschrift (CSV) of schermafbeeldingen uit je bankapp';if(S.shot&&!S.imp){b.st='app';b.how=`Schermafbeeldingen gelezen op ${new Date(S.shot.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})} · maak elke maand nieuwe`;b.b=['Nieuwe schermafbeeldingen','go','import']}}}catch(e){}return L}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
