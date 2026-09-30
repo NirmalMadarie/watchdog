@@ -13867,7 +13867,7 @@ function ag43HTML(d,i){
  const props=P.map((p,k)=>`<button class="btn sm w41-pb ag-prop" data-a="ag43-prop" data-arg="${i}:${k}">${I('eye')} Ja, bewaak ${p.soort==='prijs'?'de prijs van':p.soort==='vacature'?'vacatures als':'regelingen in'} ${esc(p.onderwerp)}</button>`).join('');
  return `<div class="msg a ag-msg">${orb('ai')}<div class="bub">
   ${steps?`<div class="ag-steps" aria-label="Wat ik heb gedaan">${steps}</div>`:''}
-  <div class="ag-ans">${aiFmt(d.answer||'')}</div>
+  <div class="ag-ans">${aiFmt(String(d.answer||'').replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/\(\s*\)/g,''))}</div>
   ${ag43Jobs(D.jobs)}${ag43Regs(D.regs)}${ag43Toes(D.toeslagen)}${ag43Prices(D.prices)}
   ${props?`<div class="ag-props"><small>Wil je dat ik dit voor je bewaak? Jij beslist.</small>${props}</div>`:''}
   <span class="demo-tag" style="background:#EDE9FE;color:#5B21B6">WAAKHOND-AGENT</span><small class="ai-src">Gegevens uit echte bronnen${(d.sources||[]).length?': '+esc([...new Set(d.sources.map(s=>s.name))].join(', ')):''}. Uitleg door ${esc(d.source||'Mistral AI')}. Geen financieel advies; ik vraag niets aan en koop niets.</small>
@@ -13902,6 +13902,10 @@ const AG43_Q=['Waar laat ik geld liggen?','Heb ik recht op toeslagen?','Zoek bet
 function ag43Box(){return `<section class="ag-box"><div class="ag-bh"><span class="ag-bi" aria-hidden="true">${I('sparkle')}</span><div><b>Vraag het de waakhond</b><small>Hij zoekt zelf op in echte bronnen: vacatures, regelingen, prijzen en toeslagen.</small></div></div><div class="ag-qs">${AG43_Q.map(q=>`<button class="ag-q" data-a="ai-go" data-arg="${esc(q)}">${esc(q)} ›</button>`).join('')}</div></section>`}
 {const _c=WAKE.card;WAKE.card=function(){return _c.apply(this,arguments)+ag43Box()}}
 {const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);try{h=h.replace('<section class="k42-src">',ag43Box()+'<section class="k42-src">')}catch(e){}return h}}
+
+/* ---------- Money Scan: sluiten-knop werkte niet (handler ontbrak) ---------- */
+ACT['sd-close']=()=>{const had=!!(SC&&SC.step>0);scanClose();try{refresh()}catch(e){}toast(had?'Money Scan gesloten. Wat je invulde is nog niet opgeslagen; je kunt later opnieuw beginnen.':'Money Scan gesloten. Je kunt hem later starten via Mijn situatie.')};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#scanov')&&!$('#ov'))ACT['sd-close']()});
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
