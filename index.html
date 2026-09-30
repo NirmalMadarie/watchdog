@@ -1998,6 +1998,16 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .w41-why{margin-top:10px;border:1px solid #EEF2F7;border-radius:12px;padding:8px 12px}.w41-why summary{cursor:pointer;font-weight:800;color:#6D28D9;min-height:32px;display:flex;align-items:center}
 .w41-sd .w41-btns .btn{min-height:46px}
 .w41-sd .w41-pb{background:var(--g)!important;color:#fff!important;border:0!important}
+/* "3 meldingen" is duidelijk een knop; de hele paarse balk is aan te tikken */
+.w41-hb{cursor:pointer}
+.w41-hb:focus-visible{outline:3px solid #FDE68A;outline-offset:-3px}
+.w41-nb{display:flex;flex-direction:column;align-items:center;background:#fff!important;color:#6D28D9;border-radius:18px;padding:8px 12px 7px;min-width:84px;box-shadow:0 8px 18px -8px rgba(30,0,60,.55),0 0 0 3px rgba(255,255,255,.35)}
+.w41-nb b{color:#6D28D9!important;font-size:26px!important}
+.w41-nb small{color:#6D28D9!important;font-weight:700;font-size:11.5px!important}
+.w41-nb em{font-style:normal;font-weight:900;font-size:13px;color:#fff;background:linear-gradient(135deg,#8B5CF6,#DB2777);border-radius:999px;padding:3px 10px;margin-top:5px;white-space:nowrap}
+.w41-hb:active .w41-nb{transform:scale(.96)}
+@media (prefers-reduced-motion:no-preference){.w41-nb{animation:w41Beat 2.8s ease-in-out 1s infinite}}
+@keyframes w41Beat{0%,80%,100%{transform:none}86%{transform:scale(1.06)}92%{transform:none}}
 </style>
 </head>
 <body>
@@ -13500,7 +13510,7 @@ function w41Radar(){
  const vis=calm?L.filter(x=>x.p>=3):L,st=G40.status(),tot=W41.sum(vis);
  const cnt={};vis.forEach(x=>{const k=t41Of(x);cnt[k]=(cnt[k]||0)+1});
  const chips=['letop','geld','kans','termijn'].filter(k=>cnt[k]).map(k=>`<span class="w41-chip" style="--c:${T41[k].c};--bg:${T41[k].bg}">${I(T41[k].ic)}${cnt[k]} ${cnt[k]===1?T41[k].lab.toLowerCase():T41[k].pl}</span>`).join('');
- const head=`<div class="w41-head"><div class="w41-ht"><span class="w41-live${st.n?' on':''}" aria-hidden="true"></span><div><b>WATCHDOG meldt</b><small>${st.n?`Ik bewaak ${st.n===1?'1 ding':st.n+' dingen'}`:'Ik bewaak nog niets'} · laatst gekeken ${g40Ago(st.lc)}</small></div></div><button class="w41-n" data-a="go" data-arg="notifications" aria-label="Bekijk alle meldingen"><b>${vis.length}</b><small>${vis.length===1?'melding':'meldingen'}</small></button></div>`;
+ const head=`<div class="w41-head w41-hb" data-a="go" data-arg="notifications" role="button" tabindex="0" aria-label="Bekijk alle ${vis.length} meldingen"><div class="w41-ht"><span class="w41-live${st.n?' on':''}" aria-hidden="true"></span><div><b>WATCHDOG meldt</b><small>${st.n?`Ik bewaak ${st.n===1?'1 ding':st.n+' dingen'}`:'Ik bewaak nog niets'} · laatst gekeken ${g40Ago(st.lc)}</small></div></div><span class="w41-n w41-nb"><b>${vis.length}</b><small>${vis.length===1?'melding':'meldingen'}</small><em>Bekijk ›</em></span></div>`;
  if(!vis.length)return `<section class="w41-radar" aria-live="polite">${head}<div class="w41-empty"><span class="w41-ok" aria-hidden="true">${I('check')}</span><div><b>Alles rustig.</b><small>Ik vond niets waar je nu iets mee moet. ${st.n?'Ik blijf opletten.':'Geef me iets om te bewaken, dan let ik op.'}</small></div></div>${st.n?'':`<button class="btn w41-cta" data-a="g40-watch">${I('eye')} Laat me iets bewaken</button>`}</section>`;
  return `<section class="w41-radar" aria-live="polite">${head}
   ${tot>0?`<div class="w41-pot">${I('coins')}<span>Hier ligt mogelijk <b>${E(Math.round(tot))} per jaar</b> voor je klaar.</span></div>`:''}
@@ -13590,7 +13600,8 @@ ACT['w41-open']=(k,el,e)=>{
   <p class="fine">WATCHDOG doet nooit iets met je geld zonder jouw ja.</p></div>`);
 };
 ACT['w41-later']=k=>{try{ME.st().wake.snooze[k]=Date.now()+20*3600e3;save()}catch(e){}closeSheet();refresh();toast('Ik herinner je er morgen weer aan')};
-document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('w41-it')&&e.target.dataset.a){e.preventDefault();ACT['w41-open'](e.target.dataset.arg)}});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('w41-it')&&e.target.dataset.a){e.preventDefault();ACT['w41-open'](e.target.dataset.arg)}
+ if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('w41-hb')){e.preventDefault();go('notifications')}});
 /* Meldingen-pagina: bovenaan alles wat WATCHDOG nu meldt */
 {const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);
  try{if(route[0]==='notifications'&&!$('#main .w41-all')){const L=W41.items();if(L.length){const d=document.createElement('section');d.className='w41-radar w41-all';
