@@ -2210,6 +2210,44 @@ button.w41-n{border:0;font:inherit;color:#fff;cursor:pointer}
 .x48 input:not([type]){width:100%;font-size:16px;padding:11px 12px;border:1px solid #D5DEE8;border-radius:12px;background:#FBFCFD;-webkit-appearance:none;appearance:none}
 .x48 label.f{display:block}.x48 label.f>span{display:block;font-size:13px;font-weight:700;color:#38495F;margin-bottom:5px}
 .x48-opt .x48-eur{margin-left:auto}
+/* ===== V50 · meldingen in-/uitklappen ===== */
+.w41-it.w50{cursor:pointer;align-items:flex-start;padding:10px 6px}
+.w50 .w50-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;padding-right:30px;position:relative}
+.w50 .w50-top>b{flex:1 0 100%;font-size:15px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.w50.w50-open .w50-top>b{-webkit-line-clamp:unset;display:block}
+.w50 .w41-ic{width:40px;height:40px;flex:0 0 40px}
+.w50-chev{position:absolute;right:0;top:0;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--bg,#EDE9FE);color:var(--c,#6D28D9)}
+.w50-chev .i{width:18px;height:18px;transition:transform .2s}
+.w50.w50-open .w50-chev .i{transform:rotate(180deg)}
+.w50 .w50-body{display:none}
+.w50.w50-open .w50-body{display:block;margin-top:4px}
+.w50 .w41-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+@media (prefers-reduced-motion:reduce){.w50-chev .i{transition:none}}
+/* ===== V50b · layout en teksten ===== */
+.w50 .w50-top>b{-webkit-line-clamp:2}
+.top.top-l .top-t h1{font-size:23px;letter-spacing:-.02em}
+.top.top-xl .top-t h1{font-size:20px;letter-spacing:-.01em;hyphens:manual}
+.top-t h1{overflow-wrap:break-word}
+.vd-cv{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 3%,#000 97%,transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 3%,#000 97%,transparent 100%)}
+.x50-help{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.x50-hb{display:flex;gap:10px;align-items:center;padding:12px;border-radius:18px;background:#fff;border:1px solid #EEF0F6;box-shadow:0 1px 2px rgba(15,23,42,.04);min-height:72px;text-align:left}
+.x50-hb .h4-cat-i{flex:0 0 40px;width:40px;height:40px}
+.x50-hb .h4-cat-i .i{width:22px;height:22px}
+.x50-hb b{display:block;font-size:14.5px;line-height:1.2;color:#0E1B4D}
+.x50-hb small{display:block;font-size:12.5px;color:#64748B;margin-top:2px}
+@media (max-width:340px){.x50-help{grid-template-columns:1fr}}
+.x48-bline b{display:block;font-size:14.5px}.x48-bline small{display:block;font-size:13px;color:#475569;font-weight:500;margin-top:1px}
+.x48-mini{flex:0 0 44px;height:44px;position:relative;display:grid;place-items:center}
+.x48-mini::after{content:'';position:absolute;inset:5px;border-radius:50%;background:#fff}
+.x48-mini i{position:relative;z-index:1;font-style:normal;font-size:11px;font-weight:800;color:#0E1B4D}
+.x48-shops{flex-wrap:wrap;overflow:visible}
+.h30-kies .h30-sub{margin:2px 0 12px}
+@media (max-width:480px){.gd-tip{max-width:none;margin-left:0}}
+.x50-hb>span:last-child{min-width:0}
+.x50-hb b{overflow-wrap:anywhere;hyphens:manual}
+.x50-hb{flex-direction:column;align-items:flex-start;gap:8px;min-height:0}
+.x50-hb b{overflow-wrap:normal;hyphens:manual}
+body[data-view="ai"] .top-t h1{font-size:23px}
 </style>
 </head>
 <body>
@@ -15056,6 +15094,73 @@ function home48(){const st=B48.status();
  /* zoekfilmpje alvast klaarzetten na het opstarten (klein, alleen als de rust-video werkt) */
  setTimeout(()=>{try{if(V.ok&&!RM())V.load('zoek')}catch(e){}},6000);
 })();
+
+
+/* =====================================================================
+   V50 — MELDINGEN IN- EN UITKLAPBAAR
+   - Elke melding begint ingeklapt: alleen het soort en de titel (één regel).
+   - Tik op de melding (of het pijltje) → uitgeklapt: uitleg, bedrag, knoppen en "Meer info ›".
+   - Dezelfde melding twee keer (zelfde titel en tekst) wordt maar één keer getoond.
+   ===================================================================== */
+const W50={open:new Set()};
+/* dubbele meldingen samenvoegen */
+{const _it=W41.items.bind(W41);W41.items=function(){const L=_it(),seen=new Set();return L.filter(x=>{let key=x.k;try{key=strip40(String(x.t||''))+'|'+strip40(String(x.s||''))}catch(e){}if(seen.has(key))return false;seen.add(key);return true})}}
+/* rij: ingeklapt tenzij je hem openklapte */
+{const _r=w41Row;w41Row=function(x){let h=_r.apply(this,arguments);try{
+  const k=String(x.k),open=W50.open.has(k),id='w50-'+k.replace(/[^a-z0-9_-]/gi,'_').slice(0,60);
+  h=h.replace(/class="w41-it([^"]*)"/,`class="w41-it$1 w50${open?' w50-open':''}"`)
+   .replace(/data-a="w41-open" data-arg="([^"]*)"/,`data-a="w50-tog" data-arg="$1" aria-expanded="${open}" aria-controls="${id}"`)
+   .replace(/aria-label="Meer over: /,'aria-label="Melding: ')
+   .replace(/<span class="w41-more-i" aria-hidden="true">Meer info ›<\/span>/,`<span class="w50-chev" aria-hidden="true">${I('down')}</span>`)
+   .replace(/<div class="grow">/,'<div class="grow"><div class="w50-top">').replace(/(<b>[\s\S]*?<\/b>)/,`$1</div><div class="w50-body" id="${id}">`)
+   .replace(/<div class="w41-btns">([\s\S]*?)<\/div><\/div><\/div>\s*$/,`<div class="w41-btns">$1<button class="btn sm ghost w50-info" data-a="w41-open" data-arg="${esc(k)}">Meer info ›</button></div></div></div></div>`)
+ }catch(e){console.warn('W50',e)}return h}}
+ACT['w50-tog']=(k,el)=>{const row=el&&el.closest?el.closest('.w41-it'):null;const open=!W50.open.has(k);if(open)W50.open.add(k);else W50.open.delete(k);
+ if(row){row.classList.toggle('w50-open',open);row.setAttribute('aria-expanded',String(open))}else refresh()};
+/* toetsenbord: Enter/spatie klapt in of uit */
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.dataset&&e.target.dataset.a==='w50-tog'){e.preventDefault();e.stopImmediatePropagation();ACT['w50-tog'](e.target.dataset.arg,e.target)}},true);
+
+/* =====================================================================
+   V50b — CONTROLE VAN LAYOUT EN TEKSTEN
+   ===================================================================== */
+/* 1. lange paginatitels: kleiner, zodat ze niet onder de knoppen rechts schuiven */
+{const _tb=topbar;topbar=function(title,o){let h=_tb.apply(this,arguments);try{const t=String(title||'').replace(/<[^>]+>/g,'').replace(/&shy;|­/g,'');const n=t.length;
+  const cls=n>16?' top-xl':n>10?' top-l':'';if(cls)h=h.replace('<div class="top ','<div class="top'+cls+' ');
+  h=h.replace('<h1>Levensgebeurtenissen</h1>','<h1>Levens­gebeurtenissen</h1>')}catch(e){}return h}}
+/* 2. Engelse Watch-namen → Nederlands */
+const NL50={'Benefits Watch':'Toeslagen-Watch','Budget Watch':'Budget-Watch','Contract Watch':'Contract-Watch','Energy Watch':'Energie-Watch','Goal Watch':'Doelen-Watch','Home Watch':'Woning-Watch','Housing Watch':'Woonlasten-Watch','Insurance Watch':'Verzekeringen-Watch','Job Watch':'Vacature-Watch','Life Event Watch':'Levensgebeurtenis-Watch','Savings Watch':'Spaar-Watch','Scam Watch':'Oplichting-Watch','Subscription Watch':'Abonnementen-Watch','Telecom Watch':'Telecom-Watch'};
+try{Object.keys(WM).forEach(id=>{if(NL50[WM[id].n])WM[id].n=NL50[WM[id].n]})}catch(e){}
+const RE50=new RegExp('\\b('+Object.keys(NL50).join('|')+')\\b','g');
+function txt50(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){let v=n.nodeValue,o=v;
+  if(RE50.test(v)){RE50.lastIndex=0;v=v.replace(RE50,m=>NL50[m])}
+  v=v.replace(/[−-]\s?€\s?0(?![\d.,])/g,'€0');
+  if(v!==o)n.nodeValue=v}}
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{txt50($('#main'))}catch(e){}return r}}
+{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);try{txt50($('#ov'))}catch(e){}return r}}
+/* 3. Home: starters, bewaakte producten, helpers, budgetregel */
+try{const r=WL4_START.find(x=>x.id==='regelingen');if(r)r.s='Waar heb je recht op?'}catch(e){}
+{const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{
+  h=h.replace(/(€[\d.,]+) → doel (€[\d.,]+) · doel bereikt/g,'Nu $1 · onder je grens van $2').replace(/(€[\d.,]+) → doel (€[\d.,]+)/g,'Nu $1 · jouw grens $2').replace(/<small>doel (€[\d.,]+)/g,'<small>Jouw grens $1');
+  h=h.replace(/(<button class="h4-wi" data-a="go" data-arg="watches"><span class="h4-cat-i"[^>]*>)[\s\S]*?(<\/span><span class="h4-wi-t">)/g,(m,a,b)=>a+I('tag')+b);
+  h=h.replace('<h2>WATCHDOG bewaakt voor jou</h2>','<h2>Ik bewaak voor jou</h2>');
+ }catch(e){console.warn('V50 home',e)}return h}}
+home48=function(){const st=B48.status(),pct=Math.min(100,Math.round(st.pct*100));
+ return `<section class="x48-home" aria-label="De waakhond helpt ook met"><h2>De waakhond helpt ook met</h2><div class="x50-help">${HOME48.map(h=>`<button class="x50-hb" data-a="go" data-arg="${h[0]}"><span class="h4-cat-i" style="--c:${h[4]};--bg:${h[5]}">${I(h[1])}</span><span><b>${h[2].replace('­','')}</b><small>${h[3]}</small></span></button>`).join('')}</div>
+  ${st.bud?`<button class="x48-bline" data-a="go" data-arg="budget" style="--c:${st.lvl==='over'?'#DC2626':st.lvl==='bijna'?'#EA580C':'#059669'}"><span class="x48-mini" style="--p:${pct}"><i>${pct}%</i></span><span class="grow"><b>Boodschappen deze week</b><small>${st.lvl==='over'?`${E2(-st.left)} boven je budget van ${E(st.bud)}`:`${E2(st.spent)} van ${E(st.bud)} · nog ${E2(st.left)} voor ${st.dl} ${st.dl===1?'dag':'dagen'}`}</small></span>›</button>`:''}</section>`};
+try{HOME48[1][2]='Is dit betrouwbaar?';HOME48[3][2]='Levens\u00ADgebeurtenis'}catch(e){}
+/* 4. blaf-ballon: de knop past bij de tekst */
+{const _b=BARK44.bark.bind(BARK44);BARK44.bark=function(fresh,urgent){const r=_b(fresh,urgent);try{const fix=()=>{const nb=$('.w41-next');if(!nb||(route[0]||'home')!=='home')return;nb.dataset.a='w50-seen';nb.innerHTML='Bekijk wat ik vond <i>›</i>'};[150,1100,2100].forEach(ms=>setTimeout(fix,ms))}catch(e){}return r}}
+ACT['w50-seen']=()=>{const r=$('.w41-radar');if(!r)return;r.scrollIntoView({behavior:RM()?'auto':'smooth',block:'start'});const it=r.querySelector('.w41-it');if(it&&!it.classList.contains('w50-open'))ACT['w50-tog'](it.dataset.arg,it)};
+/* 5. meldingen-pagina: geen demo-knop in de echte app; eerlijke lege tekst als bovenaan wel meldingen staan */
+{const _n=V.notifications;V.notifications=function(){let h=_n.apply(this,arguments);try{
+  if(typeof LEEG==='function'&&LEEG())h=h.replace(/<button class="btn sm ghost" data-a="demo-sheet">Simuleer gebeurtenis<\/button>/,'');
+  if(W41.items().length)h=h.replace('<b>Geen meldingen</b>','<b>Geen andere meldingen</b>').replace('>Geen meldingen<','>Geen andere meldingen<')}catch(e){}return h}}
+/* 6. bedragen zonder ",00" als het hele euro's zijn */
+const M50=n=>{n=Math.round(N(n)*100)/100;return Math.abs(n%1)<0.005?E(n):E2(n)};
+B48.line=function(st){if(st.lvl==='geen')return 'Stel een weekbudget in, dan houd ik je boodschappen bij.';
+ if(st.lvl==='over')return `Je zit ${M50(-st.left)} boven je weekbudget van ${E(st.bud)}.`;
+ return `Je gaf deze week ${M50(st.spent)} van ${E(st.bud)} uit. Nog ${M50(st.left)} voor ${st.dl} ${st.dl===1?'dag':'dagen'}${st.perDay?` (ongeveer ${M50(st.perDay)} per dag)`:''}.`};
+{const _h=home48;home48=function(){return _h.apply(this,arguments).replace(/€[\d.]+,00\b/g,m=>m.slice(0,-3))}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
