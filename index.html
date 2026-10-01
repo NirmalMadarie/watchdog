@@ -2326,6 +2326,47 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x52-yn{margin-top:8px;display:flex;gap:6px}
 .x52-agew{display:flex;gap:8px;margin-top:8px;align-items:center}.x52-age{width:110px;font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid #CBD5E1;border-radius:10px}
 .x52-c .btn.sm{margin-top:8px}
+/* ===== V53 · de hond loopt mee ===== */
+.x53-guide{display:flex;gap:12px;align-items:flex-start;margin:4px 0 14px}
+.x53-face{flex:0 0 64px;height:64px;border-radius:50%;background:#FDE68A center/cover no-repeat;border:3px solid #fff;box-shadow:0 6px 18px -6px rgba(180,83,9,.55),0 0 0 2px #F59E0B}
+.x53-face.sm{flex-basis:40px;height:40px;border-width:2px}
+.x53-bub{position:relative;flex:1;min-width:0;background:#fff;border:1.5px solid #FCD34D;border-radius:18px;border-top-left-radius:6px;padding:12px 14px;box-shadow:0 8px 22px -14px rgba(30,79,216,.35)}
+.x53-bub::before{content:"";position:absolute;left:-8px;top:14px;width:14px;height:14px;background:#fff;border-left:1.5px solid #FCD34D;border-bottom:1.5px solid #FCD34D;transform:rotate(45deg)}
+.x53-bub b{display:block;font-size:17px;line-height:1.3;color:#0E1B4D}
+.x53-bub p{margin:4px 0 0;font-size:15px;line-height:1.45;color:#1E293B}
+.x53-spk{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 12px;border-radius:999px;border:1.5px solid #CFE0FF;background:#F2F7FF;color:#1E4FD8;font:inherit;font-size:13.5px;font-weight:800;cursor:pointer}
+.x53-spk .i{width:16px;height:16px}.x53-spk.on{background:#1E4FD8;color:#fff;border-color:#1E4FD8}
+@keyframes x53pop{0%{opacity:0;transform:translateY(8px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes x53face{0%{transform:scale(.6) rotate(-12deg);opacity:0}70%{transform:scale(1.06) rotate(3deg);opacity:1}100%{transform:none}}
+.x53-in .x53-face{animation:x53face .55s cubic-bezier(.2,.9,.3,1.2) both}
+.x53-in .x53-bub{animation:x53pop .45s .18s ease-out both}
+@media (prefers-reduced-motion:reduce){.x53-in .x53-face,.x53-in .x53-bub{animation:none}}
+.x53-steps .x53-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.x53-pr{font-size:12.5px;font-weight:900;color:#B45309;background:#FEF3C7;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.x53-ol{list-style:none;margin:8px 0 0;padding:0}
+.x53-ol li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid #EEF0F6}.x53-ol li:first-child{border-top:0}
+.x53-ol b{display:block;font-size:15px;color:#0E1B4D}.x53-ol small{display:block;font-size:13.5px;color:#334155;margin-top:2px;line-height:1.4}
+.x53-ol li.done b{color:#047857}
+.x53-ck{flex:0 0 32px;height:32px;border-radius:50%;border:2px solid #1E4FD8;background:#fff;color:#1E4FD8;font:inherit;font-weight:900;display:grid;place-items:center;cursor:pointer}
+.x53-ck .i{width:17px;height:17px}.x53-ol li.done .x53-ck,.x53-ck.on{background:#047857;border-color:#047857;color:#fff}
+.x53-ck.sm{flex-basis:26px;height:26px;border-radius:8px}
+.x53-sb{margin-top:6px}
+.x53-win h3{display:flex;gap:6px;align-items:center}.x53-win.done{display:flex;gap:12px;align-items:center;border:2px solid #047857;background:linear-gradient(150deg,#fff 40%,#DCFCE7)}
+.x53-win.done b{display:block;font-size:17px;color:#047857}.x53-win.done small{display:block;color:#334155}
+.x53-wf .chips{display:flex;gap:6px;margin:4px 0 10px}.x53-wok{width:100%}
+.x53-nav{display:flex;justify-content:space-between;gap:10px;margin:6px 0 10px}
+.x53-job{padding:12px 0;border-top:1px solid #EEF0F6}.x53-job:first-of-type{border-top:0}
+.x53-jh{display:flex;gap:10px;align-items:flex-start}.x53-jh b{display:block;font-size:15.5px;color:#0E1B4D}.x53-jh small{display:block;font-size:13px;color:#64748B}
+.x53-jn{text-align:right;flex:0 0 auto}.x53-jn b{font-size:15px}.x53-jn small{display:block;font-size:11.5px;color:#64748B}.x53-jn em{display:block;font-style:normal;font-weight:900;color:#047857}
+.x53-warn{display:flex;gap:6px;align-items:flex-start;margin:8px 0 0;padding:8px 10px;border-radius:10px;background:#FFF7ED;color:#7C2D12;font-size:13.5px;line-height:1.4}.x53-warn .i{flex:0 0 16px;width:16px;height:16px;margin-top:2px}
+.x53-out{margin-top:8px}
+.x53-det p{font-size:15px;line-height:1.45}.x53-eur{font-weight:900;color:#047857}.x53-eur.neg{color:#C2410C}
+.x53-pm{font-size:22px!important;color:#1E4FD8}
+.x53-resume{display:flex;gap:10px;align-items:center;width:100%;margin:0 0 10px;padding:10px 12px;border-radius:14px;border:1.5px solid #FCD34D;background:#FFFBEB;font:inherit;text-align:left;cursor:pointer;color:#0E1B4D}
+.x53-resume small{display:block;font-size:12.5px;color:#B45309;font-weight:800}.x53-resume b{display:block;font-size:14.5px}.x53-resume em{font-style:normal;font-weight:900;color:#1E4FD8;white-space:nowrap}
+.x53-need{list-style:none;margin:6px 0 0;padding:0}.x53-need li{display:flex;gap:10px;align-items:flex-start;padding:7px 0}.x53-need b{font-size:14.5px;font-weight:700}
+.x53-rem{display:flex;gap:8px;align-items:flex-end;margin-top:10px}.x53-rem .f{flex:1;margin:0}.x53-rem input{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid #CBD5E1;border-radius:10px}
+.x53-warn details summary{cursor:pointer;font-weight:800;margin-top:4px;color:#9A3412}
 </style>
 </head>
 <body>
@@ -15557,8 +15598,8 @@ const STUDIE52={
  item(v){try{const o=K36.regs();const x=o&&(o.items||[]).find(i=>i.version===v);if(x){const z=reg42(x);return {naam:z.naam,wat:z.wat,officieel:x.title,url:x.url,g:o.g}}}catch(e){}
   const r=this.st()[v];return r?{naam:r.titel,wat:'',officieel:r.titel,url:r.url,g:r.gemeente}:null},
  async run(v){if(!this.ok(v)||this.busy[v])return;this.busy[v]=true;this.err[v]=null;refresh();try{DOG.set('searching')}catch(e){}
-  try{const j=await X48.post('/api/regeling-studie',{version:v},70000);
-   const keep=['version','titel','gemeente','url','samenvatting','voorWie','voorWieCitaat','wat','watCitaat','bedragCitaat','voorwaarden','aanvragen','aanvragenCitaat','termijn','termijnCitaat','weggelaten','truncated','source','studiedAt','let_op'];
+  try{const j=await X48.post('/api/regeling-studie',{version:v},100000);
+   const keep=['version','titel','gemeente','url','samenvatting','voorWie','voorWieCitaat','wat','watCitaat','bedragCitaat','voorwaarden','aanvragen','aanvragenCitaat','termijn','termijnCitaat','nodig','weggelaten','truncated','source','studiedAt','let_op'];
    const o={};keep.forEach(k=>{if(j[k]!==undefined)o[k]=j[k]});this.st()[v]=o;save();
    try{const c=this.check(o);GUIDE47.say(c.kind==='ja'?'Klaar! Volgens mij past deze regeling bij je. Kijk of het klopt.':c.kind==='nee'?'Klaar. Deze regeling past volgens mij niet bij je. Ik zeg waarom.':`Klaar. Ik heb nog ${c.open} ${c.open===1?'vraag':'vragen'} voor je.`)}catch(e){}
   }catch(e){this.err[v]=e.status===404?'De WATCHDOG-server is nog niet bijgewerkt (RC16 nodig).':e.nc?'Het lezen met AI staat nog niet aan op de server.':/geen server/.test(e.message)?'Ik heb nu geen verbinding met de WATCHDOG-server.':'Dat lukte niet: '+e.message}
@@ -15605,7 +15646,7 @@ V.studie=function(v){const it=STUDIE52.item(v),r=STUDIE52.st()[v];
   body=`<div class="card x52-ask"><h3>${I('search')} Zal ik dit voor je bestuderen?</h3>
    <p>Ik lees de officiële tekst en zet op een rij <b>voor wie</b> het is, <b>wat je krijgt</b> en <b>welke voorwaarden</b> er zijn. Bij alles laat ik de zin uit de regeling zien. Wat ik niet letterlijk terugvind, laat ik weg.</p>
    <p class="note">Daarna vergelijk ik de voorwaarden met Mijn situatie, hier op je telefoon. Naar de AI gaat alleen de openbare regelingstekst, niet jouw gegevens.</p>
-   ${busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik lees de regeling. Dit duurt ongeveer 20 seconden…</p>`:`<button class="btn x52-go" data-a="x52-studie" data-arg="${esc(v)}">${I('search')} Bestudeer dit voor mij</button>`}
+   ${busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik lees de regeling. Dit kan tot een minuut duren…</p>`:`<button class="btn x52-go" data-a="x52-studie" data-arg="${esc(v)}">${I('search')} Bestudeer dit voor mij</button>`}
    ${err?`<p class="x52-err">${esc(err)}</p>`:''}</div>`}
  else{const C=STUDIE52.check(r);
   const VD={ja:['#047857','#DCFCE7','check','Past waarschijnlijk bij jou','Op alles wat ik kon nagaan lijkt het te kloppen. Vraag het aan of bel je gemeente.'],
@@ -15642,6 +15683,240 @@ V.studie=function(v){const it=STUDIE52.item(v),r=STUDIE52.st()[v];
  }catch(e){console.warn('V52 hulp',e)}return h}}
 /* spaarrente: één uitkomst. Wat je op de spaarrente-pagina uitrekent, telt ook mee bij Kansen en Home */
 {const _rt=ACT['rt51'];ACT['rt51']=function(){_rt.apply(this,arguments);try{const R=S.ui.rente51||{};if(N(R.b)>0&&R.r1!==''&&R.r2!==''&&R.r1!=null&&R.r2!=null){KANS.st().data.spaar={b:N(R.b),r1:N(R.r1),r2:N(R.r2)};save()}}catch(e){}}}
+
+
+/* =====================================================================
+   V53 — DE HOND LOOPT MEE
+   1. "Bekijk" opent één scherm met alleen die vondst. Bovenaan verschijnt de hondenkop en vertelt in 1–2 zinnen
+      wat het is en wat je kunt doen (met "Lees voor"). Daaronder de vondst zelf en "Zo pak je het aan" in stappen.
+   2. Meldingen: één knop (Bekijk) + Later. "Meer info" is weg: het Bekijk-scherm ís de uitleg.
+      Een losse "Woef! N nieuwe vacatures"-melding gaat op in de vacature-melding (zelfde voor regelingen).
+      Alle tellers tonen hetzelfde getal: het aantal meldingen in "Nu van belang".
+   3. Het echte verschil bij een andere baan: wat je mogelijk aan toeslagen verliest, staat erbij.
+   4. "Gelukt?": jij vult in wat het opleverde → telt bij "Opgeleverd met WATCHDOG".
+   5. Aanvraaghulp bij regelingen: welke papieren (met citaat), waar, termijn, herinnering.
+   6. De hond onthoudt waar je bleef ("Je was bij stap 2 van 3").
+   7. Een pushmelding opent direct de vondst (#/vondst/vacatures, #/vondst/regelingen).
+   WATCHDOG solliciteert, vraagt aan of zegt op NOOIT zelf. Hij legt uit en zet klaar; jij beslist.
+   ===================================================================== */
+
+/* ---------- samenvoegen: één melding per onderwerp ---------- */
+{const _it=W41.items.bind(W41);W41.items=function(){let L=_it();try{
+  const hasJ=L.some(x=>/^kj:/.test(x.k)),hasR=L.some(x=>/^kr:/.test(x.k));let ch=false;
+  L=L.filter(x=>{if(!/^ev:/.test(x.k)||!x.ev)return true;const t=x.ev.type;
+   if((t==='vacature'&&hasJ)||(t==='reg'&&hasR)){if(!x.ev.read){x.ev.read=true;ch=true}return false}return true});
+  if(ch)try{save()}catch(e){}
+ }catch(e){console.warn('V53 merge',e)}return L}}
+
+/* ---------- het echte verschil bij een andere baan ---------- */
+const JOB53={
+ real(r){if(!r||!r.n||!(r.diff>0))return null;const out={net:r.n.m,diff:Math.round(r.diff),min:null,notes:[]};
+  let g=0;try{g=gross31(r.j.salary,JOBS.st().prefs.hours)}catch(e){}const brNew=g>0?Math.round(g*12*1.08):0;
+  let A=[];try{A=AUTO42.all()}catch(e){}const has=id=>A.some(a=>a.id===id);const partner=ME42.partner(),Z=TSL2026.zorg;
+  if(has('zorgt')){const grens=partner?Z.inkPartner:Z.inkAlleen,max=partner?Z.maxPartner:Z.maxAlleen;
+   if(!partner&&brNew>grens){out.min=Math.max(0,out.diff-max);out.notes.push(`zorgtoeslag vervalt (nu hooguit ${E(max)} p/m)`);out.why=`Met dit loon verdien je ongeveer ${E(brNew)} bruto per jaar (met vakantiegeld). De grens voor zorgtoeslag is ${E(grens)} in 2026.`}
+   else out.notes.push('zorgtoeslag wordt lager')}
+  if(has('huurt'))out.notes.push('huurtoeslag wordt lager of vervalt');
+  if(has('kwijt'))out.notes.push('kwijtschelding van gemeentebelastingen vervalt waarschijnlijk');
+  try{const o=K36.regs();if(o&&o.items&&o.items.some(i=>/inkomenstoeslag/i.test(i.title)))out.notes.push('inkomenstoeslag van de gemeente vervalt waarschijnlijk')}catch(e){}
+  return out},
+ line(q){if(!q)return '';if(!q.notes.length)return `Netto ongeveer ${E(q.diff)} per maand meer.`;
+  return `Maar: ${q.notes.join('; ')}. ${q.min!=null?`Echt verschil: minstens ${E(q.min)} per maand.`:'Het echte verschil is dus kleiner.'}`}
+};
+/* melding: noem het meteen eerlijk */
+{const _it=W41.items.bind(W41);W41.items=function(){const L=_it();try{const o=K36.jobs();if(o&&o.better.length){const q=JOB53.real(o.better[0]);
+  L.forEach(x=>{if(/^kj:/.test(x.k)&&q&&q.notes.length&&!/toeslag/.test(x.s||''))x.s=(x.s||'')+(q.min!=null?` Na je toeslagen: minstens ${E(q.min)}.`:' Let op: je toeslagen kunnen dan lager worden.')})}}catch(e){}return L}}
+
+/* ---------- voortgang: de hond onthoudt waar je bleef ---------- */
+const PROG53={
+ st(){S.ui.prog53=S.ui.prog53||{};return S.ui.prog53},
+ get(r){return this.st()[r]||null},
+ set(r,o){const P=this.st();P[r]=Object.assign(P[r]||{done:[]},o,{at:Date.now()});save()},
+ toggle(r,i,n,t){const p=this.get(r)||{done:[]};const d=new Set(p.done||[]);d.has(i)?d.delete(i):d.add(i);this.set(r,{done:[...d].sort(),n,t})},
+ open(){const P=this.st(),now=Date.now();return Object.keys(P).map(r=>Object.assign({r},P[r])).filter(p=>!p.fin&&p.n&&(p.done||[]).length>0&&(p.done||[]).length<p.n&&now-p.at<30*864e5).sort((a,b)=>b.at-a.at)}
+};
+
+/* ---------- welke vondst, welk scherm ---------- */
+const FOUND53={
+ list(){let L=[];try{L=W41.items()}catch(e){}return L.filter(x=>!/^task:/.test(x.k))},
+ alias(x){const k=x.k||x;return /^kj:/.test(k)?'vacatures':/^kr:/.test(k)?'regelingen':k},
+ find(a){const L=this.list();if(a==='vacatures')return L.find(x=>/^kj:/.test(x.k))||null;if(a==='regelingen')return L.find(x=>/^kr:/.test(x.k))||null;return L.find(x=>x.k===a)||null},
+ kans(){return this.list().filter(x=>/^(kj|kr|ka|shot):/.test(x.k)||t41Of(x)==='kans')},
+ open(k){const x=this.list().find(i=>i.k===k);if(x&&/^ev:/.test(k)&&x.ev){try{markRead(x.ev);save()}catch(e){}}
+  if(x&&/^ka:/.test(k)&&x.a42&&x.a42.go){go(x.a42.go);return}
+  if(x&&/^task:/.test(k)){const b=(x.btn||[])[0];if(b&&ACT[b[1]]){ACT[b[1]](b[2]);return}}
+  go('vondst/'+this.alias(x||k))}
+};
+ACT['x53-view']=k=>{try{closeSheet()}catch(e){}FOUND53.open(k)};
+/* elke "meer over"-ingang gaat naar het Bekijk-scherm */
+{const _o=ACT['w41-open'];ACT['w41-open']=function(k){if(/^task:/.test(k||''))return _o.apply(this,arguments);try{closeSheet()}catch(e){}FOUND53.open(k)}}
+
+/* ---------- de hondenkop die praat ---------- */
+function guide53(t,s,o){o=o||{};const t0=String(t).replace(/<[^>]+>/g,'').trim(),plain=(t0+(/[.!?…]$/.test(t0)?' ':'. ')+String(s||'')).replace(/<[^>]+>/g,'').replace(/\.\.+/g,'.').replace(/\s+/g,' ').trim();
+ return `<div class="x53-guide" role="status"><span class="x53-face" aria-hidden="true" style="background-image:url(${IMG.dogFace})"></span>
+  <div class="x53-bub"><b>${t}</b>${s?`<p>${s}</p>`:''}<button class="x53-spk" data-a="x53-speak" data-arg="${esc(plain)}" aria-label="Lees voor wat de hond zegt">${I('volume')}<span>Lees voor</span></button></div></div>`}
+let X53_TALK=false;
+ACT['x53-speak']=(txt,el)=>{const P=typeof VOICEP!=='undefined'&&VOICEP.browser;
+ if(!P||!P.capability().speak){toast('Voorlezen werkt niet in deze browser');return}
+ if(X53_TALK){try{P.cancelSpeech()}catch(e){}X53_TALK=false;$$('.x53-spk').forEach(b=>b.classList.remove('on'));return}
+ X53_TALK=true;if(el&&el.classList)el.classList.add('on');try{voiceUnlock()}catch(e){}
+ try{P.speak(String(txt||''),()=>{X53_TALK=false;$$('.x53-spk').forEach(b=>b.classList.remove('on'))})}catch(e){X53_TALK=false}};
+
+/* ---------- stappen en "Gelukt?" ---------- */
+function steps53(r,L,title){const p=PROG53.get(r)||{done:[]},d=new Set(p.done||[]),n=L.length,k=[...d].filter(i=>i<n).length;
+ return `<div class="card x53-steps"><div class="x53-sh"><h3>Zo pak je het aan</h3><span class="x53-pr">${k===n?'Klaar':'Stap '+Math.min(n,k+1)+' van '+n}</span></div>
+  <ol class="x53-ol">${L.map((s,i)=>`<li class="${d.has(i)?'done':''}"><button class="x53-ck" data-a="x53-step" data-arg="${esc(r)}|${i}|${n}|${esc(title)}" aria-pressed="${d.has(i)}" aria-label="${d.has(i)?'Gedaan':'Markeer als gedaan'}: ${esc(String(s.t).replace(/<[^>]+>/g,''))}">${d.has(i)?I('check'):i+1}</button>
+   <div class="grow"><b>${s.t}</b>${s.s?`<small>${s.s}</small>`:''}${s.b?`<div class="x53-sb">${s.b}</div>`:''}</div></li>`).join('')}</ol>
+  <p class="fine">Tik op het nummer als je een stap gedaan hebt. Ik onthoud waar je bent.</p></div>`}
+ACT['x53-step']=a=>{const [r,i,n,...t]=a.split('|');PROG53.toggle(r,+i,+n,t.join('|'));refresh()};
+function win53(r,title,o){o=o||{};const st=(S.ui.win53||{})[r]||{},p=PROG53.get(r)||{};
+ if(p.fin)return `<div class="card x53-win done"><span class="x51-coin">${I('coins')}</span><div><b>Gelukt!</b><small>${p.won?`${E(p.won)} ${p.per==='m'?'per maand':'eenmalig'} telt mee bij "Opgeleverd met WATCHDOG".`:'Goed gedaan.'}</small></div></div>`;
+ return `<div class="card x53-win"><h3>${I('star')} Gelukt?</h3><p class="note">${o.q||'Laat het me weten, dan tel ik het mee bij wat WATCHDOG je opleverde. Alleen wat jij invult, telt.'}</p>
+  ${st.open?`<div class="x53-wf"><label class="f"><span>Wat leverde het op?</span><input id="w53-b" inputmode="decimal" placeholder="Bijv. 85" value="${esc(st.b||'')}"></label>
+   <div class="chips">${[['m','Per maand'],['o','Eenmalig']].map(c=>`<button class="chip${(st.per||o.per||'m')===c[0]?' on':''}" data-a="x53-wper" data-arg="${esc(r)}|${c[0]}">${c[1]}</button>`).join('')}</div>
+   <button class="btn x53-wok" data-a="x53-wsave" data-arg="${esc(r)}|${esc(title)}">Opslaan</button></div>`
+  :`<div class="btn-row"><button class="btn" data-a="x53-wopen" data-arg="${esc(r)}">Ja, gelukt</button>${o.k?`<button class="btn ghost" data-a="x53-no" data-arg="${esc(o.k)}">Niet voor mij</button><button class="btn ghost" data-a="x53-later" data-arg="${esc(o.k)}">Later</button>`:''}</div>`}</div>`}
+const W53=r=>{S.ui.win53=S.ui.win53||{};S.ui.win53[r]=S.ui.win53[r]||{};return S.ui.win53[r]};
+ACT['x53-wopen']=r=>{W53(r).open=true;save();refresh();setTimeout(()=>{const i=$('#w53-b');if(i)i.focus()},80)};
+ACT['x53-wper']=a=>{const [r,p]=a.split('|');const w=W53(r);w.per=p;const i=$('#w53-b');if(i)w.b=i.value;save();refresh()};
+ACT['x53-wsave']=a=>{const i=a.indexOf('|'),r=a.slice(0,i),title=a.slice(i+1);const w=W53(r),b=Math.round(N(String(($('#w53-b')||{}).value||'').replace(',','.'))*100)/100;
+ if(!(b>0)){toast('Vul in hoeveel het opleverde');return}const per=w.per||'m';
+ WINS.add(title,per==='m'?b:0,per==='m'?0:b,'vondst');PROG53.set(r,{fin:true,won:b,per});w.open=false;
+ const k=FOUND53.find(r.replace(/^vondst\//,''));if(k)try{ME.st().wake.done[k.k]=Date.now()}catch(e){}save();
+ try{VIDDOG.happy()}catch(e){}try{playWatchdogSound('tap')}catch(e){}
+ toast(`Top! ${per==='m'?E2(b)+' per maand':E2(b)} telt als opgeleverd.`,false,true);refresh()};
+ACT['x53-no']=k=>{try{ME.st().wake.done[k]=Date.now();save()}catch(e){}toast('Oké, die laat ik weg.');go('notifications')};
+ACT['x53-later']=k=>{try{ME.st().wake.snooze[k]=Date.now()+20*3600e3;save()}catch(e){}toast('Ik herinner je er morgen weer aan');go('notifications')};
+
+/* ---------- inhoud per soort vondst ---------- */
+function jobs53(o){return `<div class="card x53-jobs"><h3>${I('briefcase')} ${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}</h3>
+ <small class="fine">${esc(o.L.source||'Google Jobs')} · ${evAgo(o.L.at)} · netto is een schatting met de belastingtarieven van 2026</small>
+ ${o.better.map(r=>{const q=JOB53.real(r),j=r.j;return `<div class="x53-job"><div class="x53-jh"><div class="grow"><b>${esc(j.title)}</b><small>${esc([j.company,j.location].filter(Boolean).join(' · '))}</small></div>
+  <div class="x53-jn"><b>± ${E(r.n.m)}</b><small>netto p/m</small><em>+${E(r.diff)} p/m</em></div></div>
+  ${q&&q.notes.length?`<div class="x53-warn">${I('info')}<div>${esc(JOB53.line(q))}${q.why?`<details><summary>Hoe weet je dat?</summary>${esc(q.why)}</details>`:''}</div></div>`:''}
+  ${j.url?`<a class="btn sm ghost x53-out" href="${esc(wdSafeUrl?wdSafeUrl(j.url,j.via,j.title):j.url)}" target="_blank" rel="noopener">Open vacature ›</a>`:''}</div>`}).join('')}
+ ${(o.rows.length>o.better.length)?`<button class="btn sm ghost" data-a="go" data-arg="verdienen">Alle ${o.rows.length} vacatures</button>`:''}</div>`}
+function build53(x){const k=x.k,tp=t41Of(x),T=T41[tp]||T41.kans;let r='vondst/'+FOUND53.alias(x);
+ if(/^kj:/.test(k)){const o=K36.jobs();if(!o||!o.better.length)return null;const b=o.better[0],q=JOB53.real(b);
+  const J=JOBS.st(),watching=(J.watches||[]).length>0;
+  return {top:'Vacatures',r,title:'Andere baan',say:[`Ik vond ${o.better.length} ${plural(o.better.length,'baan','banen')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}.`,
+   `De beste geeft ongeveer ${E(b.diff)} netto per maand meer${q&&q.min!=null?`, na je toeslagen minstens ${E(q.min)}`:q&&q.notes.length?', maar je toeslagen worden lager':''}. Solliciteren doe je zelf; ik help je op weg.`],
+   body:jobs53(o),
+   steps:[{t:'Lees de vacature',s:'Past het werk, de uren en de reistijd bij jou? Kijk ook naar het contract.'},
+    {t:'Reken het echte verschil',s:q&&q.notes.length?esc(JOB53.line(q)):'Netto staat hierboven. Heb je toeslagen? Doe dan de proefberekening met je nieuwe loon.',b:`<a class="link" href="${TSL2026.proef}" target="_blank" rel="noopener">Proefberekening toeslagen ›</a>`},
+    {t:'Solliciteer via de werkgever',s:'Dat doe jij, via de link van de vacature. WATCHDOG solliciteert nooit namens jou.'},
+    {t:'Blijf op de hoogte',s:watching?'Ik meld nieuwe vacatures al. Je hoeft niets te doen.':'Zal ik nieuwe vacatures melden?',b:watching?'':`<button class="btn sm ghost" data-a="v31-watch">${I('bell')} Meld nieuwe vacatures</button>`}],
+   win:{q:'Heb je een nieuwe baan? Vul in hoeveel je er netto per maand op vooruit gaat.',per:'m',k}}}
+ if(/^kr:/.test(k)){const o=K36.regs();if(!o||!o.items.length)return null;const n=reg42List(o.items).A.length;
+  return {top:'Regelingen',r,title:'Regelingen '+o.g,say:[`Ik vond ${n} ${plural(n,'regeling','regelingen')} van gemeente ${esc(o.g)} ${n===1?'die voor jou kan zijn':'die voor jou kunnen zijn'}.`,'Tik op een regeling. Ik lees de officiële tekst voor je en zeg of hij bij je past. Dan hoef jij het niet te lezen.'],
+   body:k36Regs(),
+   steps:[{t:'Kies een regeling',s:'Tik erop en dan op “Bestudeer dit voor mij”.'},{t:'Kijk of hij bij je past',s:'Ik vergelijk de voorwaarden met Mijn situatie. Beantwoord mijn vragen als ik iets niet weet.'},{t:'Vraag hem aan bij je gemeente',s:'Ik zet op een rij welke papieren je nodig hebt. Aanvragen doe je zelf.'}],
+   win:{q:'Heb je een regeling gekregen? Vul in wat je kreeg.',per:'o',k}}}
+ if(/^ka:/.test(k)&&x.a42){const a=x.a42,det=String(a.detail||'').replace(/<ol class="g40-ol">[\s\S]*?<\/ol>/g,'');
+  const toes=a.cat==='toeslag',kw=a.id==='kwijt';
+  const st=toes?[{t:'Doe de proefberekening',s:'10 minuten. Dan zie je je echte bedrag.',b:`<a class="link" href="${TSL2026.proef}" target="_blank" rel="noopener">Proefberekening Dienst Toeslagen ›</a>`},
+    {t:'Vraag het aan',s:'Via Mijn toeslagen. Dat kan tot 1 september van het jaar erna, dus ook met terugwerkende kracht.',b:`<a class="link" href="${TOES_URL}" target="_blank" rel="noopener">Mijn toeslagen ›</a>`},
+    {t:'Geef wijzigingen op tijd door',s:'Inkomen, huur of samenwonen veranderd? Geef het door, anders moet je terugbetalen.'}]
+   :kw?[{t:'Pak je aanslag erbij',s:'Van de gemeente of het waterschap.'},{t:'Vraag kwijtschelding aan',s:'Bij je gemeente of belastingsamenwerking (staat op de aanslag). Vaak kan dat online.'},{t:'Heb je bijstand?',s:'Dan krijg je het soms automatisch. Vraag het na.'}]
+   :String(a.detail||'').match(/<li>[\s\S]*?<\/li>/g)?String(a.detail).match(/<li>([\s\S]*?)<\/li>/g).slice(0,4).map(li=>({t:li.replace(/<\/?li>/g,'')})):[{t:'Lees wat er staat en kies wat je wilt doen.'}];
+  return {top:toes?'Toeslag':kw?'Gemeente':'Nu te doen',r,title:strip40(a.t),say:[strip40(a.t)+'.',`${a.s}${toes?' Zeker weet je het met de proefberekening.':''}`],
+   body:`<div class="card x53-det"><small class="fine">Bron: ${esc(a.src||'')}</small>${det}${N(a.eurMax)>0?`<p class="x53-eur">Tot ${E(N(a.eurMax))} per jaar (officieel maximum 2026)</p>`:''}</div>`,
+   steps:st,win:{q:'Gekregen? Vul in hoeveel, dan telt het mee.',per:toes?'m':'o',k}}}
+ /* alle andere meldingen */
+ let extra='',own=null;
+ try{if(/^imp:/.test(k)&&S.imp){const id=k.slice(4),ins=impInsights(S.imp).find(i=>i.id===id);
+   if(/^dbl:/.test(id)){const d=(S.imp.dups||[]).find(z=>'dbl:'+z.key+z.d2===id);if(d)own=[{t:'Controleer het',s:'Kijk in je bankapp of het echt twee keer is afgeschreven.'},{t:'Automatische incasso?',s:'Die kun je binnen 8 weken zonder reden terugboeken (“terugboeken” of “storneren” in je bankapp).'},{t:'Pin of iDEAL?',s:`Vraag het geld terug bij ${esc(d.p)}. Lukt dat niet, bel je bank.`}]}
+   if(ins&&ins.why)extra=`<details class="w41-why"><summary>Waarom zie ik dit?</summary>${whyHTML(ins.t,ins.why)}</details>`}}catch(e){console.warn('V53 imp',e)}
+ const btns=(x.btn||[]).filter(y=>y[1]!=='wake-later'&&y[1]!=='x53-view').slice(0,2);
+ const body=`<div class="card x53-det" style="--c:${T.c};--bg:${T.bg}"><span class="w41-lab">${T.lab}</span>${x.s?`<p>${x.s}</p>`:''}
+  ${x.eur>0?`<p class="x53-eur${x.eurT?' neg':''}">${x.eurT||'Tot '+E(Math.round(x.eur))+' per jaar'}</p>`:''}<small class="fine">${esc(w41Src(x))}</small>${extra}
+  ${btns.length?`<div class="btn-row">${btns.map((y,i)=>`<button class="btn ${i?'ghost':''}" data-a="${y[1]}" data-arg="${esc(y[2]||'')}">${esc(y[0])}</button>`).join('')}</div>`:''}</div>`;
+ const money=x.eur>0&&!x.eurT||/^(imp|shot):/.test(k);
+ return {top:T.lab.charAt(0)+T.lab.slice(1).toLowerCase(),r,title:strip40(x.t),say:[strip40(x.t)+(/[.!?]$/.test(strip40(x.t))?'':'.'),x.s?strip40(x.s):''],body,
+  steps:own||(W41_DO[tp]||W41_DO.info).map(s=>({t:s})),win:money?{q:'Geregeld? Vul in wat het opleverde, dan telt het mee.',per:'m',k}:null,k}}
+
+V.vondst=function(a){a=decodeURIComponent(a||'');const L=FOUND53.list(),x=FOUND53.find(a);
+ if(!x){const pg=PROG53.get('vondst/'+a);
+  if(pg&&pg.fin)return `<div class="wrap x53">${topbar('Gelukt',{back:1})}${guide53('Woef! Goed gedaan.',pg.won?`${E2(pg.won)} ${pg.per==='m'?'per maand':'eenmalig'} telt nu mee bij “Opgeleverd met WATCHDOG”.`:'Deze vondst is geregeld.')}
+   <div class="btn-row"><button class="btn" data-a="go" data-arg="notifications">Naar je meldingen</button><button class="btn ghost" data-a="go" data-arg="kansen">Naar Kansen</button></div></div>`;
+  /* via een pushmelding: gegevens zijn misschien nog niet binnen */
+  if((a==='vacatures'||a==='regelingen')&&!X53_SYNCED[a]){X53_SYNCED[a]=1;setTimeout(()=>{try{const p=a==='vacatures'?(JOBS.syncSrv?JOBS.syncSrv():SRV.sync()):GEMREG.load({paint:false});Promise.resolve(p).catch(()=>{}).then(()=>{X53_SYNCED[a]=2;if(route[0]==='vondst')render(false)})}catch(e){}},30)}
+  return `<div class="wrap x53">${topbar('Vondst',{back:1})}${guide53('Even kijken…',X53_SYNCED[a]===1?'Ik haal je nieuwste vondsten op.':'Deze vondst is er niet meer. Misschien heb je hem al geregeld of weggezet.')}
+   <div class="btn-row"><button class="btn" data-a="go" data-arg="notifications">Naar je meldingen</button><button class="btn ghost" data-a="go" data-arg="kansen">Naar Kansen</button></div></div>`}
+ const B=build53(x);if(!B)return `<div class="wrap x53">${topbar('Vondst',{back:1})}${guide53('Deze vondst is er niet meer.','Kijk bij je meldingen wat er nu speelt.')}</div>`;
+ const i=Math.max(0,L.findIndex(y=>y.k===x.k)),n=L.length,prev=i>0?L[i-1]:null,next=i<n-1?L[i+1]:null;
+ PROG53.set(B.r,{n:B.steps.length,t:B.title,seen:true});
+ return `<div class="wrap x53">${topbar(B.top,{back:1,sub:n>1?`Vondst ${i+1} van ${n}`:'Wat ik voor je vond'})}
+  ${guide53(B.say[0],B.say[1])}
+  ${B.body}
+  ${steps53(B.r,B.steps,B.title)}
+  ${B.win?win53(B.r,B.title,B.win):''}
+  ${n>1?`<div class="x53-nav">${prev?`<button class="btn ghost" data-a="x53-view" data-arg="${esc(prev.k)}">‹ Vorige</button>`:'<span></span>'}${next?`<button class="btn" data-a="x53-view" data-arg="${esc(next.k)}">Volgende vondst ›</button>`:`<button class="btn ghost" data-a="go" data-arg="notifications">Alle meldingen</button>`}</div>`:''}
+  <p class="fine">WATCHDOG solliciteert, vraagt aan of zegt op nooit zelf. Ik leg uit en zet klaar; jij beslist.</p></div>`};
+const X53_SYNCED={};
+
+/* ---------- meldingen: één knop ---------- */
+{const _r=w41Row;w41Row=function(x){let h=_r.apply(this,arguments);try{const k=String(x.k);
+  const own=/^task:/.test(k)?(x.btn||[]).filter(y=>y[1]!=='wake-later')[0]:null;
+  const main=own?`<button class="btn sm w41-pb" data-a="${own[1]}" data-arg="${esc(own[2]||'')}">${esc(own[0])}</button>`:`<button class="btn sm w41-pb" data-a="x53-view" data-arg="${esc(k)}">Bekijk ›</button>`;
+  h=h.replace(/<div class="w41-btns">[\s\S]*?<\/div>/,`<div class="w41-btns">${main}<button class="btn sm ghost" data-a="wake-later" data-arg="${esc(k)}">Later</button></div>`);
+ }catch(e){console.warn('V53 row',e)}return h}}
+
+/* ---------- Kansen: de ballon en het geldvak gaan naar de vondst ---------- */
+x52Show=function(){ACT['x52-found']();return true};
+ACT['x52-found']=()=>{const K=FOUND53.kans(),f=K[0]||FOUND53.list()[0];if(f){FOUND53.open(f.k);return}go('kansen')};
+{const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);try{const P=MONEY52.pot();
+  if(!(P.jaar>0)&&P.baanPm>0){
+   h=h.replace(/<div class="k32-t x52-tap"([^>]*)><small>Mogelijk nog te halen<\/small><b>[^<]*<\/b><span>[^<]*<\/span><\/div>/,`<div class="k32-t x52-tap"$1><small>Mogelijk nog te halen</small><b class="x53-pm">tot +${E(P.baanPm)}</b><span>per maand, alleen bij een andere baan · nog niet zeker</span></div>`);
+   h=h.replace(/<p class="x52-baan">[\s\S]*?<\/p>/,'')}
+ }catch(e){console.warn('V53 kansen',e)}return h}}
+
+/* ---------- Home: verder waar je bleef ---------- */
+{const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);try{const o=PROG53.open()[0];if(o){const d=(o.done||[]).length;
+  const card=`<button class="x53-resume" data-a="go" data-arg="${esc(o.r)}"><span class="x53-face sm" aria-hidden="true" style="background-image:url(${IMG.dogFace})"></span><span class="grow"><small>Je was bij stap ${Math.min(o.n,d+1)} van ${o.n}</small><b>${esc(o.t||'Verder waar je bleef')}</b></span><em>Verder ›</em></button>`;
+  h=h.replace(/(<section class="w41-radar"[^>]*>)/,'$1'+card)}}catch(e){console.warn('V53 resume',e)}return h}}
+
+/* ---------- één getal voor alle tellers ---------- */
+const C53={n(){try{return W41.items().length}catch(e){return 0}},k(){try{return K36.count()}catch(e){return 0}}};
+w41Badges=function(){try{const nb=$('#nav');if(!nb)return;const n=C53.n(),kn=C53.k();
+ const set=(k,v,c)=>{const b=nb.querySelector(`[data-nav="${k}"]`);if(!b)return;let s=b.querySelector('.w41-bd');if(!v){if(s)s.remove();return}if(!s){s=document.createElement('i');s.className='w41-bd';b.appendChild(s)}s.textContent=v>9?'9+':v;s.style.background=c;s.setAttribute('aria-label',v+(k==='kansen'?' gevonden':' meldingen'))};
+ set('home',n,'#E11D48');set('kansen',kn,'#1E4FD8')}catch(e){}};
+function bells53(){const n=C53.n();$$('.bellb').forEach(b=>{let i=b.querySelector('.badge');if(!n){if(i)i.remove();b.setAttribute('aria-label','Meldingen');return}
+  if(!i){i=document.createElement('i');i.className='badge';b.appendChild(i)}i.textContent=n>9?'9+':n;b.setAttribute('aria-label',`Meldingen (${n})`)});
+ if(route[0]==='notifications'){const s=$('#main .top-t small');if(s)s.textContent=n?`${n} ${n===1?'melding':'meldingen'}`:'Alles rustig'}}
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{bells53();w41Badges()}catch(e){}
+  try{if(route[0]==='vondst'||route[0]==='studie'){const g=$('#main .x53-guide');if(g&&!RM())g.classList.add('x53-in')}}catch(e){}return r}}
+
+/* ---------- aanvraaghulp bij regelingen (op de studiepagina) ---------- */
+{const _s=V.studie;V.studie=function(v){let h=_s.apply(this,arguments);try{const r=STUDIE52.st()[v];if(!r)return h;const it=STUDIE52.item(v)||{};
+  const C=STUDIE52.check(r),route='studie/'+v,nm=it.naam||r.titel||'Regeling';
+  const nd=(S.ui.nodig53=S.ui.nodig53||{})[v]||{};const L=r.nodig||[];
+  const q=encodeURIComponent((nm+' aanvragen gemeente '+(r.gemeente||it.g||'')).trim());
+  const hulp=`<div class="card x53-apply"><h3>${I('pencil')} Aanvragen: zo doe je het</h3>
+   ${r.aanvragen?`<div class="x52-f"><small>Waar</small><p>${esc(r.aanvragen)}</p>${X52Q(r.aanvragenCitaat)}</div>`:`<div class="x52-f"><small>Waar</small><p>Bij gemeente ${esc(r.gemeente||it.g||'')}. De tekst noemt niet precies hoe; vaak kan het online.</p></div>`}
+   ${r.termijn?`<div class="x52-f"><small>Termijn</small><p>${esc(r.termijn)}</p>${X52Q(r.termijnCitaat)}</div>`:''}
+   <div class="x52-f"><small>Wat je nodig hebt</small>${L.length?`<ul class="x53-need">${L.map((z,i)=>`<li><button class="x53-ck sm${nd[i]?' on':''}" data-a="x53-need" data-arg="${esc(v)}|${i}" aria-pressed="${!!nd[i]}" aria-label="${nd[i]?'Heb ik':'Nog niet'}: ${esc(z.tekst)}">${nd[i]?I('check'):''}</button><div class="grow"><b>${esc(z.tekst)}</b>${X52Q(z.citaat)}</div></li>`).join('')}</ul>`:`<p class="note">De regeling noemt geen papieren. Meestal vraagt de gemeente je ID en bewijs van je inkomen (loonstroken of uitkeringsspecificaties). Vraag het na.</p>`}</div>
+   <div class="btn-row"><a class="btn ghost" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">${I('search')} Zoek het aanvraagformulier</a></div>
+   <div class="x53-rem"><label class="f"><span>Herinner me op</span><input type="date" id="x53-rd" value="${X48.iso(Date.now()+7*864e5)}"></label><button class="btn sm ghost" data-a="x53-rem" data-arg="${esc(nm)}">${I('bell')} Zet in Bewaken</button></div>
+   <p class="fine">Aanvragen doe jij. WATCHDOG vult niets in en verstuurt niets namens jou.</p></div>`;
+  const stp=[{t:'Laat me de regeling bestuderen',s:'Klaar: je ziet hierboven wat erin staat.'},{t:'Kijk of hij bij je past',s:C.kind==='ja'?'Volgens mij wel.':C.kind==='nee'?'Volgens mij niet. Klopt je situatie niet? Pas Mijn situatie aan.':'Beantwoord mijn vragen hierboven.'},{t:'Verzamel je papieren',s:L.length?`${Object.values(nd).filter(Boolean).length} van ${L.length} klaar.`:'ID en bewijs van je inkomen.'},{t:'Vraag het aan bij de gemeente',s:'Dat doe je zelf. Tik daarna op het nummer, dan weet ik het.'}];
+  const p=PROG53.get(route)||{done:[]};if(!(p.done||[]).includes(0))PROG53.set(route,{done:[0].concat(p.done||[]),n:stp.length,t:nm});else PROG53.set(route,{n:stp.length,t:nm});
+  if(C.kind==='ja'&&!(PROG53.get(route).done||[]).includes(1)){const q2=PROG53.get(route);PROG53.set(route,{done:[...new Set((q2.done||[]).concat([1]))].sort()})}
+  if(L.length&&L.every((z,i)=>nd[i])){const q3=PROG53.get(route);if(!(q3.done||[]).includes(2))PROG53.set(route,{done:[...new Set((q3.done||[]).concat([2]))].sort()})}
+  const add=hulp+steps53(route,stp,nm)+win53(route,nm,{q:'Kreeg je het? Vul in hoeveel, dan telt het mee bij wat WATCHDOG je opleverde.',per:'o'});
+  const g=guide53(C.kind==='ja'?'Deze past volgens mij bij je!':C.kind==='nee'?'Deze past volgens mij niet.':C.kind==='open'?'Ik heb nog een paar vragen.':'Ik heb de regeling gelezen.',C.kind==='ja'?'Hieronder zie je wat je nodig hebt en waar je het aanvraagt.':C.kind==='nee'?'Ik zeg hieronder waarom. Klopt iets niet, pas dan Mijn situatie aan.':C.kind==='open'?'Beantwoord ze hieronder, dan zeg ik of hij bij je past.':'Lees wat erin staat; vraag het na bij je gemeente.');
+  h=h.replace(/(<div class="card x52-head">)/,g+'$1');
+  h=h.replace(/(<div class="card x52-src">)/,add+'$1');
+  h=h.replace(/<div class="x52-f"><small>Hoe vraag je het aan<\/small><p>[^<]*<\/p>(?:<details[\s\S]*?<\/details>)?<\/div>/,'').replace(/<div class="card x52-fs"><\/div>/,'');
+ }catch(e){console.warn('V53 studie',e)}return h}}
+{const _s=V.studie;V.studie=function(v){let h=_s.apply(this,arguments);try{if(!STUDIE52.st()[v]&&h.indexOf('x53-guide')<0){const busy=STUDIE52.busy[v];
+  h=h.replace(/(<div class="card x52-head">)/,guide53(busy?'Ik lees de regeling…':'Zal ik deze regeling voor je lezen?',busy?'Dat kan tot een minuut duren. Blijf gerust even op dit scherm.':'Dan hoef jij het niet te doen. Tik op “Bestudeer dit voor mij”.')+'$1')}}catch(e){}return h}}
+ACT['x53-need']=a=>{const [v,i]=a.split('|');const o=(S.ui.nodig53=S.ui.nodig53||{});o[v]=o[v]||{};o[v][i]=!o[v][i];save();refresh()};
+ACT['x53-rem']=nm=>{const d=($('#x53-rd')||{}).value;if(!d){toast('Kies een datum');return}TERM48.add('Aanvragen: '+nm,d,'eigen')};
+
+/* Kansen: de hond telt wat er in "Gevonden" staat, net als het tabje */
+K36.count=function(){try{return FOUND53.kans().length}catch(e){return 0}};
+C53.k=()=>{try{return FOUND53.kans().length}catch(e){return 0}};
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
