@@ -2410,6 +2410,28 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 @media print{body.cv54-printing>*:not(#cv54print){display:none!important}body.cv54-printing #cv54print{display:block;margin:0;padding:0;color:#111;font-family:Arial,Helvetica,sans-serif}}
 .x54-crisis a{display:inline!important;font-weight:900}
 .x54 .x48-2>*{min-width:0}.x54 .f input{width:100%;min-width:0;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border:1.5px solid #CBD5E1;border-radius:12px}
+/* ===== V55 · ondernemen ===== */
+.x55-lab{flex:0 0 auto;font-size:11px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.x55-lab.feit{color:#065F46;background:#D1FAE5}.x55-lab.schat{color:#92400E;background:#FEF3C7}.x55-lab.advies{color:#1A3FA8;background:#E3EDFF}.x55-lab.onb{color:#475569;background:#E2E8F0}
+.x55-q{border:2px solid #FCD34D;background:#FFFBEB}.x55-q>small{font-size:12px;font-weight:900;color:#B45309;text-transform:uppercase;letter-spacing:.04em}.x55-q h3{margin:4px 0 6px;font-size:18px}
+.x55-in{display:flex;gap:8px;align-items:stretch}.x55-in input{flex:1;min-width:0;font:inherit;font-size:17px;padding:11px 12px;border:1.5px solid #CBD5E1;border-radius:12px;background:#fff}
+.x55-opts{display:flex;flex-direction:column;gap:8px}.x55-opts .btn{background:#fff;border:1.5px solid #CFE0FF}
+.x55-unk{display:block;margin-top:10px;border:0;background:transparent;color:#475569;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px 0}
+.x55-ex{display:flex;flex-direction:column;gap:6px;margin-top:12px}.x55-exb{border:1.5px dashed #B4CEFF;background:#F2F7FF;border-radius:12px;padding:9px 12px;font:inherit;font-size:14px;color:#1A3FA8;text-align:left;cursor:pointer}
+.x55-mg{font-size:15.5px;line-height:1.5}
+.x55-tw{overflow-x:auto;margin:8px 0}.x55-t{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.x55-t th,.x55-t td{padding:8px 6px;text-align:right;border-bottom:1px solid #EEF0F6;font-size:14.5px}
+.x55-t th:first-child,.x55-t td:first-child{text-align:left}.x55-t th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#64748B}.x55-t .pos{color:#047857;font-weight:900}.x55-t .neg{color:#C2410C;font-weight:900}
+.x55-goal{margin-top:10px;padding:12px;border-radius:14px;background:#F0FDFA;border:1.5px solid #99F6E4}.x55-goal>b{display:block;font-size:16px;color:#115E59;margin-bottom:6px}
+.x55-vd small+small{margin-top:4px}
+.x55-h{margin:12px 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.04em}.x55-h.ok{color:#047857}.x55-h.no{color:#C2410C}.x55-h.unk{color:#475569}
+.x55-test{margin:12px 0 6px;padding:10px 12px;border-radius:12px;background:#FFFBEB;border-left:4px solid #F59E0B;font-size:15px;line-height:1.45}
+.x55-inc{padding:10px 0;border-top:1px solid #EEF0F6}.x55-inc:first-of-type{border-top:0}.x55-inc b{display:block}.x55-inc p{margin:3px 0;font-size:14.5px;line-height:1.45}
+.x55-kans p{margin:6px 0;font-size:15px;line-height:1.45}.x55-kans .btn{margin-top:8px;width:100%}.x55-risk{color:#7C2D12}
+.x55-dos summary{cursor:pointer;font-weight:800;display:flex;gap:8px;align-items:center}.x55-dos summary .i{width:18px;height:18px}
+.x55-ed{border:0;background:transparent;color:#1E4FD8;padding:2px 4px;cursor:pointer;vertical-align:middle}.x55-ed .i{width:15px;height:15px}
+.x55-tn{display:block;padding:11px 0;border-top:1px solid #EEF0F6;text-decoration:none;color:inherit}.x55-tn b{display:block;font-size:15px;color:#1A3FA8}.x55-tn small{display:block;font-size:13px;color:#475569;margin-top:2px}
+.x55-kv{padding:9px 0;border-top:1px solid #EEF0F6}.x55-kv b{display:block}.x55-kv small{color:#64748B;font-size:13px}
+.x55 .x53-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -16272,6 +16294,253 @@ try{HOME48.push(['werkcoach','briefcase','Werk-coach','Cv en solliciteren','#1E4
   if(/\b(niet tevreden|ontevreden)\b.*\b(werk|baan|job)\b|\b(werk|baan)\b.*\b(niet tevreden|ontevreden|zat|kwijt)\b/.test(t)){CHK54.cur={mood:'gaatwel',topic:'werk'};go('hoegaathet');return true}
   if(/\b(het gaat niet goed|ik voel me (slecht|rot|somber|alleen)|ik zit niet lekker|ik zie het niet meer zitten)\b/.test(t)){CHK54.cur=/niet meer zitten/.test(t)?{mood:'nietgoed',topic:'gezond',sub:'crisis'}:{mood:'nietgoed'};go('hoegaathet');return true}
  }catch(e){}return _hm.apply(this,arguments)}}
+
+
+/* =====================================================================
+   V55 — WATCHDOG ONDERNEMEN
+   Eén ingang ("Ik wil ondernemen"), één gesprek. De hond vraagt alleen wat hij voor de volgende stap nodig heeft.
+   - Rekenen (omzet, marge, winst, belasting, netto voor jou privé) gebeurt hier op de telefoon: SCHATTING.
+   - Het oordeel (kansrijk / mogelijk / risicovol / eerst onderzoeken) volgt uit vaste, zichtbare regels. Niet uit de AI.
+   - De AI helpt alleen met: begrijpen wat je typt, 3 kansen bedenken als je nog geen idee hebt, en voor/tegen op een rij: ADVIES.
+   - Echte bronnen: TenderNed (aanbestedingen, open data) en KVK (alleen als de server een KVK-sleutel heeft): FEIT.
+   - Wat de hond niet weet, noemt hij ONBEKEND. Hij adviseert geen lening en belooft geen succes. Jij beslist.
+   ===================================================================== */
+const TAXZ26={zelfst:1200,starter:2123,mkb:0.127,uren:1225,zvw:0.0485,zvwMax:79409};
+const O55={T:{busy:'',err:'',ask:null},
+ st(){const o=(S.ond55=S.ond55||{d:null,arch:[]});o.arch=o.arch||[];return o},
+ d(){return this.st().d},
+ /* zoekwoord voor bronnen: de sector, anders het kernwoord uit je idee ("schoonmaakbedrijf" → "schoonmaak") */
+ kw(d){if(!d)return '';if(d.sector&&!UNK55(d.sector))return String(d.sector).toLowerCase();const t=String(d.idee||'').toLowerCase(),m=t.match(/([a-zà-ü]{4,})(?:bedrijf|dienst|zaak|bureau)\b/);if(m)return m[1].replace(/s$/,'');
+  const stop=/^(beginnen|starten|bedrijf|eigen|voor|bedrijven|particulieren|mezelf|willen|graag|iets|doen|maken|verkopen|almere|online)$/;return (t.split(/[^a-zà-ü]+/).filter(w=>w.length>4&&!stop.test(w)&&w!==String(d.plaats||'').toLowerCase())[0])||''},
+ parse(t){t=String(t||'');const lo=t.toLowerCase(),d={tekst:t.slice(0,600)};
+  d.heeftIdee=!/\b(weet (het )?(nog )?niet|geen idee|maakt niet uit wat|welk bedrijf)\b/.test(lo)&&lo.replace(/ik wil|voor mezelf|beginnen|ondernemen|een bedrijf|eigen bedrijf|starten|geld verdienen|met|mijn/g,'').trim().length>6;
+  const pl=t.match(/\bin ((?:[A-Z][\w'’-]+)(?: [A-Z][\w'’-]+)?)\b/);if(pl&&!/^(Nederland|Het|De|Een)$/.test(pl[1]))d.plaats=pl[1];
+  const dm=lo.match(/€?\s?(\d{1,3}(?:\.\d{3})+|\d{3,6})\s*(?:euro\s*)?(?:netto\s*)?(?:per|p\/|in de)\s*maand/);if(dm)d.doel=+dm[1].replace(/\./g,'');
+  if(d.heeftIdee){d.idee=t.replace(/^\s*(ik wil|ik heb een idee:?|ik ga)\s*/i,'').replace(/\s+/g,' ').trim().slice(0,160)}
+  if(/\bbedrijven\b|b2b|zakelijk/.test(lo))d.klant='bedrijven';else if(/particulier|consument|b2c/.test(lo))d.klant='particulieren';
+  return d},
+ async begin(t){t=String(t||'').trim();if(t.length<8){toast('Vertel iets meer. Eén zin is genoeg.');return}
+  const o=this.st();if(o.d&&o.d.tekst)o.arch.unshift({at:Date.now(),d:o.d});o.arch=o.arch.slice(0,5);
+  o.d=this.parse(t);o.kansen=null;o.oordeel=null;o.tender=null;o.kvk=null;try{delete PROG53.st()['ondernemen/plan']}catch(e){}save();
+  go('ondernemen');
+  if(X48.base()&&X48.aiOk()){this.T.busy='begrijp';refresh();try{const j=await X48.post('/api/ondernemen',{soort:'begrijp',tekst:X48.mask(t)},60000);const d=this.d();
+    if(d){if(j.heeftIdee&&j.idee){d.heeftIdee=true;d.idee=j.idee}else if(j.heeftIdee===false)d.heeftIdee=false;['sector','plaats','klant','doel','startgeld','uren'].forEach(k=>{if(j[k]!=null&&d[k]==null)d[k]=j[k]});if(j.soort2)d.soort=j.soort2;save()}}catch(e){}finally{this.T.busy='';refresh()}}},
+ async ai(soort,feiten,store){this.T.err='';if(!X48.base()){this.T.err='Ik heb nu geen verbinding met de WATCHDOG-server.';refresh();return null}
+  if(!X48.aiOk()){this.T.ask={soort,feiten,store};refresh();return null}
+  this.T.busy=soort;refresh();try{DOG.set('thinking')}catch(e){}
+  try{const j=await X48.post('/api/ondernemen',{soort,feiten},100000);this.st()[store]=Object.assign({at:Date.now()},j);save();return j}
+  catch(e){this.T.err=e.status===404?'De WATCHDOG-server is nog niet bijgewerkt (RC18 nodig).':e.nc?'De AI staat nog niet aan op de server.':'Dat lukte niet: '+e.message;return null}
+  finally{this.T.busy='';try{DOG.set('idle')}catch(e){}refresh()}}
+};
+const N55=v=>v==null||v==='onbekend'?null:+v;
+const UNK55=v=>v==='onbekend';
+const EENH55={uur:['uur','uur'],klant:['klant per maand','klanten'],stuk:['stuk','stuks']};
+/* de vragen: alleen de eerstvolgende die nodig is */
+const QN55=[
+ /* nog geen idee */
+ {k:'ervaring',w:d=>!d.heeftIdee,q:'Wat kun je goed, of waar heb je ervaring in?',t:'text',ph:'Bijvoorbeeld: 8 jaar monteur, handig met computers'},
+ {k:'online',w:d=>!d.heeftIdee,q:'Wil je online werken of bij mensen langs?',t:'chips',o:[['online','Online'],['fysiek','Op locatie'],['beide','Maakt niet uit']]},
+ {k:'risico',w:d=>!d.heeftIdee,q:'Hoeveel risico wil je nemen?',t:'chips',o:[['laag','Zo min mogelijk'],['middel','Een beetje'],['hoog','Ik durf wel']]},
+ {k:'plaats',w:d=>true,q:'In welke plaats of regio?',t:'text',ph:'Bijvoorbeeld: Almere'},
+ {k:'uren',w:d=>true,q:'Hoeveel uur per week kun je eraan werken?',t:'num',u:'uur per week'},
+ {k:'startgeld',w:d=>true,q:'Hoeveel eigen geld kun je erin steken?',t:'num',u:'euro',h:'Geld dat je kunt missen. Je buffer voor vaste lasten telt niet mee.'},
+ {k:'doel',w:d=>true,q:'Wat wil je er netto per maand aan overhouden?',t:'num',u:'euro per maand',h:'Wat jij privé overhoudt, na kosten en belasting.'},
+ /* met idee */
+ {k:'klant',w:d=>d.heeftIdee,q:'Wie wordt je klant?',t:'chips',o:[['bedrijven','Bedrijven'],['particulieren','Particulieren'],['beide','Allebei']]},
+ {k:'model',w:d=>d.heeftIdee,q:'Hoe laat je klanten betalen?',t:'chips',o:[['uur','Per uur'],['klant','Vast bedrag per maand'],['stuk','Per stuk of opdracht']]},
+ {k:'prijs',w:d=>d.heeftIdee&&d.model,q:d=>`Wat vraag je per ${EENH55[d.model][0]}? (zonder btw)`,t:'num',u:'euro',h:'Weet je het niet? Kijk wat 3 concurrenten vragen en kom dan terug.'},
+ {k:'kostenE',w:d=>d.heeftIdee&&d.model,q:d=>`Wat kost het jou per ${EENH55[d.model][0]}?`,t:'num',u:'euro',h:'Personeel, inkoop of materiaal. Doe je alles zelf en koop je niets in? Vul 0 in.',zero:1},
+ {k:'eenh',w:d=>d.heeftIdee&&d.model&&d.model!=='klant',q:d=>d.model==='uur'?'Hoeveel uur werk je gemiddeld per klant per maand?':'Hoeveel stuks of opdrachten per klant per maand?',t:'num',u:d=>d.model==='uur'?'uur':'stuks'},
+ {k:'vast',w:d=>d.heeftIdee,q:'Wat zijn je vaste kosten per maand?',t:'num',u:'euro per maand',h:'Verzekering, bus of auto, telefoon, boekhouder, website. Tel het ruw op.',zero:1},
+ {k:'start',w:d=>d.heeftIdee,q:'Wat heb je eenmalig nodig om te starten?',t:'num',u:'euro',h:'Gereedschap, voorraad, inschrijving, eerste reclame.',zero:1},
+ {k:'bron',w:d=>d.heeftIdee,q:'Waar leef je nu van?',t:'chips',o:[['loon','Loon'],['ww','WW-uitkering'],['bijstand','Bijstand'],['anders','Iets anders']]},
+ {k:'naast',w:d=>d.heeftIdee&&d.bron==='loon',q:'Houd je je baan erbij in het begin?',t:'chips',o:[['ja','Ja, ernaast'],['nee','Nee, ik stop']]},
+ {k:'signaal',w:d=>d.heeftIdee,q:'Is er al iemand die heeft gezegd: “dat wil ik van je kopen”?',t:'chips',o:[['ja','Ja'],['nee','Nog niet']]}
+];
+const Q55={next(d){return QN55.find(q=>d[q.k]==null&&q.w(d))||null},
+ left(d){return QN55.filter(q=>d[q.k]==null&&q.w(d)).length},
+ txt(q,d){return typeof q.q==='function'?q.q(d):q.q}};
+/* de rekensom */
+const BC55={
+ ready(d){return !!(d&&d.heeftIdee&&d.model&&['prijs','kostenE','vast'].every(k=>d[k]!=null)&&(d.model==='klant'||d.eenh!=null))},
+ unknown(d){return ['prijs','kostenE','vast','eenh'].filter(k=>UNK55(d[k])&&(k!=='eenh'||d.model!=='klant'))},
+ base(d){const p=N55(d.prijs),k=N55(d.kostenE)||0,e=d.model==='klant'?1:N55(d.eenh),v=N55(d.vast)||0;if(p==null||e==null||UNK55(d.kostenE)||UNK55(d.vast))return null;return {p,k,e,v,m:p-k,mk:(p-k)*e}},
+ scen(d,n){const b=this.base(d);if(!b)return null;const omzet=n*b.e*b.p,direct=n*b.e*b.k;return {n,omzet:Math.round(omzet),direct:Math.round(direct),marge:Math.round(omzet-direct),vast:b.v,winst:Math.round(omzet-direct-b.v),uren:d.model==='uur'&&b.k===0?Math.round(n*b.e):null}},
+ /* netto voor jou privé: eenmanszaak, cijfers 2026. Naast een baan: alleen de extra belasting. */
+ netto(winstJ,d){const W=Math.max(0,winstJ);const uJ=(N55(d.uren)||0)*52,crit=uJ>=TAXZ26.uren;const aftrek=crit?TAXZ26.zelfst+TAXZ26.starter:0;
+  const bel=Math.max(0,W-aftrek)*(1-TAXZ26.mkb);let nu=0;if(d.bron==='loon'&&d.naast==='ja'){try{const br=ME42.bruto();nu=br?br.v:0}catch(e){}}
+  const ib=nu>0?tax26(nu+bel)-tax26(nu):tax26(bel);const zvw=Math.min(bel,TAXZ26.zvwMax)*TAXZ26.zvw;
+  return {winst:Math.round(W),aftrek,crit,belastbaar:Math.round(bel),ib:Math.round(ib),zvw:Math.round(zvw),netto:Math.round(winstJ-ib-zvw),nu:Math.round(nu)}},
+ /* terugrekenen vanaf je doel */
+ nodig(d){const b=this.base(d),doel=N55(d.doel);if(!b||!doel||!(b.mk>0))return null;let lo=0,hi=doel*12*4;for(let i=0;i<50;i++){const m=(lo+hi)/2;(this.netto(m,d).netto<doel*12)?lo=m:hi=m}
+  const winstM=hi/12,klanten=Math.ceil((winstM+b.v)/b.mk),s=this.scen(d,klanten);return {winstM:Math.round(winstM),klanten,omzetM:s.omzet,uren:s.uren,be:Math.ceil(b.v/b.mk)}},
+ oordeel(d){const R={kind:'onderzoek',why:[],unk:this.unknown(d)};if(!this.ready(d))return R;
+  const b=this.base(d);if(R.unk.length||!b){R.why.push('Je weet nog niet alle bedragen. Zonder prijs en kosten kan ik niet rekenen.');return R}
+  if(!(b.m>0)){R.kind='risico';R.why.push(`Je houdt per ${EENH55[d.model][0]} niets over: je vraagt ${E2(b.p)} en het kost je ${E2(b.k)}.`);return R}
+  const n=this.nodig(d),uM=(N55(d.uren)||0)*4.33,start=N55(d.start)||0,geld=N55(d.startgeld);let risk=false;
+  if(n&&n.uren!=null&&uM>0&&n.uren>uM){risk=true;R.why.push(`Voor je doel werk je ${n.uren} uur per maand. Je hebt er ongeveer ${Math.round(uM)}.`)}
+  if(geld!=null&&start>geld){risk=true;R.why.push(`Je hebt ${E(start)} nodig om te starten en ${E(geld)} eigen geld.`)}
+  if(risk){R.kind='risico';return R}
+  if(UNK55(d.start)||UNK55(d.startgeld)||UNK55(d.doel)||UNK55(d.uren)){R.kind='onderzoek';R.why.push('Een paar dingen weet je nog niet. Zoek die eerst uit.');return R}
+  if(d.signaal==='ja'){R.kind='kansrijk';R.why.push('De som klopt en er is al iemand die wil kopen.')}
+  else{R.kind='mogelijk';R.why.push('De som klopt op papier. Maar niemand heeft nog gezegd dat hij wil betalen. Test dat eerst.')}
+  return R}
+};
+const VD55={kansrijk:['Kansrijk','#047857','#DCFCE7','check'],mogelijk:['Mogelijk','#1E4FD8','#E3EDFF','search'],risico:['Risicovol','#C2410C','#FFEDD5','shield'],onderzoek:['Eerst verder onderzoeken','#B45309','#FEF3C7','search']};
+const LAB55=k=>`<span class="x55-lab ${k}">${{feit:'Feit',schat:'Schatting',advies:'Advies',onb:'Onbekend'}[k]}</span>`;
+/* wat er met je huidige inkomen gebeurt */
+function ink55(d){const L=[];
+ if(d.bron==='ww')L.push(['Je hebt WW','Vraag eerst toestemming aan UWV, vóórdat je begint. Met een startperiode van 26 weken is je WW 29% lager en hoef je niet te solliciteren. Start je zonder toestemming, dan kan dat je uitkering kosten.','https://www.uwv.nl/nl/ww','UWV: WW']);
+ if(d.bron==='bijstand')L.push(['Je hebt bijstand','Overleg eerst met je gemeente. Er is een regeling voor starters vanuit de bijstand (Bbz). Inkomsten die je niet meldt, moet je terugbetalen.','','']);
+ if(d.bron==='loon'&&d.naast==='ja')L.push(['Je houdt je baan','Dat is de veiligste start. Kijk in je contract of bijwerk mag (nevenwerk, concurrentiebeding). Je winst komt bovenop je loon, dus je betaalt er meer belasting over.','','']);
+ if(d.bron==='loon'&&d.naast==='nee')L.push(['Je stopt met je baan','Zeg je zelf op, dan krijg je meestal geen WW. Zorg dat je buffer groot genoeg is voor de eerste maanden zonder omzet.','','']);
+ try{if(AUTO42.all().some(a=>a.cat==='toeslag'))L.push(['Je toeslagen','Verandert je inkomen, geef dat dan door aan Dienst Toeslagen. Een schatting die te laag is, moet je later terugbetalen.',TOES_URL,'Mijn toeslagen'])}catch(e){}
+ return L}
+/* persoonlijk startplan */
+const VERG55=[[/horeca|restaurant|café|cafe|bar\b|snack|catering/i,'Horeca: vaak een exploitatievergunning en, als je alcohol schenkt, een alcoholvergunning van de gemeente.'],[/kinderopvang|gastouder|oppas/i,'Kinderopvang: registratie in het Landelijk Register Kinderopvang en een VOG.'],[/taxi|personenvervoer/i,'Taxi: een ondernemersvergunning en een chauffeurskaart.'],[/install|cv-ketel|gas|loodgiet|monteur/i,'Installatiewerk: voor werk aan gastoestellen is een CO-certificaat verplicht.'],[/beveilig/i,'Beveiliging: een vergunning van Justis.'],[/hypothe|verzekeringsadvies|financieel advies/i,'Financieel advies: een vergunning van de AFM.'],[/markt|kraam|straatverkoop/i,'Verkopen op straat of de markt: een standplaats- of marktvergunning van de gemeente.']];
+function plan55(d){const S1=[],tx=[d.idee,d.sector,d.tekst].filter(Boolean).join(' ');
+ S1.push({t:'Test of klanten willen betalen',s:d.signaal==='ja'?'Je hebt al iemand. Vraag of hij ook echt een opdracht geeft, en voor welke prijs.':'Vraag 5 mogelijke klanten of ze dit van je zouden kopen, en voor welke prijs. Dat kost niets.'});
+ if(d.prijs==null||UNK55(d.prijs))S1.push({t:'Bepaal je prijs',s:'Kijk wat 3 concurrenten vragen. Vul het daarna hier in, dan reken ik opnieuw.',b:`<button class="btn sm ghost" data-a="o55-edit" data-arg="prijs">Prijs invullen</button>`});
+ if(d.bron==='ww')S1.push({t:'Vraag toestemming aan UWV',s:'Doe dit vóór je start. Anders loop je risico met je WW.',b:`<a class="link" href="https://www.uwv.nl/nl/ww" target="_blank" rel="noopener">UWV: WW ›</a>`});
+ if(d.bron==='bijstand')S1.push({t:'Overleg met je gemeente',s:'Vraag naar de regeling voor starters (Bbz), vóór je begint.'});
+ if(d.bron==='loon'&&d.naast==='ja')S1.push({t:'Lees je contract',s:'Mag je bijwerken? Let op een verbod op nevenwerk en een concurrentiebeding. Twijfel je, vraag het je werkgever.'});
+ const vg=VERG55.filter(v=>v[0].test(tx)).map(v=>v[1]);
+ S1.push({t:'Controleer of je een vergunning of diploma nodig hebt',s:vg.length?vg.join(' ')+' Controleer dit bij de KVK of je gemeente.':'Voor de meeste diensten niet. Controleer het voor jouw werk bij de KVK.',b:`<a class="link" href="https://ondernemersplein.overheid.nl" target="_blank" rel="noopener">Ondernemersplein ›</a>`});
+ S1.push({t:'Kies een rechtsvorm',s:'De meeste starters kiezen een eenmanszaak: snel en goedkoop, maar je bent zelf aansprakelijk. Een bv beschermt je privégeld beter en kost meer. Ik reken hier met een eenmanszaak.',b:`<a class="link" href="https://www.kvk.nl/starten/" target="_blank" rel="noopener">KVK: starten en rechtsvorm ›</a>`});
+ S1.push({t:'Controleer je bedrijfsnaam',s:'Bestaat de naam al in jouw plaats of branche? Dan kun je problemen krijgen.',b:`<button class="btn sm ghost" data-a="go" data-arg="ondernemen/naam">Naam controleren</button>`});
+ S1.push({t:'Schrijf je in bij de KVK',s:'Dat doe je zelf, met een afspraak. De KVK geeft je gegevens door aan de Belastingdienst. Je krijgt dan een btw-nummer.',b:`<a class="link" href="https://www.kvk.nl/inschrijven/" target="_blank" rel="noopener">KVK: inschrijven ›</a>`});
+ S1.push({t:'Regel je administratie',s:'Open een aparte rekening, bewaar alle bonnen en facturen en doe elk kwartaal btw-aangifte. Blijft je omzet onder € 20.000 per jaar, dan kun je kiezen voor de kleineondernemersregeling.'});
+ S1.push({t:'Kijk naar verzekeringen',s:'Minimaal een aansprakelijkheidsverzekering voor je bedrijf. Bedenk ook wat je doet als je ziek wordt: als ondernemer heb je geen loon bij ziekte.'});
+ if(d.klant==='bedrijven'||d.klant==='beide')S1.push({t:'Zoek opdrachten van de overheid',s:'Gemeenten en scholen zetten opdrachten op TenderNed. Ik kan nieuwe voor je melden.',b:`<button class="btn sm ghost" data-a="go" data-arg="ondernemen/aanbestedingen">Bekijk aanbestedingen</button>`});
+ S1.push({t:'Haal je eerste betalende klant binnen',s:'Stuur een offerte met wat je doet, wat het kost en wanneer. Tik daarna hieronder op “Ja, gelukt”.'});
+ return S1}
+/* ---------- acties ---------- */
+ACT['o55-start']=()=>O55.begin(($('#o55t')||{}).value);
+ACT['o55-ex']=t=>{const i=$('#o55t');if(i){i.value=t;i.focus()}};
+ACT['o55-ans']=a=>{const d=O55.d();if(!d)return;const i=a.indexOf('|'),k=i<0?a:a.slice(0,i),v=i<0?null:a.slice(i+1),q=QN55.find(x=>x.k===k);if(!q)return;
+ if(v!=null){d[k]=v}else if(q.t==='num'){const raw=String(($('#o55i')||{}).value||'').replace(/\./g,'').replace(',','.').trim(),n=parseFloat(raw);if(raw===''||!Number.isFinite(n)||n<0||(n===0&&!q.zero)){toast('Vul een bedrag of getal in');return}d[k]=Math.round(n*100)/100}
+ else{const t=String(($('#o55i')||{}).value||'').trim();if(t.length<2){toast('Vul iets in');return}d[k]=t.slice(0,160)}
+ const o=O55.st();o.oordeel=null;if(k==='ervaring'||k==='online'||k==='risico')o.kansen=null;save();render(false);try{const c=$('#o55q');if(c)c.scrollIntoView({block:'center',behavior:RM()?'auto':'smooth'})}catch(e){}};
+ACT['o55-unk']=k=>{const d=O55.d();if(!d)return;d[k]='onbekend';O55.st().oordeel=null;save();render(false)};
+ACT['o55-edit']=k=>{const d=O55.d();if(!d)return;d[k]=null;O55.st().oordeel=null;save();if(route[1])go('ondernemen');else render(false);setTimeout(()=>{const c=$('#o55q');if(c)c.scrollIntoView({block:'center'})},120)};
+ACT['o55-kansen']=()=>{const d=O55.d();if(!d)return;O55.ai('kansen',{ervaring:d.ervaring,werkwijze:d.online,risico:d.risico,regio:d.plaats,uren_per_week:N55(d.uren),eigen_geld:N55(d.startgeld),doel_netto_per_maand:N55(d.doel)},'kansen')};
+ACT['o55-pick']=i=>{const o=O55.st(),k=(o.kansen&&o.kansen.kansen||[])[+i];if(!k||!o.d)return;o.d.heeftIdee=true;o.d.idee=k.naam;o.d.sector=k.naam;o.d.uitKans=true;o.oordeel=null;save();toast('Goed. Dan rekenen we deze door.',false,true);render(true)};
+ACT['o55-oordeel']=()=>{const d=O55.d();if(!d)return;const b=BC55.base(d),n=BC55.nodig(d),v=BC55.oordeel(d);
+ O55.ai('oordeel',{idee:d.idee,plaats:d.plaats,klant:d.klant,betaalmodel:d.model,prijs:N55(d.prijs),kosten_per_eenheid:N55(d.kostenE),marge_per_eenheid:b?b.m:null,vaste_kosten_per_maand:N55(d.vast),startkosten:N55(d.start),eigen_geld:N55(d.startgeld),uren_per_week:N55(d.uren),doel_netto_per_maand:N55(d.doel),klanten_nodig_voor_doel:n?n.klanten:null,klanten_voor_kostendekkend:n?n.be:null,leeft_nu_van:d.bron,houdt_baan:d.naast,klant_die_wil_kopen:d.signaal,uitkomst_watchdog:VD55[v.kind][0]},'oordeel')};
+ACT['o55-ok']=()=>{const a=O55.T.ask;if(!a)return;S.settings.aiOk=true;save();O55.T.ask=null;O55.ai(a.soort,a.feiten,a.store)};
+ACT['o55-no']=()=>{O55.T.ask=null;refresh()};
+ACT['o55-new']=()=>{const o=O55.st();if(o.d)o.arch.unshift({at:Date.now(),d:o.d});o.arch=o.arch.slice(0,5);o.d=null;o.kansen=null;o.oordeel=null;o.tender=null;save();go('ondernemen')};
+/* aanbestedingen (TenderNed) */
+const TND55={busy:false,err:'',
+ async zoek(q){q=String(q||'').trim();if(q.length<3){toast('Geef een zoekwoord van minstens 3 letters');return}const b=X48.base();if(!b){this.err='Ik heb nu geen verbinding met de WATCHDOG-server.';refresh();return}
+  this.busy=true;this.err='';refresh();try{const r=await fetch(b+'/api/aanbestedingen?q='+encodeURIComponent(q)),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(r.status===404?'De WATCHDOG-server is nog niet bijgewerkt (RC18 nodig).':(j.error||'fout '+r.status));
+   const o=O55.st();o.tender=Object.assign(o.tender||{},{q:j.q,items:j.items,at:Date.now(),source:j.source});save()}catch(e){this.err=e.message}finally{this.busy=false;refresh()}},
+ async watch(){const o=O55.st(),t=o.tender;if(!t||!t.q)return;try{const ok=await GUIDE47.pushOn();}catch(e){}
+  try{const j=await SRV.call('/api/watches',{method:'POST',slow:true,body:{watch:{type:'aanbesteding',query:t.q,seen:(t.items||[]).map(x=>x.id),clientRef:uid('ab')}}});t.srv={id:j.watch.id,q:t.q};save();toast(`Ik meld nieuwe aanbestedingen voor “${esc(t.q)}”.`,false,true)}catch(e){toast('Bewaken lukte niet: '+(e.message||'server niet bereikbaar'))}refresh()},
+ async off(){const t=O55.st().tender;if(!t||!t.srv)return;const id=t.srv.id;t.srv=null;save();refresh();try{await SRV.call('/api/watches/'+id+'/status',{method:'POST',body:{status:'deleted'}})}catch(e){}},
+ async sync(){const t=O55.st().tender;if(!t||!t.srv||!X48.base())return 0;try{const j=await SRV.call('/api/events',{slow:true});const m=ME.st();m.srvSeen=m.srvSeen||{};let n=0;const ack=[];
+   for(const ev of j.events||[]){if(ev.type!=='aanbesteding')continue;ack.push(ev.id);if(m.srvSeen[ev.id])continue;m.srvSeen[ev.id]=Date.now();t.news=(ev.items||[]).concat(t.news||[]).slice(0,10);
+    emit0({type:'aanb',title:ev.title,message:ev.message,category:'KANS',priority:'medium',relatedWatch:'deal',action:{label:'Bekijk aanbestedingen',kind:'go',target:'ondernemen/aanbestedingen'},demo:false},{quiet:true});n++}
+   save();if(ack.length)SRV.call('/api/events/ack',{method:'POST',body:{ids:ack}}).catch(()=>{});if(n)refresh();return n}catch(e){return 0}}
+};
+ACT['tn55-go']=()=>TND55.zoek(($('#tn55q')||{}).value);
+ACT['tn55-watch']=()=>TND55.watch();ACT['tn55-off']=()=>TND55.off();
+setTimeout(()=>{try{TND55.sync()}catch(e){}},4000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)try{TND55.sync()}catch(e){}});
+/* naam controleren (KVK) */
+const KVK55={busy:false,
+ async zoek(){const naam=String(($('#kv55n')||{}).value||'').trim(),plaats=String(($('#kv55p')||{}).value||'').trim();if(naam.length<2){toast('Vul een naam in');return}const b=X48.base(),o=O55.st();
+  if(!b){o.kvk={naam,err:'Ik heb nu geen verbinding met de WATCHDOG-server.'};save();refresh();return}this.busy=true;refresh();
+  try{const r=await fetch(b+'/api/kvk/zoek?'+new URLSearchParams({naam,plaats})),j=await r.json().catch(()=>({}));
+   if(j.sourceType==='not-configured')o.kvk={naam,plaats,nc:true};else if(!r.ok||!j.ok)o.kvk={naam,plaats,err:r.status===404?'De WATCHDOG-server is nog niet bijgewerkt (RC18 nodig).':(j.error||'KVK is nu niet bereikbaar')};else o.kvk={naam,plaats,items:j.items,totaal:j.totaal,at:Date.now(),source:j.source};save()}
+  catch(e){o.kvk={naam,plaats,err:'KVK is nu niet bereikbaar'};save()}finally{this.busy=false;refresh()}}
+};
+ACT['kv55-go']=()=>KVK55.zoek();
+
+/* ---------- schermen ---------- */
+function o55Ask(){const a=O55.T.ask;if(!a)return '';return `<div class="card x54-ask"><b>Mag de AI meedenken?</b><p class="note">Dan gaan je idee en de bedragen die je hier invulde naar Mistral AI (Frankrijk). Geen naam, adres of bankgegevens.</p><div class="btn-row"><button class="btn" data-a="o55-ok">Ja, dat mag</button><button class="btn ghost" data-a="o55-no">Nee</button></div></div>`}
+function o55Q(d){const q=Q55.next(d);if(!q)return '';const u=typeof q.u==='function'?q.u(d):q.u,n=Q55.left(d);
+ return `<div class="card x55-q" id="o55q"><small>Nog ${n} ${n===1?'vraag':'vragen'}</small><h3>${Q55.txt(q,d)}</h3>${q.h?`<p class="note">${q.h}</p>`:''}
+  ${q.t==='chips'?`<div class="x55-opts">${q.o.map(o=>`<button class="btn ghost" data-a="o55-ans" data-arg="${q.k}|${o[0]}">${o[1]}</button>`).join('')}</div>`
+   :`<div class="x55-in"><input id="o55i" ${q.t==='num'?'inputmode="decimal"':''} placeholder="${esc(q.ph||u||'')}" aria-label="${esc(Q55.txt(q,d))}"><button class="btn" data-a="o55-ans" data-arg="${q.k}">Verder</button></div>${u&&q.t==='num'?`<small class="fine">${u}</small>`:''}`}
+  ${q.t==='num'||q.k==='plaats'?`<button class="x55-unk" data-a="o55-unk" data-arg="${q.k}">Weet ik nog niet</button>`:''}</div>`}
+function o55Dos(d){const R=[],add=(k,l,v)=>{if(d[k]!=null)R.push(`<div><dt>${l}</dt><dd>${UNK55(d[k])?LAB55('onb'):esc(String(v))} <button class="x55-ed" data-a="o55-edit" data-arg="${k}" aria-label="${l} aanpassen">${I('pencil')}</button></dd></div>`)};
+ const ee=d.model?EENH55[d.model][0]:'';
+ add('plaats','Waar',d.plaats);add('klant','Klant',{bedrijven:'Bedrijven',particulieren:'Particulieren',beide:'Allebei'}[d.klant]||d.klant);add('model','Betalen',{uur:'Per uur',klant:'Vast per maand',stuk:'Per stuk'}[d.model]);
+ add('prijs','Prijs',E2(N55(d.prijs))+' per '+ee);add('kostenE','Kosten',E2(N55(d.kostenE))+' per '+ee);add('eenh',d.model==='uur'?'Uur per klant':'Stuks per klant',N55(d.eenh)+' per maand');add('vast','Vaste kosten',E(N55(d.vast))+' per maand');
+ add('start','Nodig om te starten',E(N55(d.start)));add('startgeld','Eigen geld',E(N55(d.startgeld)));add('uren','Tijd',N55(d.uren)+' uur per week');add('doel','Doel',E(N55(d.doel))+' netto per maand');
+ add('bron','Leeft nu van',{loon:'Loon',ww:'WW',bijstand:'Bijstand',anders:'Iets anders'}[d.bron]);add('naast','Baan erbij',d.naast==='ja'?'Ja':'Nee');add('signaal','Klant die wil kopen',d.signaal==='ja'?'Ja':'Nog niet');
+ add('ervaring','Ervaring',d.ervaring);add('online','Werkwijze',{online:'Online',fysiek:'Op locatie',beide:'Maakt niet uit'}[d.online]);add('risico','Risico',{laag:'Zo min mogelijk',middel:'Een beetje',hoog:'Durft wel'}[d.risico]);
+ return R.length?`<details class="card x55-dos"><summary>${I('briefcase')} Wat ik van je weet (${R.length})</summary><dl class="x48-dl">${R.join('')}</dl><p class="fine">Dit staat alleen op je telefoon. Tik op het potlood om iets aan te passen.</p></details>`:''}
+function o55Case(d){const b=BC55.base(d);if(!b)return '';const ee=EENH55[d.model],n=BC55.nodig(d),doel=N55(d.doel);
+ const sc=[5,10,20].map(k=>BC55.scen(d,k)),nt=n?BC55.netto(n.winstM*12,d):null;
+ return `<div class="card x55-case"><div class="x53-sh"><h3>${I('coins')} De som</h3>${LAB55('schat')}</div>
+  <p class="x55-mg">Per ${ee[0]} vraag je <b>${E2(b.p)}</b> en kost het je <b>${E2(b.k)}</b>. Je houdt <b>${E2(b.m)}</b> over${d.model!=='klant'?`, dus <b>${E2(b.mk)}</b> per klant per maand`:''}.</p>
+  <div class="x55-tw"><table class="x55-t"><thead><tr><th>Klanten</th><th>Omzet</th><th>Kosten</th><th>Winst</th></tr></thead><tbody>${sc.map(s=>`<tr><td>${s.n}</td><td>${E(s.omzet)}</td><td>${E(s.direct+s.vast)}</td><td class="${s.winst<0?'neg':'pos'}">${E(s.winst)}</td></tr>`).join('')}</tbody></table></div>
+  <p class="fine">Per maand, zonder btw. Kosten = directe kosten + ${E(b.v)} vaste kosten. Winst is nog vóór belasting.</p>
+  ${b.mk>0?`<div class="x55-goal"><b>${doel?`Voor ${E(doel)} netto per maand heb je ongeveer ${n.klanten} ${n.klanten===1?'klant':'klanten'} nodig.`:`Vanaf ${Math.ceil(b.v/b.mk)||1} ${(Math.ceil(b.v/b.mk)||1)===1?'klant':'klanten'} dek je je vaste kosten.`}</b>
+   ${doel?`<dl class="x48-dl"><div><dt>Omzet per maand</dt><dd>${E(n.omzetM)}</dd></div><div><dt>Winst per maand (vóór belasting)</dt><dd>${E(n.winstM)}</dd></div><div><dt>Belasting en zorgbijdrage per maand</dt><dd>${E(Math.round((nt.ib+nt.zvw)/12))}</dd></div><div><dt>Voor jou privé</dt><dd><b>${E(Math.round(nt.netto/12))}</b></dd></div>${n.uren!=null?`<div><dt>Uren werk per maand</dt><dd>${n.uren}</dd></div>`:''}<div><dt>Kostendekkend vanaf</dt><dd>${n.be} ${n.be===1?'klant':'klanten'}</dd></div></dl>
+   <details class="x52-q"><summary>Hoe reken je dit?</summary><p class="fine">Eenmanszaak, cijfers 2026. ${nt.crit?`Je werkt minstens ${TAXZ26.uren} uur per jaar, dus ik tel de zelfstandigenaftrek (${E(TAXZ26.zelfst)}) en startersaftrek (${E(TAXZ26.starter)}) mee.`:`Je werkt minder dan ${TAXZ26.uren} uur per jaar aan je bedrijf, dus geen zelfstandigen- of startersaftrek.`} Daarna 12,7% mkb-winstvrijstelling, inkomstenbelasting met heffingskortingen${nt.nu?` bovenop je loon van ongeveer ${E(nt.nu)} bruto per jaar`:''} en 4,85% zorgbijdrage. Niet meegeteld: verzekering voor ziekte en pensioen. Een boekhouder rekent dit precies uit.</p></details>`:''}</div>`
+  :`<p class="x53-warn">${I('info')}<span>Je houdt per ${ee[0]} niets over. Dan helpt meer klanten niet. Verhoog je prijs of verlaag je kosten.</span></p>`}</div>`}
+function o55Verdict(d){if(!BC55.ready(d))return '';const v=BC55.oordeel(d),V=VD55[v.kind],O=O55.st().oordeel,T=O55.T;
+ return `<div class="card x52-vd x55-vd" style="--c:${V[1]};--bg:${V[2]}"><span class="x52-vi">${I(V[3])}</span><div><small>Mijn uitkomst</small><b>${V[0]}</b>${v.why.map(w=>`<small>${w}</small>`).join('')}</div></div>
+  <div class="card"><div class="x53-sh"><h3>Voor, tegen en wat je nog niet weet</h3>${LAB55('advies')}</div>
+   ${T.ask?o55Ask():''}${T.busy==='oordeel'?w54Busy('Ik denk na.'):''}
+   ${O?`${(O.voor||[]).length?`<h4 class="x55-h ok">Dit spreekt ervoor</h4><ul class="x48-ul">${O.voor.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${(O.tegen||[]).length?`<h4 class="x55-h no">Dit spreekt ertegen</h4><ul class="x48-ul">${O.tegen.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${(O.onbekend||[]).length?`<h4 class="x55-h unk">Dit weet je nog niet</h4><ul class="x48-ul">${O.onbekend.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${O.test?`<p class="x55-test"><b>Test deze week:</b> ${esc(O.test)}</p>`:''}<p class="fine">${esc(O.source||'')} · de AI kent jouw markt niet en heeft niets opgezocht.${O.ingevuld?` ${O.ingevuld}× iets weggelaten dat niet uit jouw gegevens kwam.`:''}</p>`
+    :(!T.busy&&!T.ask?`<p class="note">De AI zet op een rij wat voor en tegen je plan spreekt, met alleen jouw eigen cijfers.</p><button class="btn ghost" data-a="o55-oordeel">Laat de AI meedenken</button>`:'')}${T.err?`<p class="x52-err">${esc(T.err)}</p>`:''}</div>`}
+V.ondernemen=function(sub){const o=O55.st(),d=o.d,T=O55.T;
+ const fine='<p class="fine">WATCHDOG adviseert en rekent mee. Schattingen zijn geen garantie. Controleer belangrijke beslissingen bij de KVK of een boekhouder. Jij beslist.</p>';
+ if(sub==='plan'){if(!d||!d.heeftIdee)return V.ondernemen();const st=plan55(d);
+  return `<div class="wrap x53 x54 x55">${topbar('Je startplan',{back:1,sub:esc(d.idee||'Ondernemen')})}${guide53('Dit is jouw plan, stap voor stap.','Het past bij wat je me vertelde. Tik op het nummer als een stap klaar is. Ik onthoud waar je bent.')}
+   ${steps53('ondernemen/plan',st,'Je bedrijf starten')}${win53('ondernemen/plan','Eerste klant: '+(d.idee||'eigen bedrijf'),{q:'Heb je je eerste betalende klant? Vul in wat het opleverde.',per:'o'})}${fine}</div>`}
+ if(sub==='aanbestedingen'){const t=o.tender,q0=(t&&t.q)||O55.kw(d)||'';
+  return `<div class="wrap x53 x54 x55">${topbar('Aanbestedingen',{back:1,sub:'Opdrachten van de overheid'})}${guide53('Gemeenten, scholen en zorg zoeken ook bedrijven.','Ze zetten opdrachten op TenderNed. Ik zoek wat nu open staat. Let op: dit zijn vaak grote opdrachten met eisen aan ervaring en omzet.')}
+   <div class="card"><div class="x55-in"><input id="tn55q" value="${esc(q0)}" placeholder="Bijvoorbeeld: schoonmaak" maxlength="60" aria-label="Zoekwoord"><button class="btn" data-a="tn55-go">Zoek</button></div>${TND55.busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik zoek op TenderNed…</p>`:''}${TND55.err?`<p class="x52-err">${esc(TND55.err)}</p>`:''}</div>
+   ${t&&t.items?`<div class="card"><div class="x53-sh"><h3>${t.items.length} open ${t.items.length===1?'opdracht':'opdrachten'} voor “${esc(t.q)}”</h3>${LAB55('feit')}</div><small class="fine">${esc(t.source||'TenderNed')} · ${evAgo(t.at)}</small>
+     ${t.items.length?t.items.slice(0,12).map(x=>`<a class="x55-tn" href="${esc(x.url)}" target="_blank" rel="noopener"><b>${esc(x.titel)}</b><small>${esc(x.opdrachtgever)}${x.soort?' · '+esc(x.soort):''} · inschrijven tot ${X48.fmtD(x.sluit)}</small></a>`).join(''):'<p class="note">Nu niets open voor dit woord. Probeer een ander woord, of laat me nieuwe melden.</p>'}
+     <div class="btn-row">${t.srv&&t.srv.q===t.q?`<span class="k42-on">${I('bell')} Ik meld nieuwe opdrachten</span><button class="btn sm ghost" data-a="tn55-off">Uitzetten</button>`:`<button class="btn sm" data-a="tn55-watch">${I('bell')} Meld nieuwe opdrachten</button>`}</div></div>`:''}
+   <p class="fine">Bron: TenderNed, het officiële aankondigingenplatform van de overheid (open data). WATCHDOG schrijft nergens voor je in.</p></div>`}
+ if(sub==='naam'){const k=o.kvk;
+  return `<div class="wrap x53 x54 x55">${topbar('Bedrijfsnaam',{back:1,sub:'Bestaat hij al?'})}${guide53('Even kijken of je naam nog vrij is.','Een naam die lijkt op een bedrijf in dezelfde branche en plaats kan problemen geven.')}
+   <div class="card"><label class="f"><span>De naam die je wilt</span><input id="kv55n" maxlength="60" value="${esc(k&&k.naam||'')}" placeholder="Bijvoorbeeld: Schoon & Fris"></label><label class="f"><span>Plaats (mag leeg)</span><input id="kv55p" maxlength="40" value="${esc((k&&k.plaats)||(d&&d.plaats&&!UNK55(d.plaats)?d.plaats:'')||'')}"></label>
+    <button class="btn x52-go" data-a="kv55-go">${I('search')} Zoek in het Handelsregister</button>${KVK55.busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik zoek bij de KVK…</p>`:''}</div>
+   ${k&&k.nc?`<div class="card"><div class="x53-sh"><h3>KVK is nog niet gekoppeld</h3>${LAB55('onb')}</div><p>Ik kan het Handelsregister nu niet zelf doorzoeken. Daarvoor is een KVK-abonnement op de server nodig. Ik verzin geen uitkomst.</p><a class="btn ghost" href="https://www.kvk.nl/zoeken/?source=all&q=${encodeURIComponent(k.naam)}" target="_blank" rel="noopener">Zoek “${esc(k.naam)}” op kvk.nl ›</a></div>`:''}
+   ${k&&k.err?`<div class="card"><p class="x52-err">${esc(k.err)}</p></div>`:''}
+   ${k&&k.items?`<div class="card"><div class="x53-sh"><h3>${k.totaal?`${k.totaal} ${k.totaal===1?'bedrijf':'bedrijven'} met “${esc(k.naam)}”`:`Geen bedrijf gevonden met “${esc(k.naam)}”`}</h3>${LAB55('feit')}</div><small class="fine">${esc(k.source||'KVK')} · ${evAgo(k.at)}</small>
+     ${k.items.map(x=>`<div class="x55-kv"><b>${esc(x.naam)}</b><small>${esc(x.plaats||'plaats onbekend')} · KVK ${esc(x.kvk)}</small></div>`).join('')}
+     <p class="note">${k.totaal?'Zit er een bedrijf bij in jouw branche en regio? Kies dan liever een andere naam.':'Dat is een goed teken. Controleer ook of de internetnaam vrij is en of er geen merk met die naam bestaat.'}</p></div>`:''}
+   <p class="fine">De KVK beslist bij je inschrijving of de naam mag.</p></div>`}
+ /* start: wat wil je gaan doen? */
+ if(!d)return `<div class="wrap x53 x54 x55">${topbar('Ondernemen',{back:1,sub:'Van idee naar eerste klant'})}${guide53('Wat wil je gaan doen?','Vertel het in je eigen woorden. Weet je het nog niet? Zeg dat dan. Dan zoeken we samen.')}
+  <div class="card"><textarea id="o55t" rows="4" maxlength="600" placeholder="Bijvoorbeeld: ik wil een schoonmaakbedrijf beginnen in Almere" aria-label="Wat wil je gaan doen?"></textarea><button class="btn x52-go" data-a="o55-start">Verder</button>
+   <div class="x55-ex">${['Ik wil een schoonmaakbedrijf beginnen in Almere','Ik wil voor mezelf beginnen maar weet nog niet wat','Ik wil 3000 per maand verdienen met een eigen bedrijf'].map(x=>`<button class="x55-exb" data-a="o55-ex" data-arg="${esc(x)}">“${x}”</button>`).join('')}</div></div>
+  ${o.arch.length?`<div class="card"><h3>Eerdere ideeën</h3>${o.arch.map((a,i)=>`<button class="x54-sub" data-a="o55-back" data-arg="${i}">${esc((a.d.idee||a.d.tekst||'').slice(0,60))}<i class="h4-chev">›</i></button>`).join('')}</div>`:''}${fine}</div>`;
+ const q=Q55.next(d),ready=BC55.ready(d),v=ready?BC55.oordeel(d):null,K=o.kansen,inc=d.heeftIdee?ink55(d):[];
+ const noIdea=!d.heeftIdee,kReady=noIdea&&!q;
+ const say=T.busy==='begrijp'?['Even lezen…','Ik kijk wat je precies bedoelt.']
+  :noIdea?(kReady?(K?['Deze 3 passen volgens mij bij jou.','Kies er een. Dan rekenen we hem samen door.']:['Dank je. Nu weet ik genoeg.','Zal ik 3 kansen zoeken die bij jouw situatie passen?']):['Geen idee nog? Dat is prima.','Ik stel een paar korte vragen. Daarna zoek ik kansen die bij jou passen.'])
+  :q?[`Oké: ${esc(d.idee||'je idee')}.`,ready?'De som staat hieronder. Nog een paar vragen, dan is het plaatje compleet.':'Ik stel alleen de vragen die ik nodig heb om te rekenen.']
+  :[`Mijn uitkomst: ${VD55[v.kind][0].toLowerCase()}.`,v.why[0]||''];
+ const buf=N55(S.profile.buffer),fx=(()=>{try{return Math.round(fin().fixed)}catch(e){return 0}})();
+ return `<div class="wrap x53 x54 x55">${topbar('Ondernemen',{back:1,sub:esc((d.idee||'Op zoek naar een idee').slice(0,40))})}${guide53(say[0],say[1])}
+  ${o55Q(d)}
+  ${noIdea&&kReady?`${T.ask?o55Ask():''}${T.busy==='kansen'?`<div class="card">${w54Busy('Ik zoek kansen die bij je passen.')}</div>`:''}
+   ${K?`${K.kansen.map((k,i)=>`<div class="card x55-kans"><div class="x53-sh"><h3>${esc(k.naam)}</h3>${LAB55('advies')}</div><p><b>Past bij jou:</b> ${esc(k.past)}</p>${k.begin?`<p><b>Begin zo:</b> ${esc(k.begin)}</p>`:''}${k.letop?`<p class="x55-risk"><b>Let op:</b> ${esc(k.letop)}</p>`:''}${k.startkosten?`<small class="fine">Startkosten: ${k.startkosten} (grove inschatting van de AI)</small>`:''}<button class="btn" data-a="o55-pick" data-arg="${i}">Reken deze door ›</button></div>`).join('')}<button class="btn ghost x54-re" data-a="o55-kansen">Zoek 3 andere</button><p class="fine">${esc(K.source||'')} · de AI kent jouw markt niet. Het zijn ideeën, geen onderzoek.</p>`
+    :(!T.busy&&!T.ask?`<div class="card"><button class="btn x52-go" data-a="o55-kansen">${I('sparkle')} Zoek 3 kansen voor mij</button>${T.err?`<p class="x52-err">${esc(T.err)}</p>`:''}</div>`:'')}`:''}
+  ${d.heeftIdee?`${o55Case(d)}
+   ${!q&&ready?o55Verdict(d):''}
+   ${inc.length?`<div class="card"><div class="x53-sh"><h3>${I('wallet')} Je inkomen van nu</h3>${LAB55('feit')}</div>${inc.map(x=>`<div class="x55-inc"><b>${x[0]}</b><p>${x[1]}</p>${x[2]?`<a class="link" href="${x[2]}" target="_blank" rel="noopener">${x[3]} ›</a>`:''}</div>`).join('')}</div>`:''}
+   ${!q&&buf!=null&&fx>0?`<div class="card"><div class="x53-sh"><h3>${I('shield')} Je buffer</h3>${LAB55('schat')}</div><p>Je spaargeld (${E(buf)}) dekt ongeveer <b>${String(Math.round(buf/fx*10)/10).replace('.',',')} ${Math.round(buf/fx*10)/10===1?'maand':'maanden'}</b> van je vaste lasten privé (${E(fx)} per maand). ${buf/fx<3?'Dat is krap voor een start zonder inkomen. Begin liever naast je baan of uitkering, of spaar eerst door.':'De eerste maanden komt er vaak weinig binnen. Houd dit achter de hand.'}</p></div>`:''}
+   ${!q?`<div class="card"><h3>En nu?</h3><div class="x54-acts"><button class="btn" data-a="go" data-arg="ondernemen/plan">${I('target')} Maak mijn startplan</button><button class="btn ghost" data-a="go" data-arg="ondernemen/naam">Bedrijfsnaam controleren</button>${d.klant!=='particulieren'?`<button class="btn ghost" data-a="go" data-arg="ondernemen/aanbestedingen">Opdrachten van de overheid</button>`:''}</div>
+    <p class="fine">Heb je startgeld tekort? Begin kleiner of naast je baan. Over lenen adviseer ik niet; de KVK legt uit welke mogelijkheden en risico's er zijn.</p></div>`:''}`:''}
+  ${o55Dos(d)}
+  <button class="btn ghost x54-nn" data-a="o55-new">Een ander idee onderzoeken</button>${fine}</div>`};
+ACT['o55-back']=i=>{const o=O55.st(),a=o.arch[+i];if(!a)return;o.arch.splice(+i,1);if(o.d)o.arch.unshift({at:Date.now(),d:o.d});o.d=a.d;o.kansen=null;o.oordeel=null;save();render(true)};
+/* ---------- ingangen ---------- */
+try{HOME48.push(['ondernemen','sprout','Ik wil ondernemen','Van idee naar eerste klant','#0F766E','#CCFBF1'])}catch(e){}
+{const _hm=handleUserMessage;handleUserMessage=function(text,src,opt){try{const t=String(text||'').toLowerCase();
+  if(/\b(onderneming|ondernemen|voor mezelf beginnen|eigen bedrijf|bedrijfsidee|bedrijf (starten|beginnen)|zzp'?er worden|welk bedrijf|eenmanszaak|(schoonmaak|installatie|klus)bedrijf (starten|beginnen))\b/.test(t)||/\b(wil|ga)\b.*\bbedrijf\b.*\b(beginnen|starten|opzetten)\b/.test(t)){O55.begin(String(text));return true}}catch(e){}return _hm.apply(this,arguments)}}
+/* verder waar je bleef: ook voor ondernemen (via PROG53) — en in de check-in */
+try{HELP54.werk.loon.app.push(['Voor mezelf beginnen?','go','ondernemen']);HELP54.werk.ander.app.push(['Voor mezelf beginnen?','go','ondernemen'])}catch(e){}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
