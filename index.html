@@ -2435,8 +2435,20 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x55-tn{display:block;padding:11px 0;border-top:1px solid #EEF0F6;text-decoration:none;color:inherit}.x55-tn b{display:block;font-size:15px;color:#1A3FA8}.x55-tn small{display:block;font-size:13px;color:#475569;margin-top:2px}
 .x55-kv{padding:9px 0;border-top:1px solid #EEF0F6}.x55-kv b{display:block}.x55-kv small{color:#64748B;font-size:13px}
 .x55 .x53-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+.x55-in input{flex:1 1 0;width:0;min-width:120px}
+.x55-in .btn{flex:0 0 auto;width:auto!important;margin:0;padding-left:18px;padding-right:18px}
+.x55-q .x55-in{flex-wrap:wrap}
+.x55-exit h3{margin-bottom:4px}
 .x57-st{display:block;font-size:12.5px;color:#64748B;font-weight:700}
 .x53-resw{padding-right:6px}
+.ai-page{overflow-x:hidden}
+.ai-page .msg{min-width:0;max-width:100%;scroll-margin-bottom:150px;scroll-margin-top:90px}
+.ai-page .msg .bub{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.ai-page .msg .bub *{max-width:100%}
+.ai-page .msg .bub pre,.ai-page .msg .bub table{overflow-x:auto;display:block}
+.x58-note{display:flex;gap:8px;align-items:center;margin:8px 0;padding:10px 12px;border-radius:12px;background:#FFF7ED;color:#7C2D12;font-size:13.5px;line-height:1.4}
+.x58-note .i{flex:0 0 18px;width:18px;height:18px}.x58-note span{flex:1}.x58-note .btn{flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -16513,14 +16525,14 @@ V.ondernemen=function(sub){const o=O55.st(),d=o.d,T=O55.T;
    ${steps53('ondernemen/plan',st,'Je bedrijf starten')}${win53('ondernemen/plan','Eerste klant: '+(d.idee||'eigen bedrijf'),{q:'Heb je je eerste betalende klant? Vul in wat het opleverde.',per:'o'})}${fine}</div>`}
  if(sub==='aanbestedingen'){const t=o.tender,q0=(t&&t.q)||O55.kw(d)||'';
   return `<div class="wrap x53 x54 x55">${topbar('Aanbestedingen',{back:1,sub:'Opdrachten van de overheid'})}${guide53('Gemeenten, scholen en zorg zoeken ook bedrijven.','Ze zetten opdrachten op TenderNed. Ik zoek wat nu open staat. Let op: dit zijn vaak grote opdrachten met eisen aan ervaring en omzet.')}
-   <div class="card"><div class="x55-in"><input id="tn55q" value="${esc(q0)}" placeholder="Bijvoorbeeld: schoonmaak" maxlength="60" aria-label="Zoekwoord"><button class="btn" data-a="tn55-go">Zoek</button></div>${TND55.busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik zoek op TenderNed…</p>`:''}${TND55.err?`<p class="x52-err">${esc(TND55.err)}</p>`:''}</div>
+   <div class="card"><div class="x55-in"><input id="tn55q" value="${esc(q0)}" placeholder="Bijvoorbeeld: groenonderhoud" maxlength="60" aria-label="Zoekwoord"><button class="btn" data-a="tn55-go">Zoek</button></div>${TND55.busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik zoek op TenderNed…</p>`:''}${TND55.err?`<p class="x52-err">${esc(TND55.err)}</p>`:''}</div>
    ${t&&t.items?`<div class="card"><div class="x53-sh"><h3>${t.items.length} open ${t.items.length===1?'opdracht':'opdrachten'} voor “${esc(t.q)}”</h3>${LAB55('feit')}</div><small class="fine">${esc(t.source||'TenderNed')} · ${evAgo(t.at)}</small>
      ${t.items.length?t.items.slice(0,12).map(x=>`<a class="x55-tn" href="${esc(x.url)}" target="_blank" rel="noopener"><b>${esc(x.titel)}</b><small>${esc(x.opdrachtgever)}${x.soort?' · '+esc(x.soort):''} · inschrijven tot ${X48.fmtD(x.sluit)}</small></a>`).join(''):'<p class="note">Nu niets open voor dit woord. Probeer een ander woord, of laat me nieuwe melden.</p>'}
      <div class="btn-row">${t.srv&&t.srv.q===t.q?`<span class="k42-on">${I('bell')} Ik meld nieuwe opdrachten</span><button class="btn sm ghost" data-a="tn55-off">Uitzetten</button>`:`<button class="btn sm" data-a="tn55-watch">${I('bell')} Meld nieuwe opdrachten</button>`}</div></div>`:''}
    <p class="fine">Bron: TenderNed, het officiële aankondigingenplatform van de overheid (open data). WATCHDOG schrijft nergens voor je in.</p></div>`}
  if(sub==='naam'){const k=o.kvk;
   return `<div class="wrap x53 x54 x55">${topbar('Bedrijfsnaam',{back:1,sub:'Bestaat hij al?'})}${guide53('Even kijken of je naam nog vrij is.','Een naam die lijkt op een bedrijf in dezelfde branche en plaats kan problemen geven.')}
-   <div class="card"><label class="f"><span>De naam die je wilt</span><input id="kv55n" maxlength="60" value="${esc(k&&k.naam||'')}" placeholder="Bijvoorbeeld: Schoon & Fris"></label><label class="f"><span>Plaats (mag leeg)</span><input id="kv55p" maxlength="40" value="${esc((k&&k.plaats)||(d&&d.plaats&&!UNK55(d.plaats)?d.plaats:'')||'')}"></label>
+   <div class="card"><label class="f"><span>De naam die je wilt</span><input id="kv55n" maxlength="60" value="${esc(k&&k.naam||'')}" placeholder="Bijvoorbeeld: Fiets aan Huis"></label><label class="f"><span>Plaats (mag leeg)</span><input id="kv55p" maxlength="40" value="${esc((k&&k.plaats)||(d&&d.plaats&&!UNK55(d.plaats)?d.plaats:'')||'')}"></label>
     <button class="btn x52-go" data-a="kv55-go">${I('search')} Zoek in het Handelsregister</button>${KVK55.busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik zoek bij de KVK…</p>`:''}</div>
    ${k&&k.nc?`<div class="card"><div class="x53-sh"><h3>KVK is nog niet gekoppeld</h3>${LAB55('onb')}</div><p>Ik kan het Handelsregister nu niet zelf doorzoeken. Daarvoor is een KVK-abonnement op de server nodig. Ik verzin geen uitkomst.</p><a class="btn ghost" href="https://www.kvk.nl/zoeken/?source=all&q=${encodeURIComponent(k.naam)}" target="_blank" rel="noopener">Zoek “${esc(k.naam)}” op kvk.nl ›</a></div>`:''}
    ${k&&k.err?`<div class="card"><p class="x52-err">${esc(k.err)}</p></div>`:''}
@@ -16530,8 +16542,8 @@ V.ondernemen=function(sub){const o=O55.st(),d=o.d,T=O55.T;
    <p class="fine">De KVK beslist bij je inschrijving of de naam mag.</p></div>`}
  /* start: wat wil je gaan doen? */
  if(!d)return `<div class="wrap x53 x54 x55">${topbar('Ondernemen',{back:1,sub:'Van idee naar eerste klant'})}${guide53('Wat wil je gaan doen?','Vertel het in je eigen woorden. Weet je het nog niet? Zeg dat dan. Dan zoeken we samen.')}
-  <div class="card"><textarea id="o55t" rows="4" maxlength="600" placeholder="Bijvoorbeeld: ik wil een schoonmaakbedrijf beginnen in Almere" aria-label="Wat wil je gaan doen?"></textarea><button class="btn x52-go" data-a="o55-start">Verder</button>
-   <div class="x55-ex">${['Ik wil een schoonmaakbedrijf beginnen in Almere','Ik wil voor mezelf beginnen maar weet nog niet wat','Ik wil 3000 per maand verdienen met een eigen bedrijf'].map(x=>`<button class="x55-exb" data-a="o55-ex" data-arg="${esc(x)}">“${x}”</button>`).join('')}</div></div>
+  <div class="card"><textarea id="o55t" rows="4" maxlength="600" placeholder="Bijvoorbeeld: ik wil fietsen repareren bij mensen thuis" aria-label="Wat wil je gaan doen?"></textarea><button class="btn x52-go" data-a="o55-start">Verder</button>
+   <div class="x55-ex">${['Ik wil fietsen repareren bij mensen thuis','Ik wil voor mezelf beginnen maar weet nog niet wat','Ik wil 3000 per maand verdienen met een eigen bedrijf'].map(x=>`<button class="x55-exb" data-a="o55-ex" data-arg="${esc(x)}">“${x}”</button>`).join('')}</div></div>
   ${o.arch.length?`<div class="card"><h3>Eerdere ideeën</h3>${o.arch.map((a,i)=>`<button class="x54-sub" data-a="o55-back" data-arg="${i}">${esc((a.d.idee||a.d.tekst||'').slice(0,60))}<i class="h4-chev">›</i></button>`).join('')}</div>`:''}${fine}</div>`;
  const q=Q55.next(d),ready=BC55.ready(d),v=ready?BC55.oordeel(d):null,K=o.kansen,inc=d.heeftIdee?ink55(d):[];
  const noIdea=!d.heeftIdee,kReady=noIdea&&!q;
@@ -16552,7 +16564,7 @@ V.ondernemen=function(sub){const o=O55.st(),d=o.d,T=O55.T;
    ${!q?`<div class="card"><h3>En nu?</h3><div class="x54-acts"><button class="btn" data-a="go" data-arg="ondernemen/plan">${I('target')} Maak mijn startplan</button><button class="btn ghost" data-a="go" data-arg="ondernemen/naam">Bedrijfsnaam controleren</button>${d.klant!=='particulieren'?`<button class="btn ghost" data-a="go" data-arg="ondernemen/aanbestedingen">Opdrachten van de overheid</button>`:''}</div>
     <p class="fine">Heb je startgeld tekort? Begin kleiner of naast je baan. Over lenen adviseer ik niet; de KVK legt uit welke mogelijkheden en risico's er zijn.</p></div>`:''}`:''}
   ${o55Dos(d)}
-  <button class="btn ghost x54-nn" data-a="o55-new">Een ander idee onderzoeken</button>${fine}</div>`};
+  <div class="card x55-exit"><h3>Klaar voor nu?</h3><div class="x54-acts"><button class="btn ghost" data-a="o55-later">Later verder (ik bewaar het)</button><button class="btn ghost" data-a="o55-new">Een ander idee onderzoeken</button><button class="btn ghost dng" data-a="o55-quit">Stoppen en dit wissen</button></div></div>${fine}</div>`};
 ACT['o55-back']=i=>{const o=O55.st(),a=o.arch[+i];if(!a)return;o.arch.splice(+i,1);if(o.d)o.arch.unshift({at:Date.now(),d:o.d});o.d=a.d;o.kansen=null;o.oordeel=null;save();render(true)};
 /* ---------- ingangen ---------- */
 try{HOME48.push(['ondernemen','sprout','Ik wil ondernemen','Van idee naar eerste klant','#0F766E','#CCFBF1'])}catch(e){}
@@ -16560,6 +16572,9 @@ try{HOME48.push(['ondernemen','sprout','Ik wil ondernemen','Van idee naar eerste
   if(/\b(onderneming|ondernemen|voor mezelf beginnen|eigen bedrijf|bedrijfsidee|bedrijf (starten|beginnen)|zzp'?er worden|welk bedrijf|eenmanszaak|(schoonmaak|installatie|klus)bedrijf (starten|beginnen))\b/.test(t)||/\b(wil|ga)\b.*\bbedrijf\b.*\b(beginnen|starten|opzetten)\b/.test(t)){O55.begin(String(text));return true}}catch(e){}return _hm.apply(this,arguments)}}
 /* verder waar je bleef: ook voor ondernemen (via PROG53) — en in de check-in */
 try{HELP54.werk.loon.app.push(['Voor mezelf beginnen?','go','ondernemen']);HELP54.werk.ander.app.push(['Voor mezelf beginnen?','go','ondernemen'])}catch(e){}
+
+ACT['o55-later']=()=>{toast('Bewaard. Je vindt het terug bij \u201cIk wil ondernemen\u201d.',false,true);go('home')};
+ACT['o55-quit']=()=>{const o=O55.st();o.d=null;o.kansen=null;o.oordeel=null;o.tender=o.tender&&o.tender.srv?o.tender:null;O55.T.ask=null;O55.T.err='';try{delete PROG53.st()['ondernemen/plan']}catch(e){}save();toast('Gewist. Er staat niets meer van dit idee op je telefoon.');go('home')};
 
 
 /* =====================================================================
@@ -16589,6 +16604,29 @@ ACT['x57-show']=()=>{S.ui.regHide={};save();toast('Alle regelingen staan er weer
 /* de ballon van de hond en de kaart zeggen hetzelfde */
 {const _n=W41.next.bind(W41);W41.next=function(){try{const o=PROG53.open()[0];if(o){const d=(o.done||[]).length;return {k:'prog:'+o.r,p:3,t:'Je was ergens mee bezig.',s:`Je was bezig met ${o.t||'iets'}: stap ${Math.min(o.n,d+1)} van ${o.n}. Zullen we verder gaan?`,b:['Verder','go',o.r]}}}catch(e){}return _n()}}
 {const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);try{h=h.replace(/<small>Je was bij stap (\d+) van (\d+)<\/small><b>([^<]*)<\/b>/,'<small>Je was bezig met</small><b>$3</b><small class="x57-st">Stap $1 van $2</small>')}catch(e){}return h}}
+
+
+/* =====================================================================
+   V58 — WATCHDOG AI: één vraag tegelijk, eerlijke cijfers, niets buiten beeld
+   - Tik je een vraag terwijl de hond nog zoekt, dan wordt hij niet nog een keer gesteld (dat kostte elke keer een AI-vraag).
+     Je ziet meteen "Even snuffelen…" in beeld.
+   - "Vrij" en "Buffer" tonen een vraagteken zolang de hond je vaste lasten niet kent, in plaats van een te mooi bedrag.
+   - Geen "Hoi Jij!" als je naam niet is ingevuld. Antwoorden blijven binnen het scherm.
+   ===================================================================== */
+const AIQ58={last:'',at:0,busy(){return !!$('#msgs .ag-busy, #msgs .typing')},
+ show(){try{const b=$('#msgs .ag-busy, #msgs .typing'),el=b?b.closest('.msg'):($('#msgs')||{}).lastElementChild;if(el)el.scrollIntoView({block:'center',behavior:RM()?'auto':'smooth'})}catch(e){}}};
+{const _p=aiPush;aiPush=function(q){q=String(q||'').trim();if(!q)return;
+  if(AIQ58.busy()){toast('Ik ben nog bezig met je vorige vraag. Even geduld.');AIQ58.show();return}
+  if(q===AIQ58.last&&Date.now()-AIQ58.at<10000){toast('Die vraag stelde je net. Het antwoord staat hieronder.');AIQ58.show();return}
+  AIQ58.last=q;AIQ58.at=Date.now();const r=_p.apply(this,arguments);[150,700].forEach(ms=>setTimeout(()=>AIQ58.show(),ms));return r}}
+{const _v=V.ai;V.ai=function(){let h=_v.apply(this,arguments);try{const F=fin(),nm=String(S.profile.name||'').trim();
+  if(!nm||/^jij$/i.test(nm))h=h.replace(/Hoi [^!<]*!/,'Hoi!');
+  h=h.replace(' Ik antwoord altijd in vier stappen: inzicht, waarom belangrijk, mogelijke actie en verwacht effect.',' Stel je vraag. Ik zoek het op in echte bronnen en reken met jouw cijfers.');
+  h=h.replace('<span><small>Vrij</small>','<span><small>Vrij p/m</small>');
+  if(LEEG()&&!(F.fixed+F.variable>0)){
+   h=h.replace(/(<span><small>Vrij p\/m<\/small><b>)[^<]*(<\/b>)/,'$1?$2').replace(/(<span><small>Buffer<\/small><b>)[^<]*(<\/b>)/,'$1?$2')
+    .replace('<div id="vbar"></div>',`<div class="x58-note">${I('info')}<span>Ik ken je vaste lasten nog niet. Daarom weet ik niet wat je vrij overhoudt.</span><button class="btn sm ghost" data-a="scan">Vul ze in</button></div><div id="vbar"></div>`)}
+ }catch(e){console.warn('V58 ai',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
