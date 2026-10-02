@@ -2367,6 +2367,9 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x53-need{list-style:none;margin:6px 0 0;padding:0}.x53-need li{display:flex;gap:10px;align-items:flex-start;padding:7px 0}.x53-need b{font-size:14.5px;font-weight:700}
 .x53-rem{display:flex;gap:8px;align-items:flex-end;margin-top:10px}.x53-rem .f{flex:1;margin:0}.x53-rem input{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1.5px solid #CBD5E1;border-radius:10px}
 .x53-warn details summary{cursor:pointer;font-weight:800;margin-top:4px;color:#9A3412}
+
+.x53-resw{display:flex;gap:8px;align-items:center;margin:0 0 10px}.x53-resw .x53-resume{margin:0;flex:1;min-width:0}.x53-resw .x54-x{flex:0 0 36px;height:36px}
+.x53-stop{margin-top:6px}
 /* ===== V54 · hoe gaat het · werk-coach ===== */
 .x54-moods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 12px}
 .x54-mood{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 6px;border-radius:18px;border:2px solid var(--c);background:var(--bg);color:#0E1B4D;font:inherit;font-weight:900;font-size:15.5px;cursor:pointer}
@@ -15664,14 +15667,16 @@ const STUDIE52={
   const r=this.st()[v];return r?{naam:r.titel,wat:'',officieel:r.titel,url:r.url,g:r.gemeente}:null},
  async run(v){if(!this.ok(v)||this.busy[v])return;this.busy[v]=true;this.err[v]=null;refresh();try{DOG.set('searching')}catch(e){}
   try{const j=await X48.post('/api/regeling-studie',{version:v},100000);
-   const keep=['version','titel','gemeente','url','samenvatting','voorWie','voorWieCitaat','wat','watCitaat','bedragCitaat','voorwaarden','aanvragen','aanvragenCitaat','termijn','termijnCitaat','nodig','weggelaten','truncated','source','studiedAt','let_op'];
+   const keep=['schema','version','titel','gemeente','url','samenvatting','voorWie','voorWieCitaat','wat','watCitaat','bedragCitaat','voorwaarden','aanvragen','aanvragenCitaat','termijn','termijnCitaat','nodig','weggelaten','truncated','source','studiedAt','let_op'];
    const o={};keep.forEach(k=>{if(j[k]!==undefined)o[k]=j[k]});this.st()[v]=o;save();
    try{const c=this.check(o);GUIDE47.say(c.kind==='ja'?'Klaar! Volgens mij past deze regeling bij je. Kijk of het klopt.':c.kind==='nee'?'Klaar. Deze regeling past volgens mij niet bij je. Ik zeg waarom.':`Klaar. Ik heb nog ${c.open} ${c.open===1?'vraag':'vragen'} voor je.`)}catch(e){}
   }catch(e){this.err[v]=e.status===404?'De WATCHDOG-server is nog niet bijgewerkt (RC16 nodig).':e.nc?'Het lezen met AI staat nog niet aan op de server.':/geen server/.test(e.message)?'Ik heb nu geen verbinding met de WATCHDOG-server.':'Dat lukte niet: '+e.message}
   finally{this.busy[v]=false;try{DOG.set('idle')}catch(e){}if(route[0]==='studie'&&route[1]===v)refresh()}},
  /* vergelijken met jouw situatie — alleen hier op je telefoon */
  cond(v,c,i){const P=S.profile||{},A=this.ans(),key=v+':'+i,partner=ME42.partner(),kids=ME42.kids();
-  const yn=q=>({s:A[key]==='ja'?'ja':A[key]==='nee'?'nee':'?',q:q,yn:key});
+  const opt=c.verplicht===false||/^\s*als\b|\bkrijg(t|en)?\b[^.]{0,40}\d+\s?%/i.test(c.tekst||'');
+  const yn=q=>opt?{s:'nvt',a:A[key]||null,opt:true,q:'Dit geldt alleen voor een bepaalde groep, of bepaalt alleen de hoogte van het bedrag. Het telt niet mee in mijn inschatting.',yn:key}
+   :{s:A[key]==='ja'?'ja':A[key]==='nee'?'nee':'?',a:A[key]||null,q:q,yn:key};
   if(c.soort==='inkomen'){const inc=Math.round(N(fin().income));const norm=partner?BIJST2026.samen:BIJST2026.alleen;
    let g=null,how='';if(c.procent){g=norm*c.procent/100;how=`${c.procent}% van de bijstandsnorm (${partner?'samenwonend':'alleenstaand'}, per ${BIJST2026.peil}, met vakantiegeld) = ${E2(g)} netto per maand`}
    else if(c.euro){const yr=c.euro>5000;g=yr?c.euro/12:c.euro;how=`${E(c.euro)} ${yr?'per jaar':'per maand'}`}
@@ -15690,19 +15695,21 @@ const STUDIE52={
    if(!g)return {s:'?',why:'Ik weet je woonplaats nog niet.',b:['Invullen','go','geldcheck']};
    if(!r)return yn('Woon je in deze gemeente?');
    return {s:r.toLowerCase().indexOf(g)>=0||g.indexOf(r.toLowerCase())>=0?'ja':'nee',why:`Jij woont in ${esc(P.gemeente)}. Dit is een regeling van ${esc(r)}.`}}
-  if(c.soort==='duur')return yn(c.maanden?`Geldt dit voor jou? Het gaat om ${c.maanden} maanden${c.maanden>=24?` (${Math.round(c.maanden/12*10)/10} jaar)`:''}.`:'Geldt dit voor jou?');
-  return yn('Geldt dit voor jou?')},
+  if(c.soort==='duur')return yn(c.maanden?`Klopt dit voor jou? Het gaat om ${c.maanden} maanden${c.maanden>=24?` (${Math.round(c.maanden/12*10)/10} jaar)`:''}.`:'Klopt dit voor jou?');
+  return yn('Klopt dit voor jou?')},
  check(r){const v=r.version,L=(r.voorwaarden||[]).map((c,i)=>Object.assign({c:c,i:i},this.cond(v,c,i)));
-  const nee=L.filter(x=>x.s==='nee'),open=L.filter(x=>x.s==='?').length;
-  const kind=!L.length?'leeg':nee.length?'nee':open?'open':'ja';return {L,nee,open,kind}},
+  const nee=L.filter(x=>x.s==='nee'),open=L.filter(x=>x.s==='?').length,must=L.filter(x=>x.s!=='nvt').length;
+  const kind=!must?'leeg':nee.length?'nee':open?'open':'ja';return {L,nee,open,kind}},
  after(){const v=route[1];$$('#main .x52-age').forEach(inp=>{inp.addEventListener('change',()=>{const n=Math.round(N(inp.value));if(n>0&&n<120){S.profile.age=n;save();refresh()}})})}
 };
 ACT['x52-studie']=v=>STUDIE52.run(v);
 ACT['x52-open']=v=>{try{closeSheet()}catch(e){}go('studie/'+v)};
+ACT['x52-clear']=v=>{const A=STUDIE52.ans();Object.keys(A).forEach(k=>{if(k.indexOf(v+':')===0)delete A[k]});save();toast('Je antwoorden zijn gewist.');refresh()};
 ACT['x52-yn']=a=>{const i=a.lastIndexOf('|'),k=a.slice(0,i),val=a.slice(i+1);const A=STUDIE52.ans();A[k]=A[k]===val?null:val;save();refresh()};
 ACT['x52-age']=()=>{const i=$('#main .x52-age');if(!i)return;const n=Math.round(N(i.value));if(n>0&&n<120){S.profile.age=n;save();refresh()}else toast('Vul een leeftijd in')};
 const X52Q=c=>c?`<details class="x52-q"><summary>Zo staat het er</summary><blockquote>“${esc(c)}”</blockquote></details>`:'';
-V.studie=function(v){const it=STUDIE52.item(v),r=STUDIE52.st()[v];
+V.studie=function(v){let r=STUDIE52.st()[v];const it=STUDIE52.item(v);
+ if(r&&r.schema!==2){delete STUDIE52.st()[v];STUDIE52.stale=v;r=null;try{save()}catch(e){}}
  if(!STUDIE52.ok(v)||!it)return `<div class="wrap x48 x51">${topbar('Regeling',{back:1})}<div class="card"><p>Ik kan deze regeling niet (meer) vinden. Kijk bij Kansen voor de regelingen van je gemeente.</p><button class="btn" data-a="go" data-arg="kansen">Naar Kansen</button></div></div>`;
  const head=`<div class="card x52-head"><span class="x51-ic" style="--c:#B45309">${I('gift')}</span><div class="grow"><b>${esc(it.naam)}</b>${it.wat?`<small>${esc(it.wat)}</small>`:''}<small class="k42-off">Officieel: ${esc(it.officieel)}</small>
   ${it.url?`<a class="link x52-off" href="${esc(it.url)}" target="_blank" rel="noopener">Lees de officiële tekst ›</a>`:''}</div></div>`;
@@ -15710,7 +15717,7 @@ V.studie=function(v){const it=STUDIE52.item(v),r=STUDIE52.st()[v];
  if(!r){const busy=STUDIE52.busy[v],err=STUDIE52.err[v];
   body=`<div class="card x52-ask"><h3>${I('search')} Zal ik dit voor je bestuderen?</h3>
    <p>Ik lees de officiële tekst en zet op een rij <b>voor wie</b> het is, <b>wat je krijgt</b> en <b>welke voorwaarden</b> er zijn. Bij alles laat ik de zin uit de regeling zien. Wat ik niet letterlijk terugvind, laat ik weg.</p>
-   <p class="note">Daarna vergelijk ik de voorwaarden met Mijn situatie, hier op je telefoon. Naar de AI gaat alleen de openbare regelingstekst, niet jouw gegevens.</p>
+   ${STUDIE52.stale===v?`<p class="x53-warn">${I('info')}<span>Ik lees regelingen nu beter dan eerst. Laat me deze opnieuw bestuderen.</span></p>`:''}<p class="note">Daarna vergelijk ik de voorwaarden met Mijn situatie, hier op je telefoon. Naar de AI gaat alleen de openbare regelingstekst, niet jouw gegevens.</p>
    ${busy?`<p class="x52-busy"><i class="wl6-dots"><i></i><i></i><i></i></i> Ik lees de regeling. Dit kan tot een minuut duren…</p>`:`<button class="btn x52-go" data-a="x52-studie" data-arg="${esc(v)}">${I('search')} Bestudeer dit voor mij</button>`}
    ${err?`<p class="x52-err">${esc(err)}</p>`:''}</div>`}
  else{const C=STUDIE52.check(r);
@@ -15718,16 +15725,16 @@ V.studie=function(v){const it=STUDIE52.item(v),r=STUDIE52.st()[v];
    nee:['#C2410C','#FFEDD5','shield','Past waarschijnlijk niet',C.nee.length?`${C.nee.length===1?'Deze voorwaarde haal je volgens mij niet':'Deze voorwaarden haal je volgens mij niet'}: ${C.nee.map(x=>'“'+esc(x.c.tekst).replace(/\.$/,'')+'”').join(', ')}. Klopt mijn informatie niet? Pas Mijn situatie aan.`:''],
    open:['#1E4FD8','#E3EDFF','search','Dat weet ik nog niet',`Beantwoord ${C.open===1?'de vraag':'de '+C.open+' vragen'} hieronder, dan zeg ik het.`],
    leeg:['#475569','#F1F5F9','doc','Ik vond geen duidelijke voorwaarden','Lees de officiële tekst of vraag het na bij je gemeente.']}[C.kind];
-  const ico={ja:['check','#047857','Klopt'],nee:['shield','#C2410C','Klopt niet'],'?':['search','#1E4FD8','Weet ik niet']};
+  const ico={ja:['check','#047857','Klopt'],nee:['shield','#C2410C','Klopt niet'],'?':['search','#1E4FD8','Weet ik niet'],nvt:['info','#64748B','Niet voor iedereen']};
   const row=(lab,t,c)=>t?`<div class="x52-f"><small>${lab}</small><p>${esc(t)}</p>${X52Q(c)}</div>`:'';
   const cond=x=>{const [ic,col,lab]=ico[x.s]||ico['?'];
-   const yn=x.yn?`<div class="chips x52-yn"><button class="chip${x.s==='ja'?' on':''}" data-a="x52-yn" data-arg="${esc(x.yn)}|ja">Ja</button><button class="chip${x.s==='nee'?' on':''}" data-a="x52-yn" data-arg="${esc(x.yn)}|nee">Nee</button></div>`:'';
+   const yn=x.yn&&!x.opt?`<div class="chips x52-yn"><button class="chip${x.a==='ja'?' on':''}" data-a="x52-yn" data-arg="${esc(x.yn)}|ja">Ja, klopt</button><button class="chip${x.a==='nee'?' on':''}" data-a="x52-yn" data-arg="${esc(x.yn)}|nee">Nee</button></div>`:'';
    const age=x.age?`<div class="x52-agew"><input class="x52-age" type="number" inputmode="numeric" min="1" max="119" placeholder="Leeftijd" value="${N(S.profile.age)||''}" aria-label="Je leeftijd"><button class="btn sm ghost" data-a="x52-age">Klopt</button></div>`:'';
    return `<li class="x52-c x52-${x.s==='?'?'open':x.s}"><span class="x52-ci" style="--c:${col}" aria-label="${lab}">${I(ic)}</span><div class="grow"><b>${esc(x.c.tekst)}</b>${x.why||x.q?`<small>${x.why||''}${x.q?(x.why?' ':'')+esc(x.q):''}</small>`:''}${yn}${age}${x.b?`<button class="btn sm ghost" data-a="${x.b[1]}" data-arg="${esc(x.b[2])}">${x.b[0]}</button>`:''}${X52Q(x.c.citaat)}</div></li>`};
   body=`<div class="card x52-vd" style="--c:${VD[0]};--bg:${VD[1]}"><span class="x52-vi">${I(VD[2])}</span><div><small>Mijn inschatting</small><b>${VD[3]}</b><small>${VD[4]}</small></div></div>
    ${r.samenvatting?`<div class="card"><h3>In het kort</h3><p class="x52-sum">${esc(r.samenvatting)}</p></div>`:''}
    ${(r.voorWie||r.wat||r.aanvragen||r.termijn||r.bedragCitaat)?`<div class="card x52-fs">${row('Voor wie',r.voorWie,r.voorWieCitaat)}${row('Wat krijg je',r.wat,r.watCitaat)}${r.bedragCitaat?`<div class="x52-f"><small>Bedrag in de regeling</small><blockquote>“${esc(r.bedragCitaat)}”</blockquote></div>`:''}${row('Hoe vraag je het aan',r.aanvragen,r.aanvragenCitaat)}${row('Termijn',r.termijn,r.termijnCitaat)}</div>`:''}
-   ${C.L.length?`<div class="card"><h3>De voorwaarden en jij</h3><ul class="x52-cl">${C.L.map(cond).join('')}</ul></div>`:''}
+   ${C.L.length?`<div class="card"><h3>De voorwaarden en jij</h3><ul class="x52-cl">${C.L.map(cond).join('')}</ul>${C.L.some(x=>x.yn&&x.a)?`<button class="x55-unk" data-a="x52-clear" data-arg="${esc(v)}">Wis mijn antwoorden</button>`:''}</div>`:''}
    <div class="card x52-src"><p class="fine"><b>${esc(r.let_op||'Inschatting van WATCHDOG, geen besluit. De gemeente beslist.')}</b></p>
     <p class="fine">${esc(r.source||'')}${r.studiedAt?' · '+new Date(r.studiedAt).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}):''}.${r.weggelaten?` ${r.weggelaten} ${r.weggelaten===1?'onderdeel':'onderdelen'} weggelaten omdat ik ${r.weggelaten===1?'het':'ze'} niet letterlijk in de tekst terugvond.`:''}${r.truncated?' De regeling is lang; ik las het eerste deel.':''}</p>
     <p class="fine">Ik vergelijk met de bijstandsnorm per ${BIJST2026.peil}: ${E2(BIJST2026.alleen)} (alleenstaand) of ${E2(BIJST2026.samen)} (samen) netto per maand, met vakantiegeld. Je gemeente kan net anders rekenen.</p></div>`}
@@ -15798,7 +15805,7 @@ const PROG53={
  get(r){return this.st()[r]||null},
  set(r,o){const P=this.st();P[r]=Object.assign(P[r]||{done:[]},o,{at:Date.now()});save()},
  toggle(r,i,n,t){const p=this.get(r)||{done:[]};const d=new Set(p.done||[]);d.has(i)?d.delete(i):d.add(i);this.set(r,{done:[...d].sort(),n,t})},
- open(){const P=this.st(),now=Date.now();return Object.keys(P).map(r=>Object.assign({r},P[r])).filter(p=>!p.fin&&p.n&&(p.done||[]).length>0&&(p.done||[]).length<p.n&&now-p.at<30*864e5).sort((a,b)=>b.at-a.at)}
+ open(){const P=this.st(),now=Date.now();return Object.keys(P).map(r=>Object.assign({r},P[r])).filter(p=>!p.fin&&!p.stop&&p.n&&(p.done||[]).length>0&&(p.done||[]).length<p.n&&now-p.at<30*864e5).sort((a,b)=>b.at-a.at)}
 };
 
 /* ---------- welke vondst, welk scherm ---------- */
@@ -15829,10 +15836,15 @@ ACT['x53-speak']=(txt,el)=>{const P=typeof VOICEP!=='undefined'&&VOICEP.browser;
 
 /* ---------- stappen en "Gelukt?" ---------- */
 function steps53(r,L,title){const p=PROG53.get(r)||{done:[]},d=new Set(p.done||[]),n=L.length,k=[...d].filter(i=>i<n).length;
+ if(p.stop&&!p.auto)return `<div class="card x53-steps x53-stopped"><h3>Je bent hiermee gestopt</h3><p class="note">Ik herinner je er niet meer aan. Je kunt altijd weer verder.</p><div class="btn-row"><button class="btn ghost" data-a="x53-resume" data-arg="${esc(r)}">Toch verder gaan</button><button class="btn ghost" data-a="x53-reset" data-arg="${esc(r)}">Opnieuw beginnen</button></div></div>`;
  return `<div class="card x53-steps"><div class="x53-sh"><h3>Zo pak je het aan</h3><span class="x53-pr">${k===n?'Klaar':'Stap '+Math.min(n,k+1)+' van '+n}</span></div>
   <ol class="x53-ol">${L.map((s,i)=>`<li class="${d.has(i)?'done':''}"><button class="x53-ck" data-a="x53-step" data-arg="${esc(r)}|${i}|${n}|${esc(title)}" aria-pressed="${d.has(i)}" aria-label="${d.has(i)?'Gedaan':'Markeer als gedaan'}: ${esc(String(s.t).replace(/<[^>]+>/g,''))}">${d.has(i)?I('check'):i+1}</button>
    <div class="grow"><b>${s.t}</b>${s.s?`<small>${s.s}</small>`:''}${s.b?`<div class="x53-sb">${s.b}</div>`:''}</div></li>`).join('')}</ol>
-  <p class="fine">Tik op het nummer als je een stap gedaan hebt. Ik onthoud waar je bent.</p></div>`}
+  <p class="fine">Tik op het nummer als je een stap gedaan hebt. Tik nog een keer om het terug te zetten. Ik onthoud waar je bent.</p>
+  <button class="x55-unk x53-stop" data-a="x53-stop" data-arg="${esc(r)}">Stop hiermee</button></div>`}
+ACT['x53-stop']=r=>{PROG53.set(r,{stop:true,auto:false});toast('Gestopt. Ik herinner je er niet meer aan.');refresh()};
+ACT['x53-resume']=r=>{PROG53.set(r,{stop:false,auto:false});refresh()};
+ACT['x53-reset']=r=>{PROG53.set(r,{stop:false,auto:false,done:[],fin:false});try{const w=(S.ui.win53||{})[r];if(w)w.open=false}catch(e){}save();refresh()};
 ACT['x53-step']=a=>{const [r,i,n,...t]=a.split('|');PROG53.toggle(r,+i,+n,t.join('|'));refresh()};
 function win53(r,title,o){o=o||{};const st=(S.ui.win53||{})[r]||{},p=PROG53.get(r)||{};
  if(p.fin)return `<div class="card x53-win done"><span class="x51-coin">${I('coins')}</span><div><b>Gelukt!</b><small>${p.won?`${E(p.won)} ${p.per==='m'?'per maand':'eenmalig'} telt mee bij "Opgeleverd met WATCHDOG".`:'Goed gedaan.'}</small></div></div>`;
@@ -15938,7 +15950,7 @@ ACT['x52-found']=()=>{const K=FOUND53.kans(),f=K[0]||FOUND53.list()[0];if(f){FOU
 
 /* ---------- Home: verder waar je bleef ---------- */
 {const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);try{const o=PROG53.open()[0];if(o){const d=(o.done||[]).length;
-  const card=`<button class="x53-resume" data-a="go" data-arg="${esc(o.r)}"><span class="x53-face sm" aria-hidden="true" style="background-image:url(${IMG.dogFace})"></span><span class="grow"><small>Je was bij stap ${Math.min(o.n,d+1)} van ${o.n}</small><b>${esc(o.t||'Verder waar je bleef')}</b></span><em>Verder ›</em></button>`;
+  const card=`<div class="x53-resw"><button class="x53-resume" data-a="go" data-arg="${esc(o.r)}"><span class="x53-face sm" aria-hidden="true" style="background-image:url(${IMG.dogFace})"></span><span class="grow"><small>Je was bij stap ${Math.min(o.n,d+1)} van ${o.n}</small><b>${esc(o.t||'Verder waar je bleef')}</b></span><em>Verder ›</em></button><button class="x54-x" data-a="x53-stop" data-arg="${esc(o.r)}" aria-label="Stop hiermee: ${esc(o.t||'')}">${I('x')}</button></div>`;
   h=h.replace(/(<section class="w41-radar"[^>]*>)/,'$1'+card)}}catch(e){console.warn('V53 resume',e)}return h}}
 
 /* ---------- één getal voor alle tellers ---------- */
@@ -15965,10 +15977,13 @@ function bells53(){const n=C53.n();$$('.bellb').forEach(b=>{let i=b.querySelecto
    <div class="x53-rem"><label class="f"><span>Herinner me op</span><input type="date" id="x53-rd" value="${X48.iso(Date.now()+7*864e5)}"></label><button class="btn sm ghost" data-a="x53-rem" data-arg="${esc(nm)}">${I('bell')} Zet in Bewaken</button></div>
    <p class="fine">Aanvragen doe jij. WATCHDOG vult niets in en verstuurt niets namens jou.</p></div>`;
   const stp=[{t:'Laat me de regeling bestuderen',s:'Klaar: je ziet hierboven wat erin staat.'},{t:'Kijk of hij bij je past',s:C.kind==='ja'?'Volgens mij wel.':C.kind==='nee'?'Volgens mij niet. Klopt je situatie niet? Pas Mijn situatie aan.':'Beantwoord mijn vragen hierboven.'},{t:'Verzamel je papieren',s:L.length?`${Object.values(nd).filter(Boolean).length} van ${L.length} klaar.`:'ID en bewijs van je inkomen.'},{t:'Vraag het aan bij de gemeente',s:'Dat doe je zelf. Tik daarna op het nummer, dan weet ik het.'}];
+  const toch=!!((S.ui.toch53||{})[v]),past=C.kind!=='nee'||toch;
+  {const p0=PROG53.get(route)||{};if(!past)PROG53.set(route,{stop:true,auto:true,n:stp.length,t:nm});else if(p0.auto)PROG53.set(route,{stop:false,auto:false})}
   const p=PROG53.get(route)||{done:[]};if(!(p.done||[]).includes(0))PROG53.set(route,{done:[0].concat(p.done||[]),n:stp.length,t:nm});else PROG53.set(route,{n:stp.length,t:nm});
   if(C.kind==='ja'&&!(PROG53.get(route).done||[]).includes(1)){const q2=PROG53.get(route);PROG53.set(route,{done:[...new Set((q2.done||[]).concat([1]))].sort()})}
   if(L.length&&L.every((z,i)=>nd[i])){const q3=PROG53.get(route);if(!(q3.done||[]).includes(2))PROG53.set(route,{done:[...new Set((q3.done||[]).concat([2]))].sort()})}
-  const add=hulp+steps53(route,stp,nm)+win53(route,nm,{q:'Kreeg je het? Vul in hoeveel, dan telt het mee bij wat WATCHDOG je opleverde.',per:'o'});
+  const add=past?hulp+steps53(route,stp,nm)+win53(route,nm,{q:'Kreeg je het? Vul in hoeveel, dan telt het mee bij wat WATCHDOG je opleverde.',per:'o'})
+   :`<div class="card x53-skip"><h3>Aanvragen laat ik weg</h3><p class="note">Deze regeling past volgens mij niet bij je. Daarom toon ik geen aanvraagstappen en herinner ik je er niet aan. Denk je dat ik het mis heb?</p><div class="btn-row"><button class="btn ghost" data-a="x53-toch" data-arg="${esc(v)}">Toch de stappen zien</button></div></div>`;
   const g=guide53(C.kind==='ja'?'Deze past volgens mij bij je!':C.kind==='nee'?'Deze past volgens mij niet.':C.kind==='open'?'Ik heb nog een paar vragen.':'Ik heb de regeling gelezen.',C.kind==='ja'?'Hieronder zie je wat je nodig hebt en waar je het aanvraagt.':C.kind==='nee'?'Ik zeg hieronder waarom. Klopt iets niet, pas dan Mijn situatie aan.':C.kind==='open'?'Beantwoord ze hieronder, dan zeg ik of hij bij je past.':'Lees wat erin staat; vraag het na bij je gemeente.');
   h=h.replace(/(<div class="card x52-head">)/,g+'$1');
   h=h.replace(/(<div class="card x52-src">)/,add+'$1');
@@ -15982,6 +15997,8 @@ ACT['x53-rem']=nm=>{const d=($('#x53-rd')||{}).value;if(!d){toast('Kies een datu
 /* Kansen: de hond telt wat er in "Gevonden" staat, net als het tabje */
 K36.count=function(){try{return FOUND53.kans().length}catch(e){return 0}};
 C53.k=()=>{try{return FOUND53.kans().length}catch(e){return 0}};
+
+ACT['x53-toch']=v=>{(S.ui.toch53=S.ui.toch53||{})[v]=true;save();refresh()};
 
 
 /* =====================================================================
