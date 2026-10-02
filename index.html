@@ -2435,6 +2435,8 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x55-tn{display:block;padding:11px 0;border-top:1px solid #EEF0F6;text-decoration:none;color:inherit}.x55-tn b{display:block;font-size:15px;color:#1A3FA8}.x55-tn small{display:block;font-size:13px;color:#475569;margin-top:2px}
 .x55-kv{padding:9px 0;border-top:1px solid #EEF0F6}.x55-kv b{display:block}.x55-kv small{color:#64748B;font-size:13px}
 .x55 .x53-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.x57-st{display:block;font-size:12.5px;color:#64748B;font-weight:700}
+.x53-resw{padding-right:6px}
 </style>
 </head>
 <body>
@@ -16558,6 +16560,35 @@ try{HOME48.push(['ondernemen','sprout','Ik wil ondernemen','Van idee naar eerste
   if(/\b(onderneming|ondernemen|voor mezelf beginnen|eigen bedrijf|bedrijfsidee|bedrijf (starten|beginnen)|zzp'?er worden|welk bedrijf|eenmanszaak|(schoonmaak|installatie|klus)bedrijf (starten|beginnen))\b/.test(t)||/\b(wil|ga)\b.*\bbedrijf\b.*\b(beginnen|starten|opzetten)\b/.test(t)){O55.begin(String(text));return true}}catch(e){}return _hm.apply(this,arguments)}}
 /* verder waar je bleef: ook voor ondernemen (via PROG53) — en in de check-in */
 try{HELP54.werk.loon.app.push(['Voor mezelf beginnen?','go','ondernemen']);HELP54.werk.ander.app.push(['Voor mezelf beginnen?','go','ondernemen'])}catch(e){}
+
+
+/* =====================================================================
+   V57 — HOME KLOPT ALTIJD
+   - "Je was bezig met …" staat alleen op Home als het nog zin heeft: de regeling is bestudeerd en past (of je weet het nog niet),
+     de vondst bestaat nog, het ondernemersidee is er nog. Anders verdwijnt de kaart vanzelf.
+   - De hond zegt in zijn ballon hetzelfde als de kaart eronder. Niet meer: kaart over een regeling, ballon over je bankafschrift.
+   - Past een regeling niet: duidelijke knop "Niet meer tonen". Hij verdwijnt dan uit je regelingen en van Home. Terugzetten kan.
+   ===================================================================== */
+const HIDE57={st(){S.ui.regHide=S.ui.regHide||{};return S.ui.regHide},n(){return Object.keys(this.st()).length}};
+{const _o=PROG53.open.bind(PROG53);PROG53.open=function(){return _o().filter(p=>{try{
+   if(/^studie\//.test(p.r)){const v=p.r.slice(7),r=STUDIE52.st()[v];if(!r||r.schema!==2||HIDE57.st()[v])return false;const k=STUDIE52.check(r).kind;return k!=='nee'||!!((S.ui.toch53||{})[v])}
+   if(/^vondst\//.test(p.r))return !!FOUND53.find(p.r.slice(7));
+   if(/^ondernemen\//.test(p.r)){const d=O55.d();return !!(d&&d.heeftIdee)}
+  }catch(e){}return true})}}
+/* verborgen regelingen tellen nergens meer mee */
+{const _r=K36.regs.bind(K36);K36.regs=function(){const o=_r();try{if(o&&o.items&&HIDE57.n()){const H=HIDE57.st();o.all=o.items;o.items=o.items.filter(x=>!H[x.version])}}catch(e){}return o}}
+{const _i=STUDIE52.item.bind(STUDIE52);STUDIE52.item=function(v){let it=_i(v);if(!it){try{const G=GEMREG.st(),x=(G.items||[]).find(i=>i.version===v);if(x){const z=reg42(x);it={naam:z.naam,wat:z.wat,officieel:x.title,url:x.url,g:G.g}}}catch(e){}}return it}}
+ACT['x57-hide']=v=>{HIDE57.st()[v]=Date.now();try{PROG53.set('studie/'+v,{stop:true,auto:false})}catch(e){}save();toast('Weg uit je regelingen en van Home. Terugzetten kan onder de lijst.',false,true);go('vondst/regelingen')};
+ACT['x57-show']=()=>{S.ui.regHide={};save();toast('Alle regelingen staan er weer.');refresh()};
+{const _k=k36Regs;k36Regs=function(){let h=_k.apply(this,arguments);try{const n=HIDE57.n();if(n&&h)h=h.replace(/(<p class="fine">Je hebt hier <b>mogelijk<\/b>)/,`<button class="x55-unk" data-a="x57-show">${n} ${n===1?'regeling':'regelingen'} verborgen · toon weer</button>$1`)}catch(e){}return h}}
+/* op de studiepagina: bij "past niet" een duidelijke keuze */
+{const _s=V.studie;V.studie=function(v){let h=_s.apply(this,arguments);try{
+  h=h.replace(/<div class="card x53-skip">[\s\S]*?<\/div><\/div>/,`<div class="card x53-skip"><h3>Hier ga ik niet mee verder</h3><p class="note">Deze regeling past volgens mij niet bij je. Ik heb hem van Home gehaald en herinner je er niet aan.</p><div class="x54-acts"><button class="btn" data-a="x57-hide" data-arg="${esc(v)}">Niet meer tonen bij mijn regelingen</button><button class="btn ghost" data-a="x53-toch" data-arg="${esc(v)}">Ik denk dat hij wel past: toon de stappen</button></div></div>`);
+  if(HIDE57.st()[v])h=h.replace(/(<div class="card x52-head">)/,`<p class="x53-warn">${I('info')}<span>Je hebt deze regeling verborgen. <button class="x55-unk" style="display:inline;margin:0;padding:0" data-a="x57-show">Toon weer</button></span></p>$1`);
+ }catch(e){console.warn('V57 studie',e)}return h}}
+/* de ballon van de hond en de kaart zeggen hetzelfde */
+{const _n=W41.next.bind(W41);W41.next=function(){try{const o=PROG53.open()[0];if(o){const d=(o.done||[]).length;return {k:'prog:'+o.r,p:3,t:'Je was ergens mee bezig.',s:`Je was bezig met ${o.t||'iets'}: stap ${Math.min(o.n,d+1)} van ${o.n}. Zullen we verder gaan?`,b:['Verder','go',o.r]}}}catch(e){}return _n()}}
+{const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);try{h=h.replace(/<small>Je was bij stap (\d+) van (\d+)<\/small><b>([^<]*)<\/b>/,'<small>Je was bezig met</small><b>$3</b><small class="x57-st">Stap $1 van $2</small>')}catch(e){}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
