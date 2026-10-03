@@ -2474,6 +2474,28 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x61-del{display:flex;gap:8px;align-items:center;justify-content:center;width:100%;min-height:48px;margin:14px 0 4px;background:none;border:1px solid #FECACA;border-radius:14px;color:#B91C1C;font-weight:700;font-size:15px}
 .x61-del svg{width:18px;height:18px}
 .x61-main{width:100%;margin:10px 0}
+/* V62 Home kort */
+.h62-plus{flex:0 0 44px;width:44px;height:44px;margin-left:6px;border:0;border-radius:50%;background:#E3EDFF;color:#1E4FD8;display:grid;place-items:center}
+.h62-plus svg{width:22px;height:22px}
+.h3-ask.h4-ask #hq{min-width:0}
+.h62-sug{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 4px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.h62-sug::-webkit-scrollbar{display:none}
+.h62-chip{flex:0 0 auto;min-height:40px;padding:8px 14px;border:1px solid #D7E3FF;border-radius:999px;background:#fff;color:#1A3FA8;font-weight:650;font-size:14.5px;white-space:nowrap}
+.h62-res{display:flex;gap:10px;align-items:center;width:100%;margin-top:10px;padding:12px 14px;border:0;border-radius:16px;background:#ECFDF5;color:#065F46;text-align:left;font-size:15px}
+.h62-res svg{flex:0 0 20px;width:20px;height:20px}.h62-res span{flex:1;min-width:0}.h62-res small{display:block;color:#047857;font-size:12.5px}.h62-res i{font-style:normal;font-size:20px}
+.h62-ok{display:flex;gap:12px;align-items:center;width:100%;margin:4px 0 16px;padding:12px 14px;border:1px solid #D1FAE5;border-radius:18px;background:#fff;text-align:left}
+.h62-okc{flex:0 0 36px;height:36px;border-radius:12px;background:#10B981;color:#fff;display:grid;place-items:center}.h62-okc svg{width:20px;height:20px}
+.h62-ok .grow{min-width:0;display:flex;flex-direction:column}.h62-ok b{font-size:16px;color:#0F172A}.h62-ok small{color:#64748B;font-size:13.5px}.h62-ok em{font-style:normal;font-weight:700;color:#1E4FD8;font-size:14px;white-space:nowrap}
+.h62-foot{display:flex;flex-direction:column;gap:8px;margin:18px 0 8px}
+.h62-fb{display:flex;gap:8px;align-items:center;justify-content:center;width:100%;min-height:48px;padding:10px 14px;border:1px dashed #C7D2E5;border-radius:16px;background:#fff;color:#1A3FA8;font-weight:700;font-size:15px;margin:0}
+.h62-fb svg{width:18px;height:18px}
+.h62-h{margin:20px 4px 8px;font-size:18px}
+.h62-list{display:flex;flex-direction:column;gap:8px}
+.h62-row{display:flex;gap:12px;align-items:center;width:100%;min-height:64px;padding:10px 14px;border:1px solid #E6ECF7;border-radius:18px;background:#fff;text-align:left}
+.h62-row .h4-cat-i{flex:0 0 44px}.h62-row .h4-cat-i svg{width:22px;height:22px}
+.h62-row .grow{min-width:0;display:flex;flex-direction:column}.h62-row b{font-size:16.5px;color:#0F172A;overflow-wrap:anywhere}.h62-row small{color:#64748B;font-size:13.5px}
+.h62-all{width:100%;margin-top:14px}
+.h62-bank{margin-top:14px}.h62-bank b{display:block;margin:6px 0 2px}
 </style>
 </head>
 <body>
@@ -16919,6 +16941,108 @@ ACT['x61-del']=(k,el,ev)=>{try{if(ev&&ev.stopPropagation)ev.stopPropagation()}ca
 /* bij "Eerder": een duidelijke knop in plaats van een klein kruisje */
 {const _c=evCard;evCard=function(e){let h=_c.apply(this,arguments);try{h=h.replace(/<button class="x sm" data-a="ev-hide" data-arg="([^"]*)" aria-label="Verberg melding">×<\/button>/,`<button class="btn sm ghost x61-rm" data-a="ev-hide" data-arg="$1">Verwijder</button>`)}catch(x){}return h}}
 {const _h=ACT['ev-hide'];ACT['ev-hide']=function(id){const r=_h.apply(this,arguments);try{toast('Verwijderd. Terugzetten kan bij “Verborgen”.',true)}catch(e){}return r}}
+
+
+/* =====================================================================
+   V62 — HOME: KORT, MET ÉÉN INGANG
+   De bovenkant (hond, tekstballon, typvak, WATCHDOG meldt) blijft. Daaronder:
+   - Typvak = ook "check dit": plus-knop (link, screenshot, tekst) en drie wisselende voorbeelden eronder.
+   - Vier behoeften: Kopen · Besparen · Verdienen · Regelen. Elke tegel opent een korte lijst met wat eronder valt.
+   - "Zo vind ik meer voor je" wordt na 3/3 één regel en verdwijnt na een week (staat dan bij Mijn situatie).
+   - WATCHDOG meldt laat zien wat echt telbaar is: wat jij bevestigde, en wanneer ik voor het laatst keek.
+   - Alle andere tegels (12 hulptegels, Kies slim, Vraag het de waakhond) staan achter "Alles wat ik kan". Er is niets verwijderd.
+   ===================================================================== */
+const HOME62={orig:null,cur:[],
+ G:{kopen:['Kopen','Vind wat past','Wat wil je kopen?','Ik zoek de beste prijs, check de verkoper en reken uit of het bij je geld past.'],
+    besparen:['Besparen','Waar kan het slimmer','Waar kan het slimmer?','Ik kijk naar je vaste lasten, abonnementen, boodschappen en contracten.'],
+    verdienen:['Verdienen','Werk, bedrijf, verkopen','Meer verdienen?','Een betere baan, een eigen bedrijf of geld uit spullen die stilliggen.'],
+    regelen:['Regelen','Regelingen, brieven, termijnen','Iets regelen?','Regelingen en toeslagen, een brief die je niet snapt of iets dat op tijd moet.']},
+ IC:{verdienen:['briefcase','#1E4FD8','#E3EDFF'],regelen:['doc','#E11D48','#FFE4E6']},
+ MAP:{check:'kopen',deel:'kopen',geldcheck:'besparen',budget:'besparen',rente:'besparen',verkoop:'verdienen',werkcoach:'verdienen',ondernemen:'verdienen',brief:'regelen',leven:'regelen',kalender:'regelen',hoegaathet:'regelen'},
+ KIES:{woning:'kopen',auto:'kopen',aankoop:'kopen',energie:'besparen',telefoon:'besparen',internet:'besparen',sparen:'besparen'},
+ done3(){try{return G40.steps().filter(x=>!x.opt).every(x=>x.done)}catch(e){return false}},
+ tpl(h){const t=document.createElement('template');t.innerHTML=h;return t},
+ /* alles wat op de oude Home stond, gegroepeerd — niets raakt kwijt */
+ items(){const out={kopen:[],besparen:[],verdienen:[],regelen:[]},add=(g,o)=>out[out[g]?g:'regelen'].push(o);
+  add('kopen',{a:'wd-start',arg:'kopen',ic:'cart',c:'#1E4FD8',bg:'#E3EDFF',t:'Zoek een product',s:'Ik zoek de beste prijs'});
+  add('kopen',{a:'go',arg:'hulp/betaalbaar',ic:'target',c:'#0F766E',bg:'#CCFBF1',t:'Past dit bij mijn geld?',s:'Reken het eerst door'});
+  add('besparen',{a:'wd-start',arg:'besparen',ic:'coins',c:'#D97706',bg:'#FEF3C7',t:'Besparen-check',s:'Waar kan het slimmer'});
+  add('verdienen',{a:'go',arg:'verdienen',ic:'search',c:'#1E4FD8',bg:'#E3EDFF',t:'Vacatures zoeken',s:'Wat levert het netto op?'});
+  add('regelen',{a:'wd-start',arg:'regelingen',ic:'doc',c:'#E11D48',bg:'#FFE4E6',t:'Regelingen en toeslagen',s:'Waar heb je recht op'});
+  let T=null;try{T=this.tpl(this.orig?this.orig():'')}catch(e){}
+  if(T){T.content.querySelectorAll('.x50-hb').forEach(b=>{const i=b.querySelector('.h4-cat-i'),st=(i&&i.getAttribute('style'))||'',lb=b.querySelector('b'),sm=b.querySelector('small');
+     add(this.MAP[b.dataset.arg]||'regelen',{a:b.dataset.a,arg:b.dataset.arg,svg:i?i.innerHTML:'',st,t:lb?lb.textContent.replace(/­/g,''):'',s:sm?sm.textContent:''})});
+   T.content.querySelectorAll('.h30-kies .sbt').forEach(b=>{const i=b.querySelector('.sbt-i'),lb=b.querySelector('b');
+     add(this.KIES[b.dataset.arg]||'regelen',{a:b.dataset.a,arg:b.dataset.arg,svg:i?i.innerHTML:'',c:'#0F766E',bg:'#CCFBF1',t:(lb?lb.textContent:'')+' doorrekenen',s:'Kies slim: eerst rekenen, dan beslissen'})})}
+  add('kopen',{a:'go',arg:'watches',ic:'eye',c:'#0EA5E9',bg:'#E0F2FE',t:'Prijs bewaken',s:'Ik meld het als het goedkoper wordt'});
+  add('besparen',{a:'go',arg:'hulp/abonnement',ic:'info',c:'#2563EB',bg:'#E3EDFF',t:'Abonnementen',s:'Gebruik je het nog?'});
+  add('besparen',{a:'go',arg:'hulp/contract',ic:'doc',c:'#0369A1',bg:'#E0F2FE',t:'Contracten',s:'Looptijd en opzeggen'});
+  add('besparen',{a:'go',arg:'import',ic:'bank',c:'#10B981',bg:'#D1FAE5',t:'Vaste lasten uit je bankgegevens',s:'Als je wilt. Blijft op je telefoon'});
+  add('besparen',{a:'scan',arg:'',ic:'wallet',c:'#F59E0B',bg:'#FEF3C7',t:'Mijn financiële situatie',s:'Inkomen en vaste lasten invullen'});
+  add('regelen',{a:'go',arg:'termijnen',ic:'check',c:'#0F766E',bg:'#CCFBF1',t:'Termijnen',s:'Niets te laat'});
+  add('regelen',{a:'go',arg:'ai',ic:'sparkle',c:'#1E4FD8',bg:'#E3EDFF',t:'Vraag het de waakhond',s:'Hij zoekt op in echte bronnen'});
+  return out},
+ /* drie voorbeelden onder het typvak: eerst waar je zelf mee bezig bent, dan een wisselende lijst */
+ sugg(){const L=[],has=t=>L.some(x=>x.t===t),push=o=>{if(L.length<3&&!has(o.t))L.push(o)};
+  try{const d=O55.st().d;if(d&&d.heeftIdee)push({t:'Verder met mijn startplan',go:()=>go('ondernemen/plan')})}catch(e){}
+  try{if(W54.st().cv)push({t:'Past een vacature bij mijn cv?',go:()=>go('werkcoach')})}catch(e){}
+  try{if(!GC51.done())push({t:'Waar laat ik geld liggen?',go:()=>go('geldcheck')})}catch(e){}
+  const P=[['Is deze aanbieding echt?',()=>go('deel')],['Heb ik recht op toeslagen?',()=>ACT['ai-go']('Heb ik recht op toeslagen?')],['Kan dit goedkoper?',()=>ACT['wd-start']('besparen')],
+   ['Zoek beter betaald werk voor mij',()=>ACT['ai-go']('Zoek beter betaald werk voor mij')],['Leg mijn brief uit',()=>go('brief')],['Waar laat ik geld liggen?',()=>ACT['ai-go']('Waar laat ik geld liggen?')],
+   ['Waarmee kan ik voor mezelf beginnen?',()=>go('ondernemen')],['Klopt wat ik op TikTok zag?',()=>go('deel')],['Wat kan ik vandaag verbeteren?',()=>go('kansen')]];
+  const d=new Date(),day=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(d.getFullYear(),0,0))/864e5);
+  for(let i=0;i<P.length&&L.length<3;i++){const x=P[(day*3+i)%P.length];push({t:x[0],go:x[1]})}
+  this.cur=L;return L},
+ row(o){return `<button class="h62-row" data-a="${esc(o.a)}" data-arg="${esc(o.arg||'')}"><span class="h4-cat-i" style="${o.st||`--c:${o.c};--bg:${o.bg}`}">${o.svg||I(o.ic)}</span><span class="grow"><b>${esc(o.t)}</b><small>${esc(o.s||'')}</small></span><i class="h4-chev" aria-hidden="true">›</i></button>`},
+ bankOffer(){try{const b=G40.steps().find(s=>s.opt);if(!b||b.done||HOME60.skip())return '';
+   return `<div class="card h62-bank"><em class="h60-tag">Als je wilt</em><b>${b.t}</b><p class="note">${b.s}</p><div class="h60-btns"><button class="btn sm ghost" data-a="${b.a}" data-arg="${b.arg}">${b.b}</button><button class="h60-no" data-a="h60-bankskip">Nee, liever niet</button></div></div>`}catch(e){return ''}}
+};
+ACT['h62-s']=i=>{const x=HOME62.cur[+i];if(x&&x.go)x.go()};
+ACT['h62-grp']=g=>go('meer/'+g);
+/* ---------- de lijst achter een tegel, en "Alles wat ik kan" ---------- */
+V.meer=function(g){const A=HOME62.items(),G=HOME62.G,one=G[g]?g:null;
+ const sec=k=>`${one?'':`<h2 class="h62-h">${G[k][0]}</h2>`}<div class="h62-list">${A[k].map(o=>HOME62.row(o)).join('')}</div>`;
+ return `<div class="wrap x53 h62-meer">${topbar(one?G[one][0]:'Alles wat ik kan',{back:1,sub:one?G[one][1]:'Kies wat je wilt doen'})}
+  ${one?guide53(G[one][2],G[one][3]):guide53('Dit kan ik allemaal voor je doen.','Weet je niet waar het bij hoort? Typ het gewoon op Home, dan zoek ik het uit.')}
+  ${one?sec(one):Object.keys(G).map(sec).join('')}
+  ${one?`<button class="btn ghost h62-all" data-a="go" data-arg="meer">Alles wat ik kan ›</button>`:''}</div>`};
+/* ---------- Home ---------- */
+{const _h=V.home;HOME62.orig=function(){return _h.apply(V,[])};V.home=function(){let h=_h.apply(this,arguments);
+ try{const T=HOME62.tpl(h),R=T.content,q=s=>R.querySelector(s),rm=s=>R.querySelectorAll(s).forEach(e=>e.remove());
+  const ask=q('.h3-ask');if(!ask||!q('.h4-hero'))return h;
+  /* typvak = ook "check dit" */
+  const inp=ask.querySelector('#hq');if(inp){inp.setAttribute('placeholder','Iets gezien of een vraag?');inp.setAttribute('aria-label','Typ je vraag, of plak een link van iets dat je zag')}
+  const ic=ask.querySelector('.h3-ask-i');const plus=document.createElement('button');plus.className='h62-plus';plus.dataset.a='go';plus.dataset.arg='deel';plus.setAttribute('aria-label','Deel een link, screenshot of tekst met WATCHDOG');plus.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+  if(ic)ic.replaceWith(plus);else ask.prepend(plus);
+  const S3=HOME62.sugg(),sg=document.createElement('div');sg.className='h62-sug';sg.setAttribute('role','group');sg.setAttribute('aria-label','Voorbeelden van wat je kunt vragen');
+  sg.innerHTML=S3.map((x,i)=>`<button class="h62-chip" data-a="h62-s" data-arg="${i}">${esc(x.t)}</button>`).join('');ask.after(sg);
+  /* weg van Home, terug te vinden achter de vier tegels / "Alles wat ik kan" */
+  const bline=q('.x48-bline'),simple=q('.x51-simple-b');
+  rm('.x51-gcb');rm('.ag-box');rm('.h4-exq');rm('.h30-kies');rm('.h4-fin');rm('.h4-wl');
+  R.querySelectorAll('.h4-sec').forEach(s=>{const t=s.textContent.trim();if(/^Ik bewaak voor jou/.test(t))s.remove();if(/^Recente zoekopdrachten/.test(t)&&q('.h4-none')){s.remove()}});rm('.h4-none');
+  const help=q('.x48-home');if(help){if(bline)help.replaceWith(bline);else help.remove()}
+  /* vier behoeften */
+  const st=q('.wd-st');if(st){const old={};st.querySelectorAll('.wd-stb').forEach(b=>{const i=b.querySelector('.h4-cat-i');old[b.dataset.arg]=i?i.outerHTML:''});
+   st.innerHTML=Object.keys(HOME62.G).map(k=>{const G=HOME62.G[k],c=HOME62.IC[k];return `<button class="wd-stb" data-a="h62-grp" data-arg="${k}">${old[k]||old[{regelen:'regelingen'}[k]]||`<span class="h4-cat-i" style="--c:${c[1]};--bg:${c[2]}">${I(c[0])}</span>`}<b>${G[0]}</b><small>${G[1]}</small></button>`}).join('');
+   st.setAttribute('aria-label','Wat wil je doen?')}
+  /* WATCHDOG meldt: alleen wat echt telbaar is */
+  const rad=q('.w41-radar');if(rad){let tot=0;try{tot=WINS.total()}catch(e){}const stt=G40.status();
+   const em=rad.querySelector('.w41-empty small');if(em&&stt.n&&stt.lc)em.textContent=`Ik keek ${g40Ago(stt.lc)} naar je ${stt.n===1?'bewaking':stt.n+' bewakingen'}. Geen actie nodig.`;
+   if(tot>0){const d=document.createElement('button');d.className='h62-res';d.dataset.a='go';d.dataset.arg='kansen';d.innerHTML=`${I('check')}<span>Opgeleverd met WATCHDOG: <b>${E(tot)}</b> <small>door jou bevestigd</small></span><i aria-hidden="true">›</i>`;rad.appendChild(d)}}
+  /* 3/3 klaar: één regel, na een week weg */
+  const steps=q('.w41-steps');if(steps&&HOME62.done3()){S.ui=S.ui||{};if(!S.ui.h62at){S.ui.h62at=Date.now();try{save()}catch(e){}}
+   if(Date.now()-S.ui.h62at>7*864e5)steps.remove();else{const d=document.createElement('button');d.className='h62-ok';d.dataset.a='go';d.dataset.arg='plan';d.innerHTML=`<span class="h62-okc" aria-hidden="true">${I('check')}</span><span class="grow"><b>Ik ken je situatie</b><small>Daardoor zoek ik persoonlijker voor je.</small></span><em>Bekijk ›</em>`;steps.replaceWith(d)}}
+  /* onderaan: alles wat ik kan + eenvoudige stand */
+  const foot=document.createElement('div');foot.className='h62-foot';foot.innerHTML=`<button class="h62-fb" data-a="go" data-arg="meer">${I('search')} Alles wat ik kan ›</button>`;
+  if(simple){simple.remove();simple.classList.add('h62-fb');foot.appendChild(simple)}
+  (q('.h4')||R).appendChild(foot);
+  h=T.innerHTML}catch(e){console.warn('V62 home',e)}return h}}
+/* het bank-aanbod staat nu bij Mijn situatie */
+{const _p=V.plan;V.plan=function(){let h=_p.apply(this,arguments);try{const o=HOME62.bankOffer();if(o)h=h.replace(/<\/div>\s*$/,o+'</div>')}catch(e){}return h}}
+/* tips van de hond verwijzen alleen naar wat er op Home staat */
+{const _l=DTIP.list.bind(DTIP);DTIP.list=function(){let L=_l();try{if((route[0]||'home')==='home'&&$('.h4-hero'))L=L.filter(x=>!x.sel||!!$(x.sel))}catch(e){}return L.length?L:_l()}}
+/* tekst mét een link in het typvak → Deel met WATCHDOG (een vraag "is dit betrouwbaar" blijft naar de check gaan) */
+{const _se=submitFromEntry;submitFromEntry=function(v){try{const s=String(v||'');if(/https?:\/\/\S+/i.test(s)&&!DEEL59.bare(s)&&ROUTE48.classify(s).route!=='betrouwbaar'){const i=$('#hq');if(i)i.value='';go('deel');DEEL59.run(s.trim(),'home');return}}catch(e){}return _se.apply(this,arguments)}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
