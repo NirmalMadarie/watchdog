@@ -2469,6 +2469,11 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .h60-tag{display:inline-block;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#475569;background:#F1F5F9;border-radius:999px;padding:2px 8px;margin-bottom:4px}
 .h60-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px}
 .h60-no{background:none;border:0;padding:8px 4px;min-height:44px;color:#475569;font-weight:700;font-size:14px;text-decoration:underline}
+/* V61 meldingen verwijderen */
+.x61-rm{color:#B91C1C!important}
+.x61-del{display:flex;gap:8px;align-items:center;justify-content:center;width:100%;min-height:48px;margin:14px 0 4px;background:none;border:1px solid #FECACA;border-radius:14px;color:#B91C1C;font-weight:700;font-size:15px}
+.x61-del svg{width:18px;height:18px}
+.x61-main{width:100%;margin:10px 0}
 </style>
 </head>
 <body>
@@ -16848,6 +16853,72 @@ w41Steps=function(){
  return `<section class="w41-steps"><div class="w41-sh"><div class="w41-ring" style="--p:${pct}" aria-hidden="true"><b>${done}/${N3}</b></div><div><b>Zo vind ik meer voor je</b><small>${left===0?'Je bent klaar. Ik kijk overal met je mee.':done?`Nog ${left} ${left===1?'stap':'stappen'}. Jij kiest wat je deelt.`:`${N3} korte stappen. Jij kiest wat je deelt.`}</small></div></div>
  ${steps.map((s,i)=>row(s,i===cur,false)).join('')}${showBank?row(bank,false,!bank.done):''}</section>`};
 ACT['h60-bankskip']=()=>{S.ui=S.ui||{};S.ui.bankSkip=true;save();toast('Prima. Ik vraag er niet meer om. Je vindt het bij Mijn situatie als je het later wilt.',false,true);refresh()};
+
+
+/* =====================================================================
+   V61 — MELDINGEN DIE KLOPPEN, EN ZELF VERWIJDEREN
+   Fout: een melding ("Woef! 3 nieuwe vacatures") werd bij het openen op "gelezen" gezet en was daardoor meteen
+   onvindbaar: je kreeg "Deze vondst is er niet meer". Hetzelfde bij een pushmelding als er geen vacature was die netto meer oplevert.
+   Nu:
+   - Een melding die je opent, zie je altijd: de tekst van de melding zelf, met de knop die erbij hoort.
+   - "Vacatures" en "Regelingen" tonen wat er wél is (of eerlijk dat er nu niets is), nooit "niet meer".
+   - Wat echt weg is (verwijderde bewaking, verdwenen vondst) staat niet meer bij je meldingen en niet meer op Home.
+   - Elke melding heeft "Verwijder": in de lijst, op het scherm van de vondst en bij "Eerder".
+   ===================================================================== */
+const N61={
+ hid(){S.ui=S.ui||{};S.ui.hid61=S.ui.hid61||{};return S.ui.hid61},
+ ev(k){const id=String(k||'').replace(/^ev:/,'');return (S.events||[]).find(e=>e.id===id)||null},
+ /* bestaat het ding waar de melding over gaat nog? */
+ alive(e){try{if(!e||e.status==='dismissed')return false;
+   if(e.dealId&&!(S.deals||[]).some(d=>d.id===e.dealId))return false;
+   const tg=e.action&&e.action.kind==='go'?String(e.action.target||''):'';
+   if(/^vondst\//.test(tg)){const a=decodeURIComponent(tg.slice(7));if(!/^(vacatures|regelingen)$/.test(a)&&!/^ev:/.test(a)&&!N61.raw().some(x=>x.k===a))return false}
+   if(/^studie\//.test(tg)){try{if(HIDE57.st()[tg.slice(7)])return false}catch(x){}}
+   return true}catch(x){return true}},
+ raw(){try{return N61._items()}catch(e){return []}},
+ /* opruimen: meldingen over iets dat weg is, op gelezen zetten (blijven in de geschiedenis) */
+ sweep(){let ch=false;try{(S.events||[]).forEach(e=>{if(!e.read&&!e.demo&&e.status!=='dismissed'&&!N61.alive(e)){e.read=true;e.gone61=true;ch=true}})}catch(x){}if(ch)try{save()}catch(x){}},
+ del(k){k=String(k||'');const e=/^ev:/.test(k)?this.ev(k):null;
+  if(e){e.status='dismissed';e.read=true}else this.hid()[k]=Date.now();
+  try{const P=PROG53.st();['vondst/'+k,'vondst/'+FOUND53.alias(k)].forEach(r=>{if(P[r]&&!P[r].fin)P[r].stop=true})}catch(x){}
+  try{W50.open.delete(k)}catch(x){}save()}
+};
+/* de lijst met meldingen: zonder wat je verwijderde en zonder wat niet meer bestaat */
+{const _it=W41.items.bind(W41);N61._items=_it;W41.items=function(){N61.sweep();const H=N61.hid();let L=_it();
+  try{L=L.filter(x=>!H[x.k]&&!(/^ev:/.test(x.k)&&x.ev&&!N61.alive(x.ev)))}catch(e){}return L}}
+/* een melding blijft vindbaar nadat hij "gelezen" is */
+{const _f=FOUND53.find.bind(FOUND53);FOUND53.find=function(a){const x=_f(a);if(x)return x;
+  if(/^ev:/.test(a||'')){const e=N61.ev(a);if(e&&e.status!=='dismissed')return {k:a,p:1,ev:e,t:esc(e.title),s:esc(e.message),btn:[[(e.action&&e.action.label)||'Bekijk','wake-ev',e.id]],read61:true}}
+  return null}}
+/* "verder waar je was" verwijst nooit naar een vondst die weg is */
+{const _o=PROG53.open.bind(PROG53);PROG53.open=function(){return _o().filter(p=>{if(!/^vondst\//.test(p.r))return true;const a=decodeURIComponent(p.r.slice(7));try{return !!FOUND53.find(a)&&!N61.hid()[a]}catch(e){return true}})}}
+/* het scherm van de vondst */
+function n61Page(top,t,s,body){return `<div class="wrap x53">${topbar(top,{back:1})}${guide53(t,s)}${body||''}<div class="btn-row"><button class="btn ghost" data-a="go" data-arg="notifications">Naar je meldingen</button><button class="btn ghost" data-a="go" data-arg="kansen">Naar Kansen</button></div></div>`}
+{const _v=V.vondst;V.vondst=function(a0){const a=decodeURIComponent(a0||'');let h=_v.apply(this,arguments);
+  try{
+   if(h.indexOf('Deze vondst is er niet meer')>=0){
+    if(a==='vacatures'){let rows=[];try{rows=(K36.jobs().rows||[])}catch(e){}const n=rows.length;
+     return n?n61Page('Vacatures',`Ik vond ${n} ${n===1?'vacature':'vacatures'}.`,(()=>{try{return K36.jobs().better.length>0}catch(e){return false}})()?'Je had deze melding verwijderd. De vacatures zelf staan er nog.':'Er zit er geen bij waarvan ik zeker weet dat hij netto meer oplevert dan je nu verdient. Je kunt ze wel bekijken.',
+       `<div class="card list">${rows.slice(0,5).map(r=>`<div class="row"><span class="grow"><b>${esc(r.j.title||'')}</b><small>${esc([r.j.company,r.j.location].filter(Boolean).join(' · '))}</small></span></div>`).join('')}</div><button class="btn x61-main" data-a="go" data-arg="verdienen">${I('search')} Bekijk alle vacatures</button>`)
+      :n61Page('Vacatures','Ik heb nu geen vacatures voor je.','Er is op dit moment niets nieuws. Je kunt zelf opnieuw zoeken.',`<button class="btn x61-main" data-a="go" data-arg="verdienen">${I('search')} Zoek vacatures</button>`)}
+    if(a==='regelingen')return n61Page('Regelingen','Ik heb nu geen nieuwe regelingen voor je.','Bij Kansen zie je alles wat ik eerder vond.','');
+    if(/^ev:/.test(a))return n61Page('Melding','Deze melding is verwijderd.','Je vindt hem nog bij “Verborgen” in je meldingen.','');
+    return n61Page('Vondst','Dit is er niet meer.','Het is geregeld, verlopen of verwijderd. Ik heb het uit je meldingen gehaald.','')}
+   /* een melding die al gelezen is: geen "vorige/volgende", wel verwijderen */
+   const k=(FOUND53.find(a)||{}).k;
+   if(k&&h.indexOf('x61-del')<0)h=h.replace(/<p class="fine">WATCHDOG solliciteert/,`<button class="x61-del" data-a="x61-del" data-arg="${esc(k)}">${I('x')} Verwijder deze melding</button><p class="fine">WATCHDOG solliciteert`)
+  }catch(e){console.warn('V61 vondst',e)}return h}}
+/* openen: een melding over vacatures zonder "betere" vacature gaat naar de melding zelf, niet naar een lege vondst */
+{const _o=FOUND53.open.bind(FOUND53);FOUND53.open=function(k){const e=/^ev:/.test(k||'')?N61.ev(k):null;
+  if(e){try{markRead(e);save()}catch(x){}go('vondst/'+k);return}
+  return _o(k)}}
+/* knop "Verwijder" bij elke melding in de lijst */
+{const _r=w41Row;w41Row=function(x){let h=_r.apply(this,arguments);try{const k=String(x.k);
+  h=h.replace(/(<div class="w41-btns">[\s\S]*?)(<\/div>)/,`$1<button class="btn sm ghost x61-rm" data-a="x61-del" data-arg="${esc(k)}" aria-label="Verwijder deze melding">Verwijder</button>$2`)}catch(e){}return h}}
+ACT['x61-del']=(k,el,ev)=>{try{if(ev&&ev.stopPropagation)ev.stopPropagation()}catch(x){}N61.del(k);toast('Verwijderd. Je ziet deze melding niet meer.',false,true);if(route[0]==='vondst')go('notifications');else refresh()};
+/* bij "Eerder": een duidelijke knop in plaats van een klein kruisje */
+{const _c=evCard;evCard=function(e){let h=_c.apply(this,arguments);try{h=h.replace(/<button class="x sm" data-a="ev-hide" data-arg="([^"]*)" aria-label="Verberg melding">×<\/button>/,`<button class="btn sm ghost x61-rm" data-a="ev-hide" data-arg="$1">Verwijder</button>`)}catch(x){}return h}}
+{const _h=ACT['ev-hide'];ACT['ev-hide']=function(id){const r=_h.apply(this,arguments);try{toast('Verwijderd. Terugzetten kan bij “Verborgen”.',true)}catch(e){}return r}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
