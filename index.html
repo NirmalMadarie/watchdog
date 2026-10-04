@@ -2585,6 +2585,12 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x67-dl{margin-left:10px;color:#B91C1C}
 .zs-rel{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.zs-rel>*{min-width:0}.zs-relb{overflow-wrap:break-word}
 .x67 .h3-say{overflow-wrap:anywhere;max-width:100%}.x67 .h3-say b{font-size:clamp(20px,6vw,26px);overflow-wrap:anywhere}
+.x67-chip{white-space:normal;border-radius:18px;text-align:left;line-height:1.3}
+.x67-t{border:0;background:none;color:inherit;font:inherit;font-weight:700;padding:0;margin:0;text-align:left;cursor:pointer;overflow-wrap:anywhere;min-width:0}
+.x67-x{flex:none}
+.x67-hint{display:block;color:#64748B;font-size:12.5px;margin:-6px 0 10px}
+.x67-ws{margin:0 0 14px}.x67-wr{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.x67-wr .x67-ta{flex:1;min-width:0}
+.x67-x.lg{width:44px;height:44px;margin:2px 0 0;font-size:22px;background:#EEF2F7;color:#334155}
 </style>
 </head>
 <body>
@@ -11456,7 +11462,7 @@ function wdgParse(text){
  for(const c in WDG_COLORS){if(WDG_COLORS[c].test(t)&&!new RegExp('(geen|niet)\\s+'+WDG_COLORS[c].source).test(t)){s.color=c;break}}
  const neg=[];for(const c in WDG_COLORS){if(new RegExp('\\b(geen|niet|zonder)\\s+(\\w+\\s+)?'+WDG_COLORS[c].source.replace(/\\b/g,'')).test(t))neg.push(c)}if(neg.length){s.noColors=neg;if(neg.indexOf(s.color)>=0)delete s.color}
  const br=WDG_BRANDS.find(x=>new RegExp('\\b'+x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(t));if(br)s.brand=br;
- if(/\bdames|vrouw|\bmeisje/.test(t))s.gender='dames';else if(/\bheren|\bman\b|\bmannen|\bjongen/.test(t))s.gender='heren';else if(/\bkind|kinder/.test(t))s.gender='kinderen';
+ if(/\bkind|kinder|\bjongen|\bjongetje|\bmeisje|\bzoon|\bdochter|\bpeuter|\bkleuter/.test(t))s.gender='kinderen';else if(/\bdames|vrouw/.test(t))s.gender='dames';else if(/\bheren|\bman\b|\bmannen/.test(t))s.gender='heren';
  for(const o in WDG_OCC)if(WDG_OCC[o].test(t)){s.occasion=o;break}
  if(/tweedehands|gebruikt|refurbished/.test(t))s.cond='refurbished';else if(/\bnieuw(e)?\b/.test(t))s.cond='nieuw';
  m=t.match(/(\d{2,3})\s*(?:inch|")/);if(m)s.inch=+m[1];
@@ -11604,7 +11610,7 @@ const WDG={c:null,log:[],
  narrate(prep){
   const C=this.c,E_=C&&C.eval;if(!E_)return;const s=C.slots;
   const msgs=[];
-  msgs.push(`Ik vergeleek ${E_.n} ${plural(E_.n,'aanbieding','aanbiedingen')} bij ${E_.shops} ${plural(E_.shops,'winkel','winkels')}.`);
+  msgs.push(`Ik vergeleek ${E_.n} ${plural(E_.n,'aanbieding','aanbiedingen')} bij ${E_.shops} ${plural(E_.shops,'winkel','winkels')} in Google Shopping.`);
   if(E_.removed)msgs.push(`${E_.removed} liet ik weg omdat je die niet wilde${C.rej.colors.length?' ('+C.rej.colors.map(c=>'geen '+c).join(', ')+')':''}.`);
   if(s.budget){
    if(E_.within>=2)msgs.push(`Ik heb er ${E_.within} gevonden binnen je budget van ${E(s.budget)}.`);
@@ -11945,7 +11951,7 @@ WDG.narrate=function(prep){
  else if(within.length)m3=`Ik heb er ${within.length} gevonden die bij je wensen ${within.length===1?'past':'passen'}.`;
  else if(s.budget){C.adjust=true;m3=`Onder ${E(s.budget)} vind ik weinig goede ${esc(s.brand?wdgCap(s.brand)+'-':'')}opties${s.size?' in maat '+esc(s.size):''}.`}
  const m4=tp&&!tp.over?`Deze van ${E2g(tp.price)}${tp.shop?' bij '+esc(tp.shop):''} past het beste binnen je wensen.`:'';
- const msgs=[m3,m4,`Ik vergeleek ${E_.n} ${plural(E_.n,'aanbieding','aanbiedingen')} bij ${E_.shops} ${plural(E_.shops,'winkel','winkels')}.`];
+ const msgs=[m3,m4,`Ik vergeleek ${E_.n} ${plural(E_.n,'aanbieding','aanbiedingen')} bij ${E_.shops} ${plural(E_.shops,'winkel','winkels')} in Google Shopping.`];
  if(drop.length)msgs.push(drop.join('; ')+'.');
  if(tp&&tp.ship>0)msgs.push(`Let op: bij ${esc(tp.shop)} komt er ${E2g(tp.ship)} bezorgkosten bij.`);
  if(s.size)msgs.push(`Of maat ${esc(s.size)} op voorraad is, zie ik niet in de zoekresultaten; dat check je bij de winkel.`);
@@ -13836,7 +13842,7 @@ const WDG_SIZE_S={k:'size',t:s=>s.gender==='kinderen'?'Welke schoenmaat heeft je
 
 /* ---------- 3. antwoorden begrijpen ---------- */
 const WDG_NEWK={
- gender:lo=>/unisex/.test(lo)?'unisex':/dame|vrouw|meisje/.test(lo)?'dames':/here|\bman|mannen|jongen/.test(lo)?'heren':/kind|kinder/.test(lo)?'kinderen':null,
+ gender:lo=>/unisex/.test(lo)?'unisex':/kind|kinder|jongen|meisje/.test(lo)?'kinderen':/dame|vrouw/.test(lo)?'dames':/here|\bman|mannen/.test(lo)?'heren':null,
  fit:lo=>/slim/.test(lo)?'slim fit':/regular|normaal|gewoon/.test(lo)?'regular fit':/loose|ruim|wijd/.test(lo)?'loose fit':null,
  sleeve:lo=>/kort/.test(lo)?'korte mouw':/lang/.test(lo)?'lange mouw':null,
  ptype:lo=>/verschil|uitleg/.test(lo)?'?':/parfum/.test(lo)?'eau de parfum':/toilette|edt/.test(lo)?'eau de toilette':null,
@@ -17635,16 +17641,17 @@ const SQ67={cur:null,draft:null,_go:false,
   const main=t.split(/[.!?;]|\b(?:zodat|omdat|want|waarmee|om te)\b/i)[0]||t,wishes=[];
   const age=(lo.match(/\b(\d{1,2})\s*jaar\b/)||[])[1],kid=/\b(kind|kinderen|kids|jongen|jongetje|meisje|zoon|zoontje|dochter|dochtertje|peuter|kleuter)\b/.test(lo)||(age&&+age<=12);
   let term=cleanSearchQuery(main).replace(/\bvoor\s+(?:mijn\s+|onze\s+)?(?:kind|kinderen|kids|jongen|jongetje|meisje|zoon|zoontje|dochter|dochtertje|peuter|kleuter)(?:\s+van\s+\d{1,2}(?:\s*jaar)?)?/gi,' ').replace(/\bvan\s+\d{1,2}\s*jaar\b/gi,' ').replace(/\s+/g,' ').replace(/[\s,.]+$/,'').trim();
+  if(kid)term=term.replace(/\b(?:voor\s+)?(?:mijn\s+|onze\s+)?(?:kind|kinderen|kids|jongen|jongetje|meisje|zoon|zoontje|dochter|dochtertje|peuter|kleuter)\b(?:\s+(?:van\s+)?\d{1,2}(?:\s*jaar)?)?/gi,' ').replace(/\b\d{1,2}\s*jaar\b/gi,' ').replace(/\b(heren|dames)\b/gi,' ').replace(/\s+/g,' ').trim();
   if(!term)term=cleanSearchQuery(main)||raw;
-  if(kid)wishes.push('voor kind');
+  if(kid&&!/\b(kind|kinder\w*|kids)\b/i.test(term))wishes.push(age?'voor kind van '+age+' jaar':'voor kind');
   this.FEAT.forEach(f=>{if(f[0].test(lo)&&!term.toLowerCase().includes(f[1]))wishes.push(f[1])});
   return {raw,term:term.slice(0,80),wishes,max:mx&&mx.v>0?mx.v:null,src:'regels',vraag:null}},
  /* een toevoeging: bedrag eruit, de rest als losse wensen */
  addOf(t){const mx=this.maxOf(t);let s=mx?String(t).replace(mx.s,' '):String(t);
-  const w=s.split(/[,;\n]|\s+en\s+/i).map(x=>x.replace(/^\s*(met|liefst|graag|ook|het liefst|en)\s+/i,'').replace(/[.!?]+$/,'').replace(/\s+/g,' ').trim().slice(0,30)).filter(x=>x.length>=2);
+  const w=s.split(/[,;\n.!?]|\s+en\s+/i).map(x=>x.replace(/^\s*(met|liefst|graag|ook|het liefst|en)\s+/i,'').replace(/\s+/g,' ').trim().slice(0,80)).filter(x=>x.length>=2);
   return {max:mx&&mx.v>0?mx.v:null,wishes:w}},
  neg(w){const m=String(w).toLowerCase().match(/^(?:geen|niet|zonder)\s+(.{3,})$/);return m?m[1].trim():null},
- query(sq){return [sq.term].concat((sq.wishes||[]).filter(w=>!this.neg(w)).map(w=>w.replace(/^voor\s+/i,''))).join(' ').replace(/\s+/g,' ').trim()},
+ query(sq){return [sq.term].concat((sq.wishes||[]).filter(w=>!this.neg(w)).map(w=>w.replace(/^voor kind van (\d+) jaar$/i,'kind $1 jaar').replace(/^voor\s+/i,''))).join(' ').replace(/\s+/g,' ').trim()},
  on(){return !!(this.cur&&SEARCH&&!SEARCH.wdg&&!(WDG.c&&WDG.c.stage==='search'))},
  run(sq){this.cur=sq;sq.busy=false;sq.skip=!!sq.noAsk;this._go=true;try{_ss67(this.query(sq))}finally{this._go=false}},
  /* de hond laat eerst zien wat hij begreep */
@@ -17653,12 +17660,13 @@ const SQ67={cur:null,draft:null,_go:false,
   if(route[0]==='zoek')render(true);else go('zoek');
   if(!sq.busy)return;
   SRV.call('/api/zoek-begrip',{method:'POST',body:{text:sq.raw.slice(0,300)}}).then(j=>{if(!SEARCH||SEARCH.id!==id||SQ67.cur!==sq)return;
-    const term=String(j.zoekterm||'').replace(/<[^>]*>/g,'').trim().slice(0,60);if(term.length>=2){sq.term=term;sq.wishes=(j.wensen||[]).map(w=>String(w).replace(/<[^>]*>/g,'').trim().slice(0,30)).filter(Boolean).slice(0,5);if(j.max>0)sq.max=N(j.max);sq.vraag=SQ67.Q[j.vraag]?j.vraag:null;sq.src='ai'}})
+    const term=String(j.zoekterm||'').replace(/<[^>]*>/g,'').trim().slice(0,60);if(term.length>=2){sq.term=term;sq.wishes=(j.wensen||[]).map(w=>String(w).replace(/<[^>]*>/g,'').trim().slice(0,80)).filter(Boolean).slice(0,6);if(sq.lock){const L=sq.lock,all=[];if(L.term)sq.term=L.term;L.keep.concat(sq.wishes).forEach(w=>{if(!all.some(x=>x.toLowerCase()===w.toLowerCase())&&w.toLowerCase()!==sq.term.toLowerCase())all.push(w)});sq.wishes=all.slice(0,10)}if(j.max>0&&!sq.max)sq.max=N(j.max);sq.vraag=SQ67.Q[j.vraag]?j.vraag:null;sq.src='ai'}})
    .catch(()=>{}).then(()=>{if(SEARCH&&SEARCH.id===id&&SQ67.cur===sq){sq.busy=false;try{setDogState('idle',{say:null})}catch(e){}if(route[0]==='zoek')render(false)}})},
  chips(sq,rm){const x=(a,l)=>rm?`<button class="x67-x" data-a="sq-rm" data-arg="${a}" aria-label="Haal ${esc(l)} weg">×</button>`:'';
-  return `<div class="x67-chips"><span class="x67-chip main">${esc(sq.term)}</span>${(sq.wishes||[]).map((w,i)=>`<span class="x67-chip">${esc(w)}${x(i,w)}</span>`).join('')}${sq.max?`<span class="x67-chip eur">tot ${E(sq.max)}${x('max','het maximumbedrag')}</span>`:''}</div>`},
+  const t=(a,h,l)=>rm?`<button class="x67-t" data-a="sq-ed" data-arg="${a}" aria-label="Pas aan: ${esc(l)}">${h}</button>`:h;
+  return `<div class="x67-chips"><span class="x67-chip main">${t('term',esc(sq.term),sq.term)}</span>${(sq.wishes||[]).map((w,i)=>`<span class="x67-chip">${t(i,esc(w),w)}${x(i,w)}</span>`).join('')}${sq.max?`<span class="x67-chip eur">${t('max','tot '+E(sq.max),'het maximumbedrag')}${x('max','het maximumbedrag')}</span>`:''}</div>${rm?'<small class="x67-hint">Tik op een blokje om het aan te passen.</small>':''}`},
  vBegrip(){const sq=this.cur,ws=(sq.wishes||[]);
-  const bub=sq.busy?h3Bubble('<b>Even kijken wat je bedoelt…</b>Daarna laat ik zien waar ik op ga zoeken.','h3-say-r'):h3Bubble(`<b>Ik zoek op: ${esc(sq.term)}.</b>${ws.length?`Met: ${esc(ws.join(', '))}. `:''}${sq.max?`Tot ${E(sq.max)}. `:''}Klopt dat?`,'h3-say-r');
+  const bub=sq.busy?h3Bubble('<b>Even kijken wat je bedoelt…</b>Daarna laat ik zien waar ik op ga zoeken.','h3-say-r'):h3Bubble(`<b>Ik zoek op: ${esc(sq.term)}.</b>${!ws.length?'':ws.join(', ').length<=40?`Met: ${esc(ws.join(', '))}. `:`Met ${ws.length} wensen; ze staan hieronder. `}${sq.max?`Tot ${E(sq.max)}. `:''}Klopt dat?`,'h3-say-r');
   return `<div class="h3 x67">${h3Top()}<section class="h3-hero">${DOG.el('md',sq.busy?'thinking':'idle','denk')}${bub}</section>
    <div class="card x67-b"><small class="x67-l">Jij schreef:</small><p class="x67-raw">“${esc(sq.raw)}”</p>
    ${sq.busy?'':`<small class="x67-l">Ik ga zoeken op:</small>${this.chips(sq,true)}
@@ -17719,37 +17727,43 @@ ACT['sq-skip']=()=>{if(SQ67.cur){SQ67.cur.skip=true;render(false)}};
 ACT['sq-max']=v=>{const sq=SQ67.cur;if(!sq||!(N(v)>0))return;sq.max=N(v);SQ67.refilter()};
 ACT['sq-ans']=k=>{const sq=SQ67.cur,v=String(($('#sq-ans')||{}).value||'').trim();if(!sq)return;if(!v){toast(k==='budget'?'Vul een bedrag in':'Typ eerst je antwoord');return}
  if(k==='budget'){const n=N(v.replace(',','.'));if(!(n>0)){toast('Vul een bedrag in');return}sq.max=n;SQ67.refilter();return}
- sq.answered=(sq.answered||[]).concat(k);sq.wishes=(sq.wishes||[]).concat(k==='maat'&&!/maat/i.test(v)?'maat '+v.slice(0,24):v.slice(0,30));SQ67.run(sq)};
-ACT['sq-rm']=a=>{const dr=SQ67.draft,sq=dr||SQ67.cur;if(!sq)return;if(a==='max')sq.max=null;else sq.wishes.splice(+a,1);
- if(dr){dr.text=($('#zs-q')||{}).value||dr.text;dr.add=($('#sq-add')||{}).value||'';const mv=($('#sq-max')||{}).value;if(a!=='max')dr.max=mv?N(mv):null;sq67Sheet();return}
+ sq.answered=(sq.answered||[]).concat(k);sq.wishes=(sq.wishes||[]).concat(k==='maat'&&!/maat/i.test(v)?'maat '+v.slice(0,24):v.slice(0,80));SQ67.run(sq)};
+ACT['sq-rm']=a=>{const dr=SQ67.draft,sq=dr||SQ67.cur;if(!sq)return;if(dr)sq67Read();if(a==='max')sq.max=null;else sq.wishes.splice(+a,1);
+ if(dr){sq67Sheet();return}
  if(SEARCH&&SEARCH.phase==='begrip'){render(false);return}
  if(a==='max'){SQ67.refilter();return}
  SQ67.run(sq)};
 /* ---------- aanpassen ---------- */
 function sq67Grow(el){if(!el)return;el.style.height='auto';el.style.height=Math.max(48,el.scrollHeight+2)+'px'}
-function sq67Sheet(){const d=SQ67.draft,ws=d.wishes||[],miss=[];if(!d.max)miss.push('een maximumbedrag');
+function sq67Read(){const d=SQ67.draft;if(!d||!$('#zs-q'))return;d.text=$('#zs-q').value;d.add=($('#sq-add')||{}).value||'';const mv=N(String(($('#sq-max')||{}).value||'').replace(',','.'));d.max=mv>0?mv:null;d.wishes=$$('.x67-w').map(e=>e.value.replace(/\s+/g,' ').trim().slice(0,80))}
+function sq67Sheet(focus){const d=SQ67.draft,ws=d.wishes||[],miss=[];if(!d.max)miss.push('een maximumbedrag');
  const dog=(()=>{try{return `<img class="x67-av" src="${IMG.dogFace}" alt="" width="48" height="48">`}catch(e){return ''}})();
- sheet('Zoekopdracht aanpassen',`<div class="x67-dog">${dog}<p><b>Dit begreep ik:</b> ik zoek op “${esc(d.term0)}”${ws.length?`, met ${esc(ws.join(', '))}`:''}${d.max?`, tot ${E(d.max)}`:''}.${miss.length?` Ik mis nog ${miss.join(' en ')}; dat hoeft niet, maar het helpt me kiezen.`:''}</p></div>
+ sheet('Zoekopdracht aanpassen',`<div class="x67-dog">${dog}<p><b>Dit begreep ik:</b> ik zoek op “${esc(d.term0)}”${d.ws0.length?`, met ${esc(d.ws0.join(', '))}`:''}${d.max0?`, tot ${E(d.max0)}`:''}.${miss.length?` Ik mis nog ${miss.join(' en ')}; dat hoeft niet, maar het helpt me kiezen.`:''} Pas hieronder aan wat niet klopt.</p></div>
   <label class="f"><span>Waar zal ik naar zoeken?</span><textarea id="zs-q" class="x67-ta" rows="1" maxlength="300" enterkeyhint="search">${esc(d.text)}</textarea></label>
-  ${ws.length||d.max?`<small class="x67-l">Je wensen (tik op × om er een weg te halen):</small><div class="x67-chips">${ws.map((w,i)=>`<span class="x67-chip">${esc(w)}<button class="x67-x" data-a="sq-rm" data-arg="${i}" aria-label="Haal ${esc(w)} weg">×</button></span>`).join('')}${d.max?`<span class="x67-chip eur">tot ${E(d.max)}<button class="x67-x" data-a="sq-rm" data-arg="max" aria-label="Haal het maximumbedrag weg">×</button></span>`:''}</div>`:''}
-  <label class="f"><span>Wil je er iets bij zeggen?</span><textarea id="sq-add" class="x67-ta" rows="1" maxlength="200" placeholder="Bijv. met gps, geen roze, liefst waterdicht">${esc(d.add||'')}</textarea></label>
+  ${ws.length?`<div class="x67-ws"><small class="x67-l">Je wensen. Tik in een vak om de tekst te veranderen, of op × om hem weg te halen.</small>${ws.map((w,i)=>`<div class="x67-wr"><textarea class="x67-ta x67-w" id="sq-w-${i}" rows="1" maxlength="80" aria-label="Wens ${i+1}">${esc(w)}</textarea><button class="x67-x lg" data-a="sq-rm" data-arg="${i}" aria-label="Haal ${esc(w)} weg">×</button></div>`).join('')}</div>`:''}
+  <label class="f"><span>Wil je er iets bij zeggen?</span><textarea id="sq-add" class="x67-ta" rows="1" maxlength="200" placeholder="Bijv. moet werken met iPhone, geen roze">${esc(d.add||'')}</textarea></label>
   <label class="f"><span>Maximaal bedrag in euro (mag leeg blijven)</span><input id="sq-max" type="number" inputmode="decimal" min="0" value="${d.max||''}" placeholder="Bijv. 60"></label>
   <button class="btn" data-a="zs-edit-go">Zoek opnieuw</button>
   <button class="btn ghost x67-del" data-a="sq-del">${I('trash')} Verwijder deze zoekopdracht</button>`,'x67-sh');
- setTimeout(()=>$$('.x67-ta').forEach(sq67Grow),30)}
+ setTimeout(()=>{$$('.x67-ta').forEach(sq67Grow);const f=focus==='term'?$('#zs-q'):focus==='max'?$('#sq-max'):focus!=null&&focus!==''?$('#sq-w-'+focus):null;if(f){try{f.focus();if(f.setSelectionRange&&f.type!=='number')f.setSelectionRange(f.value.length,f.value.length);f.scrollIntoView({block:'center'})}catch(e){}}},40)}
 document.addEventListener('input',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('x67-ta'))sq67Grow(t)});
 {const _close=closeSheet;closeSheet=function(){if(!SQ67._keep)SQ67.draft=null;return _close.apply(this,arguments)}}
 {const _sheet=sheet;sheet=function(t,h,c){const keep=c==='x67-sh'?SQ67.draft:null;SQ67._keep=!!keep;try{return _sheet.apply(this,arguments)}finally{SQ67._keep=false;if(keep)SQ67.draft=keep}}}
-ACT['zs-edit']=()=>{if(!SEARCH)return;const sq=SQ67.on()||SEARCH.phase==='begrip'?SQ67.cur:null,b=sq||SQ67.rules(SEARCH.q||'');
- SQ67.draft={term0:b.term,text:b.term,wishes:(b.wishes||[]).slice(),max:b.max||null,add:'',raw:b.raw||SEARCH.raw||b.term,vraag:b.vraag||null};sq67Sheet()};
-ACT['zs-edit-go']=()=>{const d=SQ67.draft,v=String(($('#zs-q')||{}).value||'').replace(/\s+/g,' ').trim(),add=String(($('#sq-add')||{}).value||'').trim(),mv=N(String(($('#sq-max')||{}).value||'').replace(',','.'));
+ACT['zs-edit']=focus=>{if(!SEARCH)return;const sq=SQ67.on()||SEARCH.phase==='begrip'?SQ67.cur:null,b=sq||SQ67.rules(SEARCH.q||'');
+ SQ67.draft={term0:b.term,ws0:(b.wishes||[]).slice(),max0:b.max||null,text:b.term,wishes:(b.wishes||[]).slice(),max:b.max||null,add:'',raw:b.raw||SEARCH.raw||b.term,vraag:b.vraag||null};sq67Sheet(focus)};
+ACT['sq-ed']=a=>ACT['zs-edit'](a);
+/* een toevoeging in gewone woorden laat de hond eerst begrijpen; een korte, duidelijke wens gaat er direct bij */
+SQ67.addNeedsAi=function(t){t=String(t||'').trim();return !!t&&!!X48.base()&&this.addOf(t).wishes.some(w=>!this.neg(w)&&w.split(/\s+/).length>=3)};
+ACT['zs-edit-go']=()=>{sq67Read();const d=SQ67.draft;if(!d)return;const v=String(d.text||'').replace(/\s+/g,' ').trim(),add=String(d.add||'').trim();
  if(!v){toast('Typ eerst wat je zoekt');return}
- const A=SQ67.addOf(add),wishes=((d&&d.wishes)||[]).slice();A.wishes.forEach(w=>{if(!wishes.some(x=>x.toLowerCase()===w.toLowerCase()))wishes.push(w)});
- const max=mv>0?mv:(A.max||null),changed=!d||v!==d.term0;
+ const keep=[];(d.wishes||[]).forEach(w=>{if(w.length>=2&&!keep.some(x=>x.toLowerCase()===w.toLowerCase()))keep.push(w)});
+ const A=SQ67.addOf(add),max=d.max||A.max||null,changed=v!==d.term0,ai=SQ67.addNeedsAi(add),tUn=changed&&SQ67.unclear(v);
  SQ67._keep=false;SQ67.draft=null;closeSheet();
- if(changed&&SQ67.unclear(v)){const sq=SQ67.rules(v);wishes.forEach(w=>{if(!sq.wishes.includes(w))sq.wishes.push(w)});if(max)sq.max=max;SQ67.ask(sq);return}
- const base=changed?SQ67.rules(v):{term:v,max:null,wishes:[]};base.wishes.forEach(w=>{if(!wishes.includes(w))wishes.push(w)});
- SQ67.run({raw:changed?v:((d&&d.raw)||v),term:changed?base.term:v,wishes:wishes.slice(0,8),max:max||base.max||null,src:'zelf',vraag:d&&d.vraag||null,answered:[]})};
+ if(tUn||ai){const base=tUn?SQ67.rules(v):{term:v,wishes:[],max:null},fb=keep.slice();base.wishes.concat(A.wishes).forEach(w=>{if(!fb.some(x=>x.toLowerCase()===w.toLowerCase()))fb.push(w)});
+  const negs=A.wishes.filter(w=>SQ67.neg(w));
+  SQ67.ask({raw:(v+(add?'. '+add:'')).slice(0,300),term:base.term,wishes:fb.slice(0,10),max:max||base.max||null,src:'regels',vraag:d.vraag||null,answered:[],lock:{term:tUn?null:v,keep:keep.concat(negs)}});return}
+ const base=changed?SQ67.rules(v):{term:v,max:null,wishes:[]},wishes=keep.slice();base.wishes.concat(A.wishes).forEach(w=>{if(!wishes.some(x=>x.toLowerCase()===w.toLowerCase()))wishes.push(w)});
+ SQ67.run({raw:changed?v:(d.raw||v),term:changed?base.term:v,wishes:wishes.slice(0,10),max:max||base.max||null,src:'zelf',vraag:d.vraag||null,answered:[]})};
 /* ---------- permanent verwijderen ---------- */
 const DEL67={
  keys(){const C=WDG.c,sq=SQ67.cur,L=[];[SEARCH&&SEARCH.q,SEARCH&&SEARCH.raw,sq&&sq.raw,sq&&sq.term,sq&&SQ67.query(sq),C&&C.q,C&&C.raw].forEach(x=>{x=String(x||'').trim().toLowerCase();if(x&&!L.includes(x))L.push(x)});return L},
