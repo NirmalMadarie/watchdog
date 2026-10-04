@@ -2496,6 +2496,22 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .h62-row .grow{min-width:0;display:flex;flex-direction:column}.h62-row b{font-size:16.5px;color:#0F172A;overflow-wrap:anywhere}.h62-row small{color:#64748B;font-size:13.5px}
 .h62-all{width:100%;margin-top:14px}
 .h62-bank{margin-top:14px}.h62-bank b{display:block;margin:6px 0 2px}
+/* V63 Mijn situatie */
+.x63-r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EEF2F7;font-size:16px}
+.x63-r span{color:#334155;min-width:0}.x63-r b{white-space:nowrap}
+.x63-r.unk{align-items:center}.x63-r.unk .btn{white-space:nowrap}
+.x63-r.tot{border-bottom:0;padding-top:14px;font-size:17px}.x63-r.tot span{font-weight:700;color:#0F172A}
+.x63-r.tot.pos b{color:#047857}.x63-r.tot.neg b{color:#B91C1C}.x63-r.tot.maybe b{color:#475569}
+.x63-warn{display:flex;gap:8px;align-items:flex-start;margin:4px 0 6px;padding:10px 12px;border-radius:12px;background:#FFF7ED;color:#9A3412;font-size:14.5px}
+.x63-warn svg{flex:0 0 18px;width:18px;height:18px;margin-top:1px}
+.x63-links{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.x63-l{display:flex;gap:12px;align-items:center;width:100%;min-height:60px;padding:10px 14px;border:1px solid #E6ECF7;border-radius:18px;background:#fff;text-align:left}
+.x63-l .grow{min-width:0;display:flex;flex-direction:column}.x63-l b{font-size:16px;color:#0F172A}.x63-l small{color:#64748B;font-size:13.5px}
+.x63-u{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #EEF2F7}.x63-u:last-of-type{border-bottom:0}
+.x63-u .grow{min-width:0;display:flex;flex-direction:column}.x63-u small{color:#64748B}
+.x63-noscore b{display:flex;gap:8px;align-items:center}.x63-noscore svg{width:20px;height:20px}
+.x63-geen{margin-top:10px}
+.x63-aff .btn{width:100%;margin-top:6px}
 </style>
 </head>
 <body>
@@ -4029,7 +4045,7 @@ function aiLegacy(q){
   return {h:L.length?`Mogelijk heb je recht op <b>${E(sum(L.map(f=>f.monthly*12+N(f.once))))}</b> per jaar (schatting):${ul(L.map(f=>`${f.once&&!f.monthly?'+'+E(f.once)+' eenmalig':'+'+E(f.monthly)+'/mnd'} · ${esc(f.title)}`))}Controleer altijd de echte voorwaarden.`:'Ik heb nu geen open regelingen. Zet Benefits Watch aan of pas je gegevens aan.',acts:[['Open Benefits Watch','watch/benefits']]};
  }
  if(/buffer|noodfonds|reserve/.test(s))return {h:`Je buffer is <b>${E(p.buffer)}</b>, goed voor <b>${mFmt(T.bufMonths)} maanden</b> vaste lasten. Richtlijn: 3 maanden (${E(T.costs*3)}). ${T.bufMonths>=3?'Dat is op orde.':`Er ontbreekt nog ${E(T.costs*3-N(p.buffer))}.`}`,acts:[['Naar doelen','plan']]};
- if(/score|gezond/.test(s)){const sc=scoreVal();return {h:`Je geldscore is <b>${sc}/100</b> (${scoreLabel(sc)}).${ul(scoreParts().map(x=>`${x.n}: ${Math.round(x.v)}/${x.max} · ${x.tip}`))}`,acts:[['Open acties','all-actions']]}}
+ if(/score|gezond/.test(s)){const sc=scoreVal();if(typeof SCORE63!=='undefined'&&!SCORE63.ok)return {h:'Ik ken nog te weinig van je situatie voor een eerlijke score. Vul meer in bij Mijn situatie; ik gok niet.',acts:[]};return {h:`Je geldscore is <b>${sc}/100</b> (${scoreLabel(sc)}).${ul(scoreParts().filter(x=>!x.unknown).map(x=>`${x.n}: ${Math.round(x.v)}/${Math.round(x.max)} · ${x.tip}`))}`,acts:[['Open acties','all-actions']]}}
  if(/gerealiseerd|resultaat|opgeleverd|binnengehaald|hoeveel heeft/.test(s))return {h:`Tot nu toe vond WATCHDOG <b>${E(A.found)}</b> per jaar. Daarvan is <b>${E(A.got)}</b> gerealiseerd (door jou bevestigd), <b>${E(A.inAct)}</b> in actie en <b>${E(A.possible)}</b> nog mogelijk. Potentieel voordeel telt nooit mee als gerealiseerd.`,acts:[['Bekijk mijn resultaat','results']]};
  if(/scam|oplicht|phishing|nep|fraude/.test(s))return {h:'Geen bank of overheid vraagt om je pincode of inlogcode. Klik niet op links in onverwachte berichten en bel zelf het officiële nummer. Plak een verdacht bericht in Scam Watch en ik controleer het.',acts:[['Open Scam Watch','watch/scam']]};
  if(/vrij|budget|ruimte|overhouden|inkomen|lasten/.test(s))return {h:`Je verdient ${E(T.income)}, je vaste lasten zijn ${E(T.costs)} en je houdt <b>${E(T.free)}</b> per maand over. Na je doel-stortingen (${E(T.planned)}): ${E(T.free-T.planned)}.`,acts:[['Open Budget Lab','plan']]};
@@ -5887,7 +5903,7 @@ V.grow=function(){
  ${tabHero('grow',`${E(F.netWorth)}<small> vermogen</small>`,`Spaargeld ${E(F.savings)} · beleggingen ${E(F.invest)} · schulden ${E(F.debts)}`)}
  ${sec('Sparen en doelen')}<div class="card list">${link('coins','Een spaarplan maken','Laat WATCHDOG een plan berekenen dat past','kies/sparen')}${link('target','Mijn doelen',`${S.goals.length} ${plural(S.goals.length,'doel','doelen')} · spaarpercentage ${Math.round(F.savingsRate*100)}%`,'plan/doelen')}${link('card','Schulden aflossen',`${E(F.debts)} openstaand · simuleer extra aflossing`,'plan/schulden')}</div>
  ${sec('Vermogen en beleggen')}<div class="card list">${link('info','Sparen versus beleggen: uitleg','Informatie en simulatie. Geen persoonlijk advies','kies/beleggen')}${link('chart','Mijn beleggingsoverzicht',`${E(inv.val)} · ${inv.gain>=0?'+':'−'}${E(Math.abs(inv.gain))} resultaat`,'plan/beleggen')}${link('trend','Vermogen en scenario’s','Wat gebeurt er als je situatie verandert?','plan/scenario')}</div>
- ${sec('Voortgang')}<div class="card list">${link('shield','WATCHDOG-score',`${scoreVal()} van 100 · ${scoreLabel(scoreVal())}`,'score')}${link('star','Missies en badges',`Level ${lvlOf(S.gm.xp)} · ${S.gm.xp} XP`,'missies')}</div>
+ ${sec('Voortgang')}<div class="card list">${link('shield','WATCHDOG-score',(scoreVal(),typeof SCORE63!=='undefined'&&!SCORE63.ok)?'Nog te weinig bekend':`${scoreVal()} van 100 · ${scoreLabel(scoreVal())}`,'score')}${link('star','Missies en badges',`Level ${lvlOf(S.gm.xp)} · ${S.gm.xp} XP`,'missies')}</div>
  <p class="foot">Informatie en simulatie zijn geen persoonlijk advies. Rendement is niet gegarandeerd.</p></div>`;
 };
 
@@ -17043,6 +17059,152 @@ V.meer=function(g){const A=HOME62.items(),G=HOME62.G,one=G[g]?g:null;
 {const _l=DTIP.list.bind(DTIP);DTIP.list=function(){let L=_l();try{if((route[0]||'home')==='home'&&$('.h4-hero'))L=L.filter(x=>!x.sel||!!$(x.sel))}catch(e){}return L.length?L:_l()}}
 /* tekst mét een link in het typvak → Deel met WATCHDOG (een vraag "is dit betrouwbaar" blijft naar de check gaan) */
 {const _se=submitFromEntry;submitFromEntry=function(v){try{const s=String(v||'');if(/https?:\/\/\S+/i.test(s)&&!DEEL59.bare(s)&&ROUTE48.classify(s).route!=='betrouwbaar'){const i=$('#hq');if(i)i.value='';go('deel');DEEL59.run(s.trim(),'home');return}}catch(e){}return _se.apply(this,arguments)}}
+
+
+/* =====================================================================
+   V63 — MIJN SITUATIE: EERLIJK OVER WAT IK NIET WEET, EN KORTER
+   1. De app kende geen "onbekend": elk leeg veld telde als €0. Nu houdt WATCHDOG per onderwerp bij of het bekend is.
+   2. De score telt alleen onderdelen mee die bekend zijn ("op basis van N van 10"), doet geen uitspraken over wat
+      niet is ingevuld en verzint geen "+3 ten opzichte van vorige maand" meer.
+   3. "Kan ik dit betalen?" zegt geen "Past" zolang je andere uitgaven onbekend zijn, en let altijd op je buffer.
+      Eén rekenwijze, ook op Mijn situatie (daar stond nog een oudere, simpelere).
+   4. "Vrij besteedbaar" staat er met voorbehoud zolang je variabele uitgaven onbekend zijn.
+   5. Eén bank-aanbod (onderaan), dat "Nee, liever niet" onthoudt.
+   6. Overzicht is een samenvatting. Details staan onder Budget, Schulden en Meer. Er is niets verwijderd.
+   Voor het voorbeeldhuishouden (demo) verandert er niets: daar is alles "bekend".
+   ===================================================================== */
+const KNOW63={
+ real(){try{return LEEG()}catch(e){return false}},
+ st(){S.ui=S.ui||{};S.ui.k63=S.ui.k63||{};return S.ui.k63},
+ sit(i){try{return SIT.done().has(i)}catch(e){return false}},
+ has(k){if(!this.real())return true;const F=fin(),f=this.st(),p=S.profile;
+  switch(k){case 'inkomen':return F.income>0;case 'vast':return F.fixed>0;
+   case 'variabel':return F.variable>0||!!f.variabel;
+   case 'buffer':return N(p.buffer)>0||!!f.buffer;
+   case 'schulden':return (S.debts||[]).length>0||!!f.schulden||this.sit(5);
+   case 'abo':return (S.subs||[]).length>0||!!S.imp||!!S.shot||this.sit(5);
+   case 'sparen':case 'doelen':return (S.goals||[]).length>0||F.planned>0||!!f.sparen||this.sit(6);
+   case 'verz':return Object.keys(S.cover||{}).some(x=>S.cover[x])||!!f.verz;
+   case 'pay':return !!f.pay;
+   case 'budget':return F.variable>0&&(()=>{try{return budTotals().a>0}catch(e){return false}})();
+   default:return true}},
+ MAP:{buffer:'buffer',schulden:'schulden',sparen:'sparen',vast:'vast',betaal:'pay',doelen:'doelen',verz:'verz',abo:'abo',vermogen:'buffer',budget:'budget'},
+ HINT:{buffer:'Ik weet niet hoeveel je achter de hand hebt.',schulden:'Ik weet niet of je schulden hebt.',sparen:'Ik weet niet of je spaart.',vast:'Ik ken je vaste lasten nog niet.',betaal:'Dit heb je nog niet ingevuld.',doelen:'Je hebt nog geen doelen ingevuld.',verz:'Vink in de lijst hieronder aan welke verzekeringen je hebt.',abo:'Ik ken je abonnementen nog niet.',vermogen:'Ik weet niet hoeveel spaargeld je hebt.',budget:'Je houdt nog geen uitgaven bij.'},
+ /* is het bedrag "blijft over" betrouwbaar? */
+ sure(){return this.has('inkomen')&&this.has('vast')&&this.has('variabel')},
+ miss(){return ['inkomen','vast','variabel','buffer'].filter(k=>!this.has(k))},
+ ASK:{variabel:['Wat geef je per maand ongeveer uit aan andere dingen?','Boodschappen, kleding, uitjes, vervoer. Een schatting is genoeg; je kunt het later verfijnen bij Budget.','Bijv. 900','Dat weet ik niet'],
+      buffer:['Hoeveel spaargeld heb je achter de hand?','Dan weet ik of je een tegenvaller kunt opvangen.','Bijv. 2500','Ik heb geen spaargeld']}
+};
+/* ---------- score: alleen wat bekend is ---------- */
+const SCORE63={n:10,known:10,ok:true};
+{const _sp=scoreParts;scoreParts=function(){const P=_sp.apply(this,arguments);try{if(!KNOW63.real()){SCORE63.known=P.length;SCORE63.n=P.length;SCORE63.ok=true;return P}
+  P.forEach(x=>{x.unknown=!KNOW63.has(KNOW63.MAP[x.k]||x.k);x.max0=x.max});
+  const K=P.filter(x=>!x.unknown),sm=K.reduce((a,x)=>a+x.max,0),f=sm>0?100/sm:0;
+  P.forEach(x=>{if(x.unknown){x.v=0;x.max=0;x.gap=0;x.tip=KNOW63.HINT[x.k]||'Nog niet bekend.'}else{x.v=x.v*f;x.max=x.max*f;x.gap=x.max-x.v}});
+  SCORE63.n=P.length;SCORE63.known=K.length;SCORE63.ok=K.length>=4}catch(e){console.warn('V63 score',e)}return P}}
+/* geen "je score is gestegen" zolang er te weinig bekend is */
+{const _e=emit;emit=function(o,opt){try{if(o&&o.type==='score'&&KNOW63.real()){scoreParts();if(!SCORE63.ok||!(N(S.scoreLast)>0))return}}catch(e){}return _e.apply(this,arguments)}}
+/* echte vergelijking met vorige maand: alleen als er een vorige maand is */
+SCORE63.hist=function(sc){S.ui=S.ui||{};const ym=monthKey();let h=S.ui.sc63;if(!h||h.ym!==ym){h={ym,v:sc,prev:h&&h.ok?{ym:h.ym,v:h.v}:null,ok:SCORE63.ok};S.ui.sc63=h;try{save()}catch(e){}}else{h.v=sc;h.ok=SCORE63.ok}return h.prev};
+V.score=function(){const P=scoreParts(),sc=scoreVal(),real=KNOW63.real(),K=P.filter(x=>!x.unknown),U=P.filter(x=>x.unknown),ok=SCORE63.ok;
+ const prev=real?SCORE63.hist(sc):null,d=real?(prev?sc-prev.v:0):sc-N(S.prev.score);
+ const top=K.slice().sort((a,b)=>b.gap-a.gap).slice(0,3).filter(x=>x.gap>.5);
+ const covList=[['zorg','Zorgverzekering'],['aansprakelijkheid','Aansprakelijkheid'],['inboedel','Inboedel']];
+ if(S.hh.adults.some(isSelfEmp))covList.push(['aov','Arbeidsongeschiktheid (ZZP/ondernemer)']);
+ if(S.hh.kids.length>0&&S.profile.own==='koop')covList.push(['overlijden','Overlijdensrisico']);
+ const head=ok?`<div class="card score-h">${ring(sc)}<div><b>${scoreLabel(sc)}</b><small>${sc} van 100 punten${real?` · op basis van ${K.length} van ${P.length} onderdelen`:''}${Math.abs(d)>=1?` · ${d>0?'+':'−'}${Math.abs(d)} ten opzichte van vorige maand`:''}</small><small>${real?'Eigen rekenregel van WATCHDOG, geen kredietscore. Onderdelen die ik niet ken, tellen niet mee.':'Fictieve rekenregel, geen kredietscore.'}</small></div></div>`
+  :`<div class="card x63-noscore"><b>${I('info')} Nog geen score</b><p class="note">Ik ken ${K.length} van de ${P.length} onderdelen. Vanaf 4 kan ik een eerlijke score geven. Tot die tijd gok ik niet.</p></div>`;
+ return `<div class="wrap">${topbar('WATCHDOG-score',{back:1,sub:'Transparant en uitlegbaar',noav:1})}
+ ${head}
+ ${ok&&top.length?`${sec('Zo verhoog je je score')}<div class="card">${top.map(x=>`<div class="up"><span class="up-p">+${Math.round(x.gap)}</span><div class="grow"><b>${x.n}</b><small>${x.tip}</small></div><button class="btn sm" data-a="go" data-arg="${x.act.go}">${x.act.t}</button></div>`).join('')}<small class="fine">“+” is het maximum aan punten dat dit onderdeel nog kan opleveren.</small></div>`:''}
+ ${K.length?`${sec(real?'Wat ik weet':'Waarom deze score?')}
+ <div class="card">${K.map(x=>`<div class="sp"><div class="sp-h"><b>${x.n}</b><span>${Math.round(x.v)}/${Math.round(x.max)}</span></div>${bar(x.v/x.max*100,x.v/x.max>=.75?'var(--em)':x.v/x.max>=.4?'var(--am)':'var(--rd)')}<small>${x.tip}</small><small class="why">${x.why}</small></div>`).join('')}</div>`:''}
+ ${U.length?`${sec('Wat ik nog niet weet')}<div class="card x63-unk">${U.map(x=>`<div class="x63-u"><div class="grow"><b>${x.n}</b><small>${esc(x.tip)}</small></div>${x.k==='buffer'||x.k==='vermogen'?`<button class="btn sm ghost" data-a="x63-ask" data-arg="buffer">Invullen</button>`:x.k==='verz'||x.k==='betaal'?'':`<button class="btn sm ghost" data-a="go" data-arg="${x.act.go}">Invullen</button>`}</div>`).join('')}<small class="fine">Deze onderdelen tellen niet mee. Ze kosten je dus ook geen punten.</small></div>`:''}
+ <div class="card"><h3>Verzekeringschecklist</h3><p class="note">Vink aan wat je hebt. Dit beïnvloedt het onderdeel Verzekeringen.</p>${covList.map(c=>`<div class="row"><span class="grow"><b>${c[1]}</b></span><button class="sw ${S.cover[c[0]]?'on':''}" role="switch" aria-checked="${!!S.cover[c[0]]}" aria-label="${c[1]}" data-a="cov" data-arg="${c[0]}"><i></i></button></div>`).join('')}${real&&!KNOW63.has('verz')?`<button class="btn sm ghost x63-geen" data-a="x63-flag" data-arg="verz">Ik heb geen van deze</button>`:''}</div>
+ <div class="card"><h3>Betaalgedrag</h3><p class="note">${real?'Eigen invoer':'Demo-invoer'}: hoeveel van je betalingen waren de afgelopen 12 maanden op tijd?${real&&!KNOW63.has('pay')?' Schuif om het in te vullen; tot die tijd telt dit niet mee.':''}</p><div class="rng"><input type="range" min="0" max="12" step="1" value="${S.pay.on}" data-rng="payon" aria-label="Betalingen op tijd"><b id="payv">${real&&!KNOW63.has('pay')?'nog niet ingevuld':S.pay.on+' van '+S.pay.of}</b></div></div></div>`};
+{const _p=ACT.payon;ACT.payon=function(v){const first=KNOW63.real()&&!KNOW63.st().pay;KNOW63.st().pay=1;const r=_p.apply(this,arguments);if(first&&route[0]==='score')setTimeout(refresh,400);return r}}
+{const _c=ACT.cov;ACT.cov=function(k){KNOW63.st().verz=1;return _c.apply(this,arguments)}}
+ACT['x63-flag']=k=>{KNOW63.st()[k]=1;save();refresh()};
+/* ---------- één vraag tegelijk invullen ---------- */
+ACT['x63-ask']=k=>{const a=KNOW63.ASK[k];if(!a)return;sheet(a[0],`<p class="note">${a[1]}</p><label class="f"><span>Bedrag in euro${k==='variabel'?' per maand':''}</span><input id="k63v" type="number" inputmode="decimal" min="0" placeholder="${a[2]}"></label>
+  <div class="btn-row"><button class="btn" data-a="x63-save" data-arg="${k}">Opslaan</button><button class="btn ghost" data-a="${k==='buffer'?'x63-nul':'close'}" data-arg="${k}">${a[3]}</button></div><small class="x48-how">Blijft op je telefoon.</small>`);setTimeout(()=>{const i=$('#k63v');if(i)i.focus()},150)};
+ACT['x63-save']=k=>{const v=Math.round(N(($('#k63v')||{}).value));if(!(v>=0)||($('#k63v')||{}).value===''){toast('Vul een bedrag in');return}
+ if(k==='variabel'){S.bud=S.bud||{cats:{}};S.bud.cats=S.bud.cats||{};const others=VARK.filter(x=>x!=='overige').reduce((a,x)=>a+vb(x),0);S.bud.cats.overige=Object.assign({a:0},S.bud.cats.overige||{},{b:Math.max(0,v-others)});KNOW63.st().variabel=1}
+ if(k==='buffer'){S.profile.buffer=v;KNOW63.st().buffer=1}
+ try{afterChange()}catch(e){save()}closeSheet();toast('Opgeslagen.',false,true);refresh()};
+ACT['x63-nul']=k=>{if(k==='buffer'){S.profile.buffer=0;KNOW63.st().buffer=1}try{afterChange()}catch(e){save()}closeSheet();refresh()};
+/* ---------- kan ik dit betalen? ---------- */
+Object.assign(AFF48.V,{onbekend:['Kan ik nog niet zeggen','#475569','#F1F5F9','Ik mis nog iets om dit eerlijk te beoordelen.'],groot:['Past, maar het is veel','#B45309','#FEF3C7','Het is meer dan de helft van wat je deze maand overhoudt.'],nobuf:['Past, maar je hebt geen buffer','#EA580C','#FFEDD5','Gaat er daarna iets stuk, dan heb je niets achter de hand.']});
+{const _c=AFF48.calc.bind(AFF48);AFF48.calc=function(price){const r=_c(price);try{if(r.err||r.need)return r;
+  if(!KNOW63.has('vast')){return {need:true,price:r.price}}
+  if(!KNOW63.has('variabel')){r.v='onbekend';r.miss='variabel';return r}
+  if(!KNOW63.has('buffer')&&r.price>r.free*.25){r.v='onbekend';r.miss='buffer';return r}
+  if(r.v==='past'){if(KNOW63.has('buffer')&&r.mNow<1&&r.price>r.free*.25)r.v='nobuf';else if(r.price>r.free*.5)r.v='groot'}
+ }catch(e){console.warn('V63 aff',e)}return r}}
+{const _k=AFF48.card.bind(AFF48);AFF48.card=function(r,title){if(r&&r.v==='onbekend'){const v=AFF48.V.onbekend,a=KNOW63.ASK[r.miss];
+   return `<div class="card x48-aff x63-aff" style="--c:${v[1]};--bg:${v[2]}"><div class="x48-verd"><span class="x48-badge">${v[0]}</span><b>${esc(title||'Past dit bij je geld?')}</b><small>${r.miss==='variabel'?'Ik ken je inkomen en vaste lasten, maar niet wat je verder uitgeeft.':'Ik weet niet hoeveel je achter de hand hebt.'}</small></div>
+   <dl class="x48-dl"><div><dt>Prijs</dt><dd>${E2(r.price)}</dd></div><div><dt>${r.miss==='variabel'?'Blijft over vóór boodschappen en andere uitgaven':'Vrij te besteden deze maand'}</dt><dd>${E(r.free)}</dd></div></dl>
+   <p class="note">${r.miss==='variabel'?'Dat bedrag is dus te hoog. Met één schatting kan ik het wel zeggen.':'Voor een bedrag van deze grootte wil ik eerst weten of je een tegenvaller kunt opvangen.'}</p>
+   <button class="btn" data-a="x63-ask" data-arg="${r.miss}">${esc(a[0])}</button><small class="x48-how">Ik gok niet. Jij beslist.</small></div>`}
+  let h=_k(r,title);try{if(r&&(r.v==='groot'||r.v==='nobuf'))h=h.replace('<li>Je spaardoelen en buffer blijven zoals ze zijn.</li>',r.v==='nobuf'?'<li>Je hebt nu minder dan één maand vaste lasten achter de hand. Vuistregel: eerst een buffer, dan grote aankopen.</li>':`<li>Daarna houd je deze maand ${E(Math.max(0,r.free-r.price))} over.</li>`)}catch(e){}return h}}
+/* de oude, simpele rekenwijze op Mijn situatie en in het offline-antwoord gebruikt nu dezelfde regels */
+ACT.afford=()=>{const x=N(($('#af-x')||{}).value),n=(($('#af-n')||{}).value||'').trim()||'Aankoop';if(x<=0){toast('Vul een bedrag in');return}const b=$('#afRes');if(b){b.innerHTML=AFF48.card(AFF48.calc(x),n);try{b.scrollIntoView({block:'nearest',behavior:RM()?'auto':'smooth'})}catch(e){}}};
+{const _a=affordAnswer;affordAnswer=function(amount,label){try{const r=AFF48.calc(amount);if(r&&!r.err){if(r.need)return {h:`${label} <b>${E(amount)}</b><br><b>Dat kan ik nog niet zeggen.</b> Ik ken je inkomen en vaste lasten nog niet.`};
+   if(r.v==='onbekend')return {h:`${label} <b>${E(amount)}</b><br><b>Dat kan ik nog niet zeggen.</b> ${r.miss==='variabel'?'Ik ken je boodschappen en andere uitgaven nog niet.':'Ik weet niet hoeveel je achter de hand hebt.'} Vul dat in bij Mijn situatie.`};
+   if(r.v==='groot'||r.v==='nobuf')return {h:`${label} <b>${E(amount)}</b><br><b>${AFF48.V[r.v][0]}.</b> ${AFF48.V[r.v][3]}`}}}catch(e){}return _a.apply(this,arguments)}}
+/* wat de AI meekrijgt: geen "Past" en geen hard bedrag als het een bovengrens is */
+{const _f=facts48;facts48=function(c,q){const o=_f.apply(this,arguments);try{if(o&&KNOW63.real()&&!KNOW63.sure()){o.let_op='Variabele uitgaven (boodschappen e.d.) zijn onbekend. Genoemde vrije ruimte is een bovengrens; het echte bedrag is lager.'}}catch(e){}return o}}
+/* AI-pagina: "Vrij p/m" met voorbehoud */
+{const _v=V.ai;V.ai=function(){let h=_v.apply(this,arguments);try{if(KNOW63.real()){scoreVal();if(!SCORE63.ok)h=h.replace(/(<span><small>Score<\/small><b>)[^<]*(<\/b>)/,'$1?$2');if(!KNOW63.has('buffer'))h=h.replace(/(<span><small>Buffer<\/small><b>)[^<]*(<\/b>)/,'$1?$2')}
+  if(KNOW63.real()&&!KNOW63.sure()&&h.indexOf('x58-note')<0&&fin().income>0){
+   h=h.replace(/(<span><small>Vrij p\/m<\/small><b>)([^<]*)(<\/b>)/,'$1max. $2$3').replace('<div id="vbar"></div>',`<div class="x58-note">${I('info')}<span>Ik ken je boodschappen en andere uitgaven nog niet. Wat je echt vrij overhoudt is lager.</span><button class="btn sm ghost" data-a="x63-ask" data-arg="variabel">Vul in</button></div><div id="vbar"></div>`)}}catch(e){}return h}}
+/* ---------- Overzicht: een samenvatting ---------- */
+LIVE.cash=()=>{const F=fin(),sure=KNOW63.sure(),kv=KNOW63.has('variabel');
+ const r=(l,v,cls)=>`<div class="x63-r ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
+ return `${r('Inkomen',E(F.income))}${r('Vaste lasten','−'+E(F.fixed))}
+  ${kv?r('Boodschappen en andere uitgaven','−'+E(F.variable)):`<div class="x63-r unk"><span>Boodschappen en andere uitgaven</span><button class="btn sm ghost" data-a="x63-ask" data-arg="variabel">onbekend · Invullen</button></div>`}
+  ${F.planned>0?r('Sparen, beleggen en doelen','−'+E(F.planned)):''}
+  <div class="x63-r tot ${sure?(F.left<0?'neg':'pos'):'maybe'}"><span>${sure?'Vrij besteedbaar':'Blijft over volgens wat ik weet'}</span><b>${E(F.left)}</b></div>
+  ${sure?'':`<p class="x63-warn">${I('info')} Dit is nog geen vrij besteedbaar bedrag. Je andere uitgaven gaan er nog af.</p>`}`};
+PV.overzicht=function(){const F=fin();scoreParts();const sc=scoreVal(),real=KNOW63.real(),nA=(S.hh.adults||[]).length;let tot=0;try{tot=WINS.total()}catch(e){}
+ const link=(arg,ic,t,s,a)=>`<button class="x63-l" data-a="${a||'go'}" data-arg="${arg}"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I(ic)}</span><span class="grow"><b>${t}</b><small>${s}</small></span><i class="chev" aria-hidden="true">›</i></button>`;
+ return `<div class="card x63-sum"><h3>${real?'Volgens wat ik weet':'Je maand in het kort'}</h3><div data-live="cash">${LIVE.cash()}</div><small class="fine">Per maand. Details en aanpassen bij Budget.</small></div>
+ <button class="card banner" data-a="go" data-arg="score"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I('shield')}</span><span class="grow">${SCORE63.ok?`<b>WATCHDOG-score ${sc}/100</b><small>${scoreLabel(sc)}${real?` · op basis van ${SCORE63.known} van ${SCORE63.n} onderdelen`:''}. Bekijk waarom.</small>`:`<b>Nog geen score</b><small>Ik ken ${SCORE63.known} van de ${SCORE63.n} onderdelen. Ik gok niet.</small>`}</span><i class="chev">›</i></button>
+ <div class="card"><h3>Kan ik dit betalen?</h3><div class="grid2"><label class="f"><span>Waarvoor</span><input id="af-n" type="text" placeholder="Bijv. nieuwe laptop" maxlength="30"></label><label class="f"><span>Bedrag (€)</span><input id="af-x" type="number" inputmode="decimal" placeholder="Bijv. 900"></label></div><button class="btn pu" data-a="afford">Reken door</button><div id="afRes"></div></div>
+ <div class="x63-links">
+  ${link('plan/schulden','card','Schulden en vermogen',KNOW63.has('buffer')?`Netto vermogen ${E(F.netWorth)}`:'Spaargeld nog niet ingevuld')}
+  ${link('plan/doelen','lifebuoy','Doelen',(S.goals||[]).length?`${S.goals.length} ${S.goals.length===1?'doel':'doelen'} · ${E(F.planned)} per maand`:'Nog geen doelen')}
+  ${link('household','users','Huishouden',`${nA} ${nA===1?'volwassene':'volwassenen'}${(S.hh.kids||[]).length?` · ${S.hh.kids.length} ${S.hh.kids.length===1?'kind':'kinderen'}`:''}`)}
+  ${link('resultaten','trend','Resultaten',tot>0?`${E(tot)} door jou bevestigd`:'Nog niets bevestigd')}
+ </div>`};
+/* Vermogen staat nu bij Schulden; per persoon bij Budget */
+{const _s=PV.schulden;PV.schulden=function(){return _s.apply(this,arguments)+`<div class="card"><h3>Vermogen</h3><div data-live="wealth">${LIVE.wealth()}</div>${KNOW63.has('buffer')?'':`<button class="btn sm ghost" data-a="x63-ask" data-arg="buffer">Spaargeld invullen</button>`}<small class="fine">Waarde van beleggingen en woning is ${LEEG()?'je eigen invoer':'handmatige demo-invoer'}, geen live koersen.</small></div>`}}
+{const _b=PV.budget;PV.budget=function(){let h=_b.apply(this,arguments);try{if((S.hh.adults||[]).length>1)h+=indivCard()}catch(e){}return h}}
+/* de hond op Mijn situatie zegt wat hij mist of wat het meeste oplevert — uit echte gegevens */
+G41_PAGE.plan=function(){if(!(S.ui&&S.ui.scanned)&&!(LEEG()&&fin().income>0))return {t:'Vul je eigen cijfers in.',s:'Dan kan ik echt meekijken en vind ik meer.',b:['Vul in (2 min)','scan','']};
+ const m=KNOW63.miss();
+ if(m.includes('variabel'))return {t:'Ik mis nog je boodschappen en andere uitgaven.',s:'Daardoor weet ik je vrije ruimte niet precies.',b:['Vul aan','x63-ask','variabel']};
+ if(m.includes('buffer'))return {t:'Ik weet nog niet hoeveel je achter de hand hebt.',s:'Dan kan ik zeggen of je een tegenvaller kunt opvangen.',b:['Vul aan','x63-ask','buffer']};
+ try{const P=scoreParts().filter(x=>!x.unknown&&x.gap>1).sort((a,b)=>b.gap-a.gap)[0];if(P)return {t:'Je overzicht is compleet.',s:`Het meeste valt te halen bij ${P.n.toLowerCase()}.`,b:[P.act.t,'go',P.act.go]}}catch(e){}
+ return {t:'Je overzicht is compleet.',s:'Ik zeg het als iets beter kan.'}};
+/* de pagina zelf: vier tabs + Meer, één hond, geen dubbele blokken */
+V.planMeer=function(){const link=(a,arg,ic,t,s)=>`<button class="x63-l" data-a="${a}" data-arg="${arg}"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I(ic)}</span><span class="grow"><b>${t}</b><small>${s}</small></span><i class="chev" aria-hidden="true">›</i></button>`;
+ return `<div class="x63-links">${link('go','plan/beleggen','trend','Beleggen','Verkennen en bijhouden')}${link('go','plan/scenario','chart','Scenario’s','Wat als er iets verandert?')}${link('open-watch','housing','house','Woonlasten-Watch','Huur, koop en betaalbaarheid')}${link('go','household','users','Huishouden','Wie hoort erbij, wie verdient wat')}${link('go','gevonden','tag','Voor jou gevonden','Producten en reizen die je volgt')}${link('go','gegevens','doc','Mijn gegevens','Wat WATCHDOG van je weet: inzien en wissen')}${link('go','privacy','shield','Privacy','Wat blijft op je telefoon, wat gaat naar de server')}</div>`};
+{const _p=V.plan;V.plan=function(tab){const meer=tab==='meer';let h=_p.apply(this,meer?['overzicht']:arguments);
+ try{const T=HOME62.tpl(h),R=T.content,ov=meer||!tab||tab==='overzicht';
+  R.querySelectorAll('.h62-bank').forEach(e=>e.remove());R.querySelectorAll('.h3-mini').forEach(e=>e.remove());R.querySelectorAll('.hmv2').forEach(e=>e.remove());
+  if(S.ui&&S.ui.scanned||fin().income>0)R.querySelectorAll('.wd-optin').forEach(e=>e.remove());
+  const tabs=R.querySelector('.chips.tabs');
+  if(tabs){tabs.querySelectorAll('[data-arg="plan/beleggen"],[data-arg="plan/scenario"]').forEach(e=>e.remove());
+   const on=meer||tab==='beleggen'||tab==='scenario';if(meer)tabs.querySelectorAll('.chip').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-selected','false')});
+   const b=document.createElement('button');b.className='chip'+(on?' on':'');b.setAttribute('role','tab');b.setAttribute('aria-selected',String(on));b.dataset.a='go';b.dataset.arg='plan/meer';b.textContent='Meer';tabs.appendChild(b);
+   if(meer){let n=tabs.nextSibling;while(n){const nx=n.nextSibling;n.remove();n=nx}const d=document.createElement('div');d.innerHTML=V.planMeer();tabs.after(...d.childNodes)}}
+  R.querySelectorAll('.h62-bank').forEach(e=>e.remove());
+  if(ov&&!meer){const o=HOME62.bankOffer(),w=R.querySelector('.wrap');if(o&&w){const d=document.createElement('div');d.innerHTML=o;w.append(...d.childNodes)}}
+  h=T.innerHTML}catch(e){console.warn('V63 plan',e)}return h}}
+/* het oude, lange "volledige overzicht" toonde dezelfde cijfers zonder voorbehoud: het is nu dezelfde pagina */
+{const _s=V.situatie;V.situatie=function(){try{if(KNOW63.real())return V.plan()}catch(e){}return _s.apply(this,arguments)}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
