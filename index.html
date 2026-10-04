@@ -2530,6 +2530,12 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x64-fold>.k36-tools{padding:0 12px 12px}
 .x64-askl{width:100%;margin:12px 0;border:1px solid #E6ECF7;border-radius:18px;background:#fff}
 .k36-amt b{white-space:nowrap}
+/* V65 */
+.h62-ok.part{border-color:#FDE68A}.h62-ok.part .h62-okc{background:#F59E0B}
+.x65-sc{margin:8px 0 4px;border:1px dashed #C7D2E5;border-radius:14px;padding:10px 12px}.x65-sc>summary{font-weight:700;color:#1A3FA8;cursor:pointer}
+.x65-url{display:block;margin:6px 0;padding:8px 10px;border-radius:10px;background:#F1F5F9;font-size:13px;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.x65-saf{display:flex;gap:8px;align-items:flex-start;margin:10px 0;padding:10px 12px;border-radius:12px;background:#EFF6FF;color:#1E3A8A;font-size:14.5px}.x65-saf svg{flex:0 0 18px;width:18px;height:18px;margin-top:2px}
+.x59 .btn .i{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -17334,6 +17340,96 @@ const HEALTH64={h:null,at:0,busy:false,
    const d=document.createElement('details');d.className='x64-fold';d.innerHTML=`<summary>${I('pencil')}<span class="grow"><b>Zelf iets checken</b><small>${tools.children.length} rekenhulpen: ${[...tools.querySelectorAll('b')].map(b=>b.textContent).slice(0,4).join(', ').toLowerCase()}…</small></span><i class="h4-chev" aria-hidden="true">›</i></summary>`;tools.replaceWith(d);d.appendChild(tools);if(sc)sc.remove();
    const a=document.createElement('button');a.className='x64-askl';a.dataset.a='go';a.dataset.arg='ai';a.innerHTML=`${I('sparkle')}<span class="grow"><b>Niet gevonden wat je zoekt?</b><small>Vraag het de waakhond</small></span><i class="h4-chev" aria-hidden="true">›</i>`;d.after(a)}
   h=T.innerHTML}catch(e){console.warn('V64 kansen',e)}return h}}
+
+
+/* =====================================================================
+   V65 — HOME KLOPT MET DE REST, EN DELEN VANAF IPHONE IN TWEE TIKKEN
+   1. "Ik ken je situatie" zegt eerlijk "deels" zolang er iets belangrijks ontbreekt (zelfde toets als Mijn situatie).
+   2. Eén telling: de soorten onder "WATCHDOG meldt" tellen op tot het totaal; de teller bij Kansen telt dezelfde kansen.
+   3. De hond zegt wat er nieuw is sinds je vorige bezoek (of dat er niets nieuw is). Alleen uit echte meldingen.
+   4. Weekrapport zonder weken-teller.
+   5. Plus-knop: "Plak wat ik kopieerde" zoekt meteen uit. iPhone-uitleg klopt met wat iOS toelaat.
+   ===================================================================== */
+const VISIT65={GAP:30*60e3,
+ st(){S.ui=S.ui||{};S.ui.v65=S.ui.v65||{};return S.ui.v65},
+ /* sleutel die niet verandert als alleen het tijdstip van zoeken verandert */
+ sig(x){try{if(/^kj:/.test(x.k)){const o=K36.jobs();return 'kj:'+o.better.map(r=>r.j.id).sort().join(',')}
+   if(/^kr:/.test(x.k)){const o=K36.regs();return 'kr:'+o.g+':'+reg42List(o.items).A.map(z=>z.x.id).sort().join(',')}}catch(e){}return x.k},
+ keys(){try{return W41.items().map(x=>this.sig(x))}catch(e){return []}},
+ tick(){const v=this.st(),now=Date.now();
+  if(!v.last){v.last=now;v.keys=this.keys();v.prev=null;try{save()}catch(e){}return}
+  if(now-v.last>this.GAP)v.prev={at:v.last,keys:v.keys||[]};
+  v.last=now;v.keys=this.keys()},
+ info(){const v=this.st();if(!v.prev)return null;let L=[];try{L=W41.items()}catch(e){}const old=new Set(v.prev.keys);return {at:v.prev.at,fresh:L.filter(x=>!old.has(this.sig(x)))}},
+ when(at){const d=new Date(at),n=new Date(),hm=d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+  if(d.toDateString()===n.toDateString())return hm;
+  if(d.toDateString()===new Date(n.getTime()-864e5).toDateString())return 'gisteren';return d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'})},
+ /* "1 nieuwe kans en 1 bericht" */
+ sum(L,nieuw){const c={};L.forEach(x=>{const t=t41Of(x);c[t]=(c[t]||0)+1});const P=[];const W={kans:['kans','kansen'],letop:['ding dat aandacht vraagt','dingen die aandacht vragen'],geld:['geldmelding','geldmeldingen'],termijn:['termijn','termijnen'],zoek:['zoektocht','zoektochten'],info:['bericht','berichten']};
+  ['letop','kans','geld','termijn','zoek','info'].forEach(t=>{if(c[t])P.push(`${c[t]} ${nieuw?(c[t]===1&&t!=='letop'?'nieuwe ':t==='letop'?'':'nieuwe '):''}${W[t][c[t]===1?0:1]}`)});
+  return P.length>1?P.slice(0,-1).join(', ')+' en '+P[P.length-1]:P[0]||''}
+};
+/* de hond: nieuw sinds je vorige bezoek */
+{const _n=W41.next.bind(W41);W41.next=function(){const n=_n();try{if(n&&(/^prog:/.test(n.k||'')||n.t==='Even opletten.'||n.step==='geld'))return n;
+  const v=VISIT65.info();if(!v)return n;const w=VISIT65.when(v.at),sinds=/^\d\d:\d\d$/.test(w)?`Sinds ${w} uur`:`Sinds ${w}`;
+  if(v.fresh.length){const one=v.fresh.length===1?v.fresh[0]:null;
+   return {k:'new65',new65:true,t:'Nieuw voor jou.',s:`${sinds}: ${VISIT65.sum(v.fresh,true)}.${one?' '+strip40(one.t).replace(/\.?$/,'.'):''}`,b:one?['Bekijk','x53-view',one.k]:['Bekijk','go','notifications']}}
+  if(n&&n.t==='Alles is rustig.'){n.s=String(n.s||'').replace(/^Ik blijf opletten\./,`${sinds} niets nieuws.`);return n}
+ }catch(e){console.warn('V65 next',e)}return n}}
+{const _sh=DTIP.show.bind(DTIP);DTIP.show=function(){const r=_sh.apply(this,arguments);try{if(this.cur&&this.cur.next&&W41.cur&&W41.cur.new65){const h=$('.h4-say .dt-h');if(h)h.textContent='Nieuw'}}catch(e){}return r}}
+document.addEventListener('visibilitychange',()=>{try{if(!document.hidden){const v=VISIT65.st();if(v.last&&Date.now()-v.last>VISIT65.GAP&&(route[0]||'home')==='home'){W41.cur=null;render(false)}}}catch(e){}});
+/* één telling */
+const COUNT65={LAB:{letop:['let op','let op'],kans:['kans','kansen'],geld:['geld','geld'],termijn:['termijn','termijnen'],zoek:['zoektocht','zoektochten'],info:['bericht','berichten']},
+ vis(){let L=[];try{L=W41.items()}catch(e){}let calm=false;try{calm=ME.calm()||ME.paused()}catch(e){}return calm?L.filter(x=>x.p>=3):L},
+ by(){const c={};this.vis().forEach(x=>{const t=t41Of(x);c[t]=(c[t]||0)+1});return c},
+ kansen(){let L=[];try{L=W41.items()}catch(e){}return L.filter(x=>t41Of(x)==='kans').length}};
+C53.k=function(){return COUNT65.kansen()};
+{const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);try{h=h.replace(/<b>Ik heb \d+ dingen voor je gevonden!<\/b>/,'<b>Ik heb iets voor je gevonden!</b>')}catch(e){}return h}}
+/* de soorten onder "WATCHDOG meldt" tellen op tot het totaal */
+{const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);try{const c=COUNT65.by(),tot=Object.values(c).reduce((a,b)=>a+b,0);
+  h=h.replace(/<div class="w41-chips">[\s\S]*?<\/div>/,'');
+  if(tot>0&&h.indexOf('w41-empty')<0){const chips=`<div class="w41-chips">${['letop','kans','geld','termijn','zoek','info'].filter(k=>c[k]).map(k=>`<span class="w41-chip" style="--c:${T41[k].c};--bg:${T41[k].bg}">${I(T41[k].ic)}${c[k]} ${COUNT65.LAB[k][c[k]===1?0:1]}</span>`).join('')}</div>`;
+   h=h.replace(/<\/section>\s*$/,chips+'</section>')}}catch(e){console.warn('V65 chips',e)}return h}}
+/* weekrapport zonder weken-teller */
+{const _w=V.week;V.week=function(){let h=_w.apply(this,arguments);try{h=h.replace(/<div class="x51-streak"[\s\S]*?<\/div>/,'').replace('<small>Mis je een week, dan begin je gewoon opnieuw. Geen straf.</small>','<small>Wat ik vond, wat goed ging en wat eraan komt.</small>')}catch(e){}return h}}
+/* ---------- delen ---------- */
+const CLIP65='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="12" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 5V4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M9.5 11h5M9.5 15h3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const IOS65=()=>/iPhone|iPad|iPod/.test(navigator.userAgent);
+const STANDALONE65=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+ACT['d65-pasterun']=async()=>{let t='';try{if(!navigator.clipboard||!navigator.clipboard.readText)throw 0;t=String(await navigator.clipboard.readText()||'').trim()}catch(e){try{closeSheet()}catch(x){}go('deel');setTimeout(()=>{const el=$('#d59t');if(el)el.focus()},250);toast('Plakken lukt hier niet vanzelf. Houd je vinger in het vak en kies Plak.',false,true);return}
+ if(!t){toast('Je klembord is leeg. Kopieer eerst de link: Delen → Kopieer.',false,true);return}
+ try{closeSheet()}catch(e){}go('deel');DEEL59.run(t.slice(0,6000),'paste')};
+ACT['h65-plus']=()=>{const ios=IOS65();sheet('Iets gezien?',`<p class="note">Laat het me zien, dan zoek ik uit wat het is en of het klopt.</p>
+  <div class="x54-acts"><button class="btn" data-a="d65-pasterun">${CLIP65} Plak wat ik kopieerde</button>
+  <label class="btn ghost x48-file">${I('download')} Kies een screenshot<input type="file" accept="image/*" data-d59="shot" hidden></label>
+  <button class="btn ghost" data-a="go" data-arg="deel">${I('pencil')} Zelf typen of plakken</button></div>
+  <small class="x48-how">${ios?'In Facebook, Instagram of TikTok: tik op <b>Delen</b> en dan op <b>Kopieer</b>. Kom daarna hier terug.':'Kopieer de link in de andere app en kom hier terug.'} Een post van Facebook of Instagram kan ik niet openen; maak daar een screenshot van.</small>`)};
+document.addEventListener('change',e=>{const el=e.target;if(el&&el.dataset&&el.dataset.d59==='shot'&&el.closest&&el.closest('#ov,.sheet'))setTimeout(()=>{try{closeSheet()}catch(x){}},0)},true);
+d59How=function(){const ios=IOS65(),and=/Android/.test(navigator.userAgent),st=STANDALONE65(),site=location.origin+location.pathname;
+ const steps=ios?['Tik in Facebook, Instagram, TikTok of Safari op <b>Delen</b>.','Tik op <b>Kopieer</b> (links onderaan in het deelmenu).','Open WATCHDOG, tik op <b>+</b> en kies <b>Plak wat ik kopieerde</b>.']:and&&st?['Tik in de andere app op <b>Delen</b>.','Kies <b>WATCHDOG</b> in de lijst.','Ik open vanzelf en zoek het uit.']:and?['Zet WATCHDOG eerst op je beginscherm: Chrome-menu (⋮) → <b>App installeren</b>.','Daarna staat <b>WATCHDOG</b> in het deelmenu van andere apps.','Tot die tijd: kies <b>Link kopiëren</b> en tik hier op <b>Plak en zoek uit</b>.']:['Kopieer het webadres van wat je zag.','Tik op <b>Plak en zoek uit</b>.','Of plak de tekst zelf in het vak.'];
+ return `<details class="card x59-how"${ios?' open':''}><summary>${I('info')} Hoe deel ik iets?</summary><ol class="x48-ol">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+  ${ios?`<p class="note">WATCHDOG staat niet in het deelmenu van je iPhone. Apple laat daar alleen apps uit de App Store toe, geen web-apps op je beginscherm.</p>
+  <details class="x65-sc"><summary>Toch een knop in het deelmenu? Dat kan met een Opdracht</summary>
+   <p class="note">Met de app <b>Opdrachten</b> van Apple maak je zelf een knop “Deel met WATCHDOG”. Let op: die opent WATCHDOG in <b>Safari</b>, niet in de app op je beginscherm. Uitzoeken werkt daar gewoon; je eigen gegevens staan er niet.</p>
+   <ol class="x48-ol"><li>Open <b>Opdrachten</b> en tik op <b>+</b>.</li><li>Tik op de naam bovenaan, kies <b>Wijzig naam</b>: “Deel met WATCHDOG”. Zet <b>Toon in deelpaneel</b> aan (via het ⓘ-teken).</li><li>Voeg de taak <b>URL-codering</b> toe, met als invoer <b>Opdrachtinvoer</b>.</li><li>Voeg de taak <b>Open URL’s</b> toe. Typ dit adres en zet de gecodeerde tekst erachter:<br><code class="x65-url">${esc(site)}?share_text=</code></li><li>Klaar. In Facebook of TikTok: <b>Delen</b> → omlaag scrollen → <b>Deel met WATCHDOG</b>.</li></ol>
+   <button class="btn sm ghost" data-a="d65-copyurl">${CLIP65} Kopieer het adres</button>
+   <small class="x48-how">De namen in Opdrachten kunnen per iOS-versie iets verschillen. Dit is niet door WATCHDOG op elke iPhone getest.</small></details>`:''}
+  <h4>Wat ik wel en niet kan zien</h4><ul class="x48-ul"><li><b>Wel:</b> openbare webpagina’s, zoals webshops, vacatures en nieuws.</li><li><b>Wel:</b> alles wat op je screenshot staat. Dat lees ik op je telefoon.</li><li><b>Niet:</b> posts op Instagram en Facebook. Daar is een login voor nodig. Maak een screenshot.</li><li><b>Niet:</b> wat er in een video gezegd wordt.</li></ul></details>`};
+ACT['d65-copyurl']=async()=>{const u=location.origin+location.pathname+'?share_text=';try{await navigator.clipboard.writeText(u);toast('Adres gekopieerd. Plak het in de taak “Open URL’s”.',false,true)}catch(e){toast('Kopiëren lukte niet. Houd je vinger op het adres en kies Kopieer.',false,true)}};
+{const _v=V.deel;V.deel=function(){let h=_v.apply(this,arguments);try{
+  h=h.replace(/<button class="btn ghost" data-a="d59-paste">[\s\S]*?<\/button>/,`<button class="btn ghost" data-a="d65-pasterun">${CLIP65} Plak en zoek uit</button>`);
+  if(IOS65()&&!STANDALONE65()&&DEEL59.T.from==='share'&&DEEL59.T.text)h=h.replace(/(<small class="x48-how">Ik onderzoek en adviseer\.)/,`<p class="x65-saf">${I('info')}<span>Je kijkt nu in Safari. Je eigen gegevens staan in de WATCHDOG-app op je beginscherm; die gebruik ik hier niet.</span></p>$1`)}catch(e){}return h}}
+/* ---------- Home ---------- */
+{const _h=V.home;V.home=function(){try{VISIT65.tick();if(HOME62.done3()&&KNOW63.real()&&KNOW63.miss().length){S.ui=S.ui||{};S.ui.h62at=Date.now()}}catch(e){}
+ let h=_h.apply(this,arguments);
+ try{const T=HOME62.tpl(h),R=T.content,q=s=>R.querySelector(s);
+  /* plus-knop: keuzes */
+  const plus=q('.h62-plus');if(plus){plus.dataset.a='h65-plus';plus.dataset.arg=''}
+  /* ik ken je situatie (deels) */
+  const ok=q('.h62-ok');if(ok&&KNOW63.real()){const m=KNOW63.miss(),W={inkomen:'je inkomen',vast:'je vaste lasten',variabel:'je andere uitgaven',buffer:'je spaargeld'};
+   if(m.length){ok.classList.add('part');const b=ok.querySelector('b'),s=ok.querySelector('small'),e=ok.querySelector('em'),c=ok.querySelector('.h62-okc');
+    if(b)b.textContent='Ik ken je situatie deels';if(s){const L=m.map(x=>W[x]);s.textContent=`Ik mis nog ${L.length>1?L.slice(0,-1).join(', ')+' en '+L[L.length-1]:L[0]}.`}if(e)e.textContent='Vul aan ›';if(c)c.innerHTML=I('info')}}
+  h=T.innerHTML}catch(e){console.warn('V65 home',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
