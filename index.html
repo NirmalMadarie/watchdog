@@ -2512,6 +2512,24 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x63-noscore b{display:flex;gap:8px;align-items:center}.x63-noscore svg{width:20px;height:20px}
 .x63-geen{margin-top:10px}
 .x63-aff .btn{width:100%;margin-top:6px}
+/* V64 Kansen */
+.x64-lvl{margin:16px 4px 8px;font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#475569;display:flex;align-items:center;gap:8px}
+.x64-lvl::before{content:"";width:10px;height:10px;border-radius:50%;background:#94A3B8}
+.x64-l1{color:#047857}.x64-l1::before{background:#10B981}.x64-l2{color:#1D4ED8}.x64-l2::before{background:#3B82F6}.x64-l4{color:#9A3412}.x64-l4::before{background:#F97316}
+.k36-l>.x64-lvl:first-child{margin-top:4px}
+.x64-calc{display:flex;gap:6px;align-items:flex-start}.x64-calc svg{flex:0 0 16px;width:16px;height:16px;margin-top:2px}
+.x64-ja{background:#DCFCE7!important;color:#047857!important}
+.x64-niet summary{color:#9A3412}
+.x64-fold{margin:12px 0;border:1px solid #E6ECF7;border-radius:18px;background:#fff;overflow:hidden}
+.x64-fold>summary,.x64-askl{display:flex;gap:12px;align-items:center;min-height:60px;padding:10px 14px;list-style:none;cursor:pointer;text-align:left}
+.x64-fold>summary::-webkit-details-marker{display:none}
+.x64-fold>summary>svg,.x64-askl>svg{flex:0 0 22px;width:22px;height:22px;color:#1E4FD8}
+.x64-fold .grow,.x64-askl .grow{min-width:0;display:flex;flex-direction:column}.x64-fold summary b,.x64-askl b{font-size:16px;color:#0F172A}.x64-fold summary small,.x64-askl small{color:#64748B;font-size:13.5px}
+.x64-fold[open]>summary .h4-chev{transform:rotate(90deg)}
+.x64-fold>.k42-src{margin:0;border:0;border-top:1px solid #EEF2F7;border-radius:0;box-shadow:none}
+.x64-fold>.k36-tools{padding:0 12px 12px}
+.x64-askl{width:100%;margin:12px 0;border:1px solid #E6ECF7;border-radius:18px;background:#fff}
+.k36-amt b{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -13084,7 +13102,7 @@ ACT['t31-cmp']=link=>{const m={energy:'energie',telecom:'telefoon',carins:'auto'
 const KANS={
  st(){S.kans=S.kans||{done:{},skip:{},data:{}};return S.kans},
  list(){const P=S.profile||{},K=this.st(),y=new Date().getFullYear(),m=new Date().getMonth()+1,L=[];
-  L.push({id:'verdienen',ic:'briefcase',t:'Meer verdienen',s:'Vacatures die netto meer opleveren',p:(S.jobs&&S.jobs.last)?1:2});
+  L.push({id:'verdienen',ic:'briefcase',t:'Meer verdienen',s:'Vacatures die netto meer kunnen opleveren',p:(S.jobs&&S.jobs.last)?1:2});
   if(P.own!=='koop')L.push({id:'huur',ic:'house',t:'Huurcheck',s:'Betaal je niet te veel huur?',p:P.own==='huur'?2:1});
   if(P.own!=='huur')L.push({id:'woz',ic:'house',t:'WOZ-check',s:'Te hoge WOZ = te veel belasting',p:m>=1&&m<=4?2:1});
   L.push({id:'vertraging',ic:'plane',t:'Vertraging?',s:'Geld terug bij vertraagde vlucht of trein',p:1});
@@ -13210,7 +13228,7 @@ V.verdienen=function(){
    <button class="btn ghost" data-a="v31-watch">Waarschuw me bij nieuwe vacatures</button></div>
    ${L.jobs.slice().sort((a,b)=>(gross31(b.salary,p.hours)||0)-(gross31(a.salary,p.hours)||0)).map(job31).join('')}`:empty('Geen vacatures gevonden','Probeer een algemenere functienaam of een grotere afstand.')}`:'';
  const ws=J.watches.length?`${sec('Ik let op nieuwe vacatures')}<div class="card list">${J.watches.map(w=>`<div class="row"><span class="grow"><b>${esc(w.q)}</b><small>${w.remote?'thuiswerk':esc(w.loc||'heel Nederland')}${w.radius&&!w.remote?' · '+w.radius+' km':''}${w.newAt?' · nieuw: '+evAgo(w.newAt):''}${w.srv?'':' · niet op de server'}</small>${(w.news||[]).slice(0,3).map(j=>`<a class="j31-n" href="${esc(j.url)}" target="_blank" rel="noopener nofollow">${esc(j.title)}${j.company?' · '+esc(j.company):''} ↗</a>`).join('')}</span><button class="x" data-a="v31-unwatch" data-arg="${w.id}" aria-label="Stop met letten op ${esc(w.q)}">×</button></div>`).join('')}</div>`:'';
- return `<div class="wrap v31">${topbar('Meer verdienen',{back:1,sub:'Vacatures die netto meer opleveren'})}
+ return `<div class="wrap v31">${topbar('Meer verdienen',{back:1,sub:'Vacatures die netto meer kunnen opleveren'})}
   <section class="h3-hero v31-hero">${DOG.el('md',J.busy?'searching':L&&L.jobs.length?'found':'idle','snuffel')}<div class="h3-say h3-say-r" data-dog-say>${J.err?`<b>Dat lukte niet.</b>${esc(J.err)}`:J.busy?'<b>Even snuffelen…</b>Ik kijk op de vacaturesites.':L?`<b>Klaar!</b>Ik heb ze gesorteerd op salaris, hoogste eerst.`:p.mode==='meer'?'<b>Meer verdienen?</b>Ik kijk wat anderen in jouw vak betalen.':'<b>Op zoek naar werk?</b>Vertel me wat je zoekt.'}</div></section>
   ${form}${res}${ws}
   <p class="fine">Solliciteren doe je altijd zelf, via de link. WATCHDOG verdient niets aan vacatures of aan je keuze.</p></div>`;
@@ -13272,7 +13290,7 @@ setTimeout(()=>{try{TERM.notify()}catch(e){}},3000);
 {const _nk=navKey;navKey=function(){const r=route[0];if(r==='kansen'||r==='termijnen'||r==='kans'||r==='verdienen'||r==='resultaten')return 'kansen';return _nk.apply(this,arguments)}}
 const KAN32={
  all:[
-  {id:'verdienen',t:'Meer verdienen',s:'Vacatures die netto meer opleveren',ic:'briefcase',c:'#047857',bg:'#D1FAE5',go:'verdienen'},
+  {id:'verdienen',t:'Meer verdienen',s:'Vacatures die netto meer kunnen opleveren',ic:'briefcase',c:'#047857',bg:'#D1FAE5',go:'verdienen'},
   {id:'huur',t:'Huurcheck',s:'Betaal je niet te veel huur?',ic:'house',c:'#BE123C',bg:'#FFE4E6',go:'kans/huur',only:'huur'},
   {id:'woz',t:'WOZ-check',s:'Te hoge WOZ = te veel belasting',ic:'house',c:'#BE123C',bg:'#FFE4E6',go:'kans/woz',only:'koop'},
   {id:'vertraging',t:'Vertraging',s:'Geld terug bij vlucht of trein',ic:'plane',c:'#1D4ED8',bg:'#DBEAFE',go:'kans/vertraging'},
@@ -13607,7 +13625,7 @@ function k36Jobs(){const J=JOBS.st(),o=K36.jobs(),p=J.prefs;
  if(J.err&&!o)return `<div class="card k36"><div class="k36-h">${KIC.briefcase}<b>Vacatures</b></div><p class="note">${esc(J.err)}</p><button class="btn sm ghost" data-a="k36-jobs">Probeer opnieuw</button></div>`;
  if(!o)return '';
  const {L,rows,better,now}=o;
- const head=better.length?`${better.length} ${plural(better.length,'vacature','vacatures')} die netto meer ${plural(better.length,'oplevert','opleveren')}`:`${L.jobs.length} ${plural(L.jobs.length,'vacature','vacatures')} als ${esc(L.q)}`;
+ const head=better.length?`${better.length} ${plural(better.length,'vacature','vacatures')} die netto meer ${plural(better.length,'kan opleveren','kunnen opleveren')}`:`${L.jobs.length} ${plural(L.jobs.length,'vacature','vacatures')} als ${esc(L.q)}`;
  return `<div class="card k36"><div class="k36-h"><span class="h31-i" style="--c:#047857;--bg:#D1FAE5">${KIC.briefcase}</span><span class="grow"><b>${head}</b><small>${esc(L.q)}${L.loc?' · '+esc(L.loc):''} · ${esc(L.source||'Google Jobs')} · ${evAgo(L.at)}</small></span></div>
  ${rows.slice(0,3).map(r=>`<a class="k36-r" href="${esc(r.j.url)}" target="_blank" rel="noopener nofollow"><span class="grow"><b>${esc(r.j.title)}</b><small>${esc(r.j.company||'')}${r.j.location?' · '+esc(r.j.location):''}${r.j.salary?'':' · geen salaris vermeld'}</small></span>${r.n?`<span class="k36-amt ${r.diff>0?'up':''}"><b>± ${E(r.n.m)}</b><small>${r.diff!=null?(r.diff>0?'+':'−')+E(Math.abs(r.diff))+' p/m':'netto p/m'}</small></span>`:''}</a>`).join('')}
  <div class="btn-row"><button class="btn sm" data-a="go" data-arg="verdienen">Alle vacatures</button>${J.watches.length?'':`<button class="btn sm ghost" data-a="v31-watch">Meld nieuwe vacatures</button>`}</div>
@@ -13671,7 +13689,7 @@ ACT['k36-edit']=()=>{sheet('Wijzig waar ik voor zoek',`<label class="f"><span>We
 h31Row=function(){return ''};
 {const _it=WAKE.items.bind(WAKE);WAKE.items=function(){const L=_it();
  try{const m=ME.st(),sn=k=>(m.wake.snooze[k]||0)>Date.now()||m.wake.done[k];
-  const o=K36.jobs();if(o&&o.better.length&&!sn('kj:'+o.L.at)){L.push({k:'kj:'+o.L.at,p:2,t:`${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}`,s:`Tot ${E(Math.max.apply(null,o.better.map(r=>r.diff)))} per maand meer dan nu. Ik vond ze via ${o.L.source||'Google Jobs'}.`,btn:[['Bekijk','go','kansen'],['Later','wake-later','kj:'+o.L.at]]})}
+  const o=K36.jobs();if(o&&o.better.length&&!sn('kj:'+o.L.at)){L.push({k:'kj:'+o.L.at,p:2,t:`${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'kan opleveren','kunnen opleveren')}`,s:`Tot ${E(Math.max.apply(null,o.better.map(r=>r.diff)))} per maand meer dan nu. Ik vond ze via ${o.L.source||'Google Jobs'}.`,btn:[['Bekijk','go','kansen'],['Later','wake-later','kj:'+o.L.at]]})}
   const r=K36.regs();if(r&&r.items.length&&!sn('kr:'+r.g+r.items.length)){L.push({k:'kr:'+r.g+r.items.length,p:1,t:`${r.items.length} ${plural(r.items.length,'regeling','regelingen')} van gemeente ${esc(r.g)}`,s:'Waar je mogelijk recht op hebt. Officiële bron.',btn:[['Bekijk','go','kansen'],['Later','wake-later','kr:'+r.g+r.items.length]]})}
   /* de algemene "kun je meer verdienen?"-vraag alleen zolang ik je werk nog niet weet */
   if(K36.me().q){for(let i=L.length-1;i>=0;i--)if(L[i].k==='ks:verdienen')L.splice(i,1)}
@@ -13890,7 +13908,7 @@ const G40={
   return [
    {id:'geld',done:!!(S.ui&&S.ui.scanned)||(LEEG()&&fin().income>0),t:'Vertel me over je geld',s:'Inkomen en vaste lasten. Duurt 2 minuten. Dan weet ik waar ik op moet letten.',b:'Begin',a:'scan',arg:''},
    {id:'bank',done:!!S.imp,t:'Laat me je bankafschrift lezen',s:'Ik zoek vergeten abonnementen, prijsverhogingen en dubbele betalingen. Het bestand blijft op je telefoon.',b:'Bestand kiezen',a:'go',arg:'import'},
-   {id:'werk',done:!!(me.q&&(me.loc||me.gem)),t:'Vertel me je werk en woonplaats',s:'Dan zoek ik elke dag naar vacatures die netto meer opleveren en naar regelingen van je gemeente.',b:'Invullen',a:'go',arg:'kansen'},
+   {id:'werk',done:!!(me.q&&(me.loc||me.gem)),t:'Vertel me je werk en woonplaats',s:'Dan zoek ik elke dag naar vacatures die netto meer kunnen opleveren en naar regelingen van je gemeente.',b:'Invullen',a:'go',arg:'kansen'},
    {id:'watch',done:watched>0,t:'Geef me iets om te bewaken',s:'Een product dat je wilt kopen, een contract dat afloopt of een retourtermijn.',b:'Kies wat',a:'g40-watch',arg:''}
   ]},
  items(){
@@ -14691,7 +14709,7 @@ const GUIDE47={
   /* regelingen die je nog niet bekeek */
   try{const o=K36.regs();if(o&&o.items.length&&(U.regSeen||0)<(GEMREG.st().at||0)){const n=reg42List(o.items).A.length;if(n)L.push({id:'regs',p:7,t:`Ik vond ${n} ${plural(n,'regeling','regelingen')} bij gemeente ${o.g}. Controleer of ${n===1?'die':'ze'} voor jou ${n===1?'is':'zijn'}.`,b:['Regelingen bekijken','go','kansen']})}}catch(e){}
   /* vacatures die je nog niet bekeek */
-  try{const o=K36.jobs();if(o&&o.better.length&&(U.jobSeen||0)<(o.L.at||0))L.push({id:'jobs',p:7,t:`Er ${o.better.length===1?'is 1 vacature':'zijn '+o.better.length+' vacatures'} die netto meer ${o.better.length===1?'oplevert':'opleveren'}. Bekijk ze even.`,b:['Vacatures bekijken','go','verdienen']})}catch(e){}
+  try{const o=K36.jobs();if(o&&o.better.length&&(U.jobSeen||0)<(o.L.at||0))L.push({id:'jobs',p:7,t:`Er ${o.better.length===1?'is 1 vacature':'zijn '+o.better.length+' vacatures'} die netto meer ${o.better.length===1?'kan opleveren':'kunnen opleveren'}. Bekijk ze even.`,b:['Vacatures bekijken','go','verdienen']})}catch(e){}
   /* toeslagen */
   try{const a=AUTO42.items().find(x=>x.a42&&x.a42.cat==='toeslag');if(a)L.push({id:'toes',p:6,t:`${strip40(a.t)}. Doe de proefberekening, dan weet je het zeker.`,b:['Wat moet ik doen?','k42-open',a.a42.id]})}catch(e){}
   /* bankgegevens verouderd */
@@ -15215,7 +15233,7 @@ const LV48={pre:null,
    {t:'Toeslagen: je nieuwe inkomen doorgeven',s:'Binnen 4 weken. Misschien heb je nu recht op meer toeslag.',u:TSLW,src:'Belastingdienst',due:28},
    {t:'Bijzondere bijstand of kwijtschelding bij je gemeente',s:'Met een lager inkomen kun je mogelijk hulp van je gemeente krijgen.',a:['Regelingen zoeken','go','kansen']},
    {t:'Vaste lasten opnieuw bekijken',s:'Waar kun je geld vrijmaken?',a:['Geld vrijmaken','go','hulp/geldnodig']},
-   {t:'Vacatures die netto meer opleveren',s:'Ik zoek elke dag voor je.',a:['Vacatures','go','verdienen']}]},
+   {t:'Vacatures die netto meer kunnen opleveren',s:'Ik zoek elke dag voor je.',a:['Vacatures','go','verdienen']}]},
   {id:'nieuwebaan',ic:'trend',n:'Nieuwe baan',dl:'Eerste werkdag',items:[
    {t:'Loonheffingskorting bij maar één werkgever',s:'Werk je bij meer werkgevers of heb je ook een uitkering? Laat de korting maar bij één toepassen, anders moet je terugbetalen.',u:'https://www.belastingdienst.nl',src:'Belastingdienst'},
    {t:'Toeslagen: je nieuwe inkomen doorgeven',s:'Binnen 4 weken, anders moet je later misschien terugbetalen.',u:TSLW,src:'Belastingdienst',due:28},
@@ -15943,7 +15961,7 @@ ACT['x53-no']=k=>{try{ME.st().wake.done[k]=Date.now();save()}catch(e){}toast('Ok
 ACT['x53-later']=k=>{try{ME.st().wake.snooze[k]=Date.now()+20*3600e3;save()}catch(e){}toast('Ik herinner je er morgen weer aan');go('notifications')};
 
 /* ---------- inhoud per soort vondst ---------- */
-function jobs53(o){return `<div class="card x53-jobs"><h3>${I('briefcase')} ${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}</h3>
+function jobs53(o){return `<div class="card x53-jobs"><h3>${I('briefcase')} ${o.better.length} ${plural(o.better.length,'vacature','vacatures')} die netto meer ${plural(o.better.length,'kan opleveren','kunnen opleveren')}</h3>
  <small class="fine">${esc(o.L.source||'Google Jobs')} · ${evAgo(o.L.at)} · netto is een schatting met de belastingtarieven van 2026</small>
  ${o.better.map(r=>{const q=JOB53.real(r),j=r.j;return `<div class="x53-job"><div class="x53-jh"><div class="grow"><b>${esc(j.title)}</b><small>${esc([j.company,j.location].filter(Boolean).join(' · '))}</small></div>
   <div class="x53-jn"><b>± ${E(r.n.m)}</b><small>netto p/m</small><em>+${E(r.diff)} p/m</em></div></div>
@@ -15953,8 +15971,8 @@ function jobs53(o){return `<div class="card x53-jobs"><h3>${I('briefcase')} ${o.
 function build53(x){const k=x.k,tp=t41Of(x),T=T41[tp]||T41.kans;let r='vondst/'+FOUND53.alias(x);
  if(/^kj:/.test(k)){const o=K36.jobs();if(!o||!o.better.length)return null;const b=o.better[0],q=JOB53.real(b);
   const J=JOBS.st(),watching=(J.watches||[]).length>0;
-  return {top:'Vacatures',r,title:'Andere baan',say:[`Ik vond ${o.better.length} ${plural(o.better.length,'baan','banen')} die netto meer ${plural(o.better.length,'oplevert','opleveren')}.`,
-   `De beste geeft ongeveer ${E(b.diff)} netto per maand meer${q&&q.min!=null?`, na je toeslagen minstens ${E(q.min)}`:q&&q.notes.length?', maar je toeslagen worden lager':''}. Solliciteren doe je zelf; ik help je op weg.`],
+  return {top:'Vacatures',r,title:'Andere baan',say:[`Ik vond ${o.better.length} ${plural(o.better.length,'baan','banen')} die netto meer ${plural(o.better.length,'kan opleveren','kunnen opleveren')}.`,
+   `Bij de beste is dat ongeveer ${E(b.diff)} netto per maand, gerekend met het laagste loon en vóór pensioen${q&&q.min!=null?`, na je toeslagen minstens ${E(q.min)}`:q&&q.notes.length?', maar je toeslagen worden lager':''}. Solliciteren doe je zelf; ik help je op weg.`],
    body:jobs53(o),
    steps:[{t:'Lees de vacature',s:'Past het werk, de uren en de reistijd bij jou? Kijk ook naar het contract.'},
     {t:'Reken het echte verschil',s:q&&q.notes.length?esc(JOB53.line(q)):'Netto staat hierboven. Heb je toeslagen? Doe dan de proefberekening met je nieuwe loon.',b:`<a class="link" href="${TSL2026.proef}" target="_blank" rel="noopener">Proefberekening toeslagen ›</a>`},
@@ -17205,6 +17223,117 @@ V.planMeer=function(){const link=(a,arg,ic,t,s)=>`<button class="x63-l" data-a="
   h=T.innerHTML}catch(e){console.warn('V63 plan',e)}return h}}
 /* het oude, lange "volledige overzicht" toonde dezelfde cijfers zonder voorbehoud: het is nu dezelfde pagina */
 {const _s=V.situatie;V.situatie=function(){try{if(KNOW63.real())return V.plan()}catch(e){}return _s.apply(this,arguments)}}
+
+
+/* =====================================================================
+   V64 — KANSEN: CLAIMS DIE KLOPPEN, EN EEN KORTERE PAGINA
+   1. Vacatures: "netto meer" werd berekend met het midden van de salarisrange. Nu met het LAAGSTE loon uit de vacature.
+      Wat aan de onderkant niet meer oplevert maar aan de bovenkant wel, staat apart ("hangt af van het loon").
+      Overal staat erbij: vóór pensioenpremie. De tekst is "kan meer opleveren", niet "levert meer op".
+   2. Een vacature zonder salaris staat onder "Salaris niet vermeld", niet meer onder "levert minder op".
+   3. "Elke 3 uur op de server" stond er altijd. Nu vraagt de app de server wat hij echt doet (planning actief? hoe vaak?).
+   4. Regelingen voor minima staan niet meer onder "kunnen voor jou zijn" als je inkomen daar duidelijk boven ligt,
+      of als je de regeling al liet bestuderen en hij niet past. Ze staan ingeklapt onder "Past waarschijnlijk niet".
+   5. De pagina: kansen gegroepeerd op zekerheid; "Waar ik voor je zoek" en "Zelf checken" ingeklapt; geen dubbele vragenbox.
+   ===================================================================== */
+/* ---------- 1. vacatures eerlijk rekenen ---------- */
+{const _j=K36.jobs.bind(K36);K36.jobs=function(){const o=_j();if(!o)return o;try{const p=JOBS.st().prefs,now=o.now;
+  o.rows.forEach(r=>{const s=r.j.salary;if(!s||!r.n)return;const mn=N(s.min)||N(s.max),mx=N(s.max)||N(s.min);
+   const lo=net31(gross31({min:mn,max:mn,per:s.per},p.hours)),hi=net31(gross31({min:mx,max:mx,per:s.per},p.hours));if(!lo||!hi)return;
+   r.mid=r.n;r.lo=lo;r.hi=hi;r.range=mx>mn*1.01;r.dLo=now?lo.m-now:null;r.dHi=now?hi.m-now:null;r.n=lo;r.diff=r.dLo});
+  o.rows.sort((a,b)=>((b.n&&b.n.m)||0)-((a.n&&a.n.m)||0));
+  o.better=o.rows.filter(r=>r.diff!=null&&r.diff>0);
+  o.maybe=o.rows.filter(r=>r.n&&r.dHi!=null&&r.dHi>0&&!(r.diff>0));
+  o.less=o.rows.filter(r=>r.n&&r.dHi!=null&&r.dHi<=0);
+  o.nosal=o.rows.filter(r=>!r.n);
+  o.nowEst=!(N(p.netNow)>0)&&now>0}catch(e){console.warn('V64 jobs',e)}return o}}
+const K64={PENS:'Gerekend met het laagste loon uit de vacature, met de belasting van 2026 en zonder pensioenpremie. Wat je echt overhoudt kan lager zijn.',
+ jr(r,tag){const band=r.range&&r.dHi!=null&&r.dLo!=null;
+  return `<a class="k36-r${tag==='less'||tag==='nosal'?' k42-less':''}" href="${esc(r.j.url||'#')}" target="_blank" rel="noopener nofollow"><span class="grow"><b>${esc(r.j.title)}</b><small>${esc(r.j.company||'')}${r.j.location?' · '+esc(r.j.location):''}</small></span>${r.n?`<span class="k36-amt ${r.diff>0?'up':''}"><b>vanaf ± ${E(r.n.m)}</b><small>${r.diff!=null?(tag==='maybe'?`${r.dLo<0?'−':'+'}${E(Math.abs(r.dLo))} tot +${E(r.dHi)} p/m`:(r.diff>0?'+':'−')+E(Math.abs(r.diff))+(band&&r.diff>0?` tot +${E(r.dHi)}`:'')+' p/m'):'netto p/m'}</small></span>`:''}</a>`}};
+k36Jobs=function(){const J=JOBS.st(),o=K36.jobs(),p=J.prefs;
+ if(J.busy)return `<div class="card k36" data-lvl="3"><div class="k36-h">${KIC.briefcase}<b>Vacatures</b></div><p class="note"><i class="wl6-dots"><i></i><i></i><i></i></i> Even snuffelen naar vacatures als ${esc(p.q)}…</p></div>`;
+ if(J.err&&!o)return `<div class="card k36" data-lvl="3"><div class="k36-h">${KIC.briefcase}<b>Vacatures</b></div><p class="note">${esc(J.err)}</p><button class="btn sm ghost" data-a="k36-jobs">Probeer opnieuw</button></div>`;
+ if(!o)return '';
+ const {L,better,maybe,less,nosal,now}=o,nb=better.length,nm=maybe.length;
+ const head=nb?`${nb} ${plural(nb,'vacature','vacatures')} die netto meer ${plural(nb,'kan opleveren','kunnen opleveren')}`:nm?`${nm} ${plural(nm,'vacature','vacatures')} die misschien meer ${plural(nm,'oplevert','opleveren')}`:`${L.jobs.length} ${plural(L.jobs.length,'vacature','vacatures')} als ${esc(L.q)}`;
+ const sub=(t,rows,tag,max)=>rows.length?`<div class="k42-cmp">${t}</div>${rows.slice(0,max).map(r=>K64.jr(r,tag)).join('')}`:'';
+ return `<div class="card k36 x64-jobs" data-lvl="${nb?2:3}"><div class="k36-h"><span class="h31-i" style="--c:#047857;--bg:#D1FAE5">${KIC.briefcase}</span><span class="grow"><b>${head}</b><small>${esc(L.q)}${L.loc?' · '+esc(L.loc):''} · ${esc(/google/i.test(L.source||'')?L.source:'via Google Jobs')} · ${evAgo(L.at)}</small></span></div>
+ ${better.slice(0,3).map(r=>K64.jr(r,'better')).join('')}
+ ${sub('Hangt af van het loon dat je afspreekt',maybe,'maybe',2)}
+ ${!nb&&!nm?sub('Levert niet meer op dan je nu verdient',less,'less',2):''}
+ ${sub('Salaris niet vermeld',nosal,'nosal',nb||nm?1:3)}
+ <div class="btn-row"><button class="btn sm" data-a="go" data-arg="verdienen">Alle vacatures</button>${J.watches.length?'':`<button class="btn sm ghost" data-a="v31-watch">Meld nieuwe vacatures</button>`}</div>
+ ${now?`<p class="fine x64-calc">${I('info')} ${K64.PENS}${nb?' Of de baan bij je past, weet ik niet.':''}</p>${o.nowEst?`<p class="fine">Ik vergelijk met ${E(now)} netto per maand (je inkomen uit Mijn situatie). Is dat niet alleen je loon? <button class="link" data-a="k36-edit">Vul je netto loon in</button></p>`:''}`:'<p class="fine">Vul bij Meer verdienen je huidige netto in, dan zie ik welke vacatures meer kunnen opleveren.</p>'}</div>`};
+/* ---------- 4. regelingen: niet tonen als "voor jou" wat duidelijk niet past ---------- */
+const REG64={MINIMA:/inkomenstoeslag|bijzondere bijstand|kwijtschelding|minima|meedoen|participatie|studietoeslag|armoede|laag inkomen|schuldhulp|collectieve zorgverzekering/i,
+ grens(){const n=ME42.partner()?BIJST2026.samen:BIJST2026.alleen;return Math.round(n*1.5)},
+ why(o){try{const r=STUDIE52.st()[o.x.version];if(r){const k=STUDIE52.check(r).kind;if(k==='nee')return 'studie';if(k==='ja'){o.ja=true;return ''}}}catch(e){}
+  try{if(HIDE57.st()[o.x.version])return ''}catch(e){}
+  const inc=ME42.netto();if(inc>0&&inc>this.grens()&&this.MINIMA.test(o.x.title+' '+o.naam))return 'inkomen';return ''}};
+{const _l=reg42List;reg42List=function(items){const R=_l.apply(this,arguments);try{const N2=[],keep=o=>{const w=REG64.why(o);if(w){o.niet=w;N2.push(o);return false}return true};
+  R.A=R.A.filter(keep);R.B=R.B.filter(keep);R.N=N2}catch(e){R.N=R.N||[]}return R}}
+function regs64(){const o=K36.regs();if(!o)return '';
+ if(o.busy&&!o.items.length)return `<div class="card k36" data-lvl="3"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note"><i class="wl6-dots"><i></i><i></i><i></i></i> Even snuffelen in de regelingen van ${esc(o.g)}…</p></div>`;
+ if(o.err&&!o.items.length)return `<div class="card k36" data-lvl="3"><div class="k36-h">${KIC.doc}<b>Regelingen van ${esc(o.g)}</b></div><p class="note">${esc(o.err)}</p><button class="btn sm ghost" data-a="gr-load">Probeer opnieuw</button></div>`;
+ if(!o.items.length)return '';
+ const {A,B,N:NN}=reg42List(o.items),ja=A.filter(z=>z.ja).length;
+ const row=z=>`<a class="k36-r k42-reg" href="${esc(z.x.url)}" target="_blank" rel="noopener"><span class="grow"><b>${esc(z.naam)}</b>${z.ja?'<em class="k42-tag x64-ja">Bestudeerd: past waarschijnlijk</em>':''}<small>${esc(z.wat)}</small><small class="k42-off">Officieel: ${esc(z.officieel)}</small></span><i class="h4-chev">›</i></a>`;
+ const inc=NN.filter(z=>z.niet==='inkomen').length,stu=NN.length-inc;
+ const niet=NN.length?`<details class="k42-grp x64-niet"><summary>Past waarschijnlijk niet (${NN.length})</summary>
+   <p class="fine">${inc?`${inc===1?'Deze regeling is':'Deze regelingen zijn'} voor mensen met een laag inkomen: meestal tot ongeveer ${E(REG64.grens())} netto per maand (150% van de bijstandsnorm, ${BIJST2026.peil}). Jouw inkomen in Mijn situatie is hoger. `:''}${stu?`${stu===1?'Eén regeling heb':stu+' regelingen heb'} je laten bestuderen; die ${stu===1?'paste':'pasten'} niet. `:''}Klopt het niet? Pas je inkomen aan bij Mijn situatie.</p>
+   ${NN.map(z=>row(z)).join('')}</details>`:'';
+ const head=A.length?`${A.length} ${plural(A.length,'regeling','regelingen')} van gemeente ${esc(o.g)} ${A.length===1?'kan':'kunnen'} voor jou zijn`:`Regelingen van gemeente ${esc(o.g)}`;
+ return `<div class="card k36" data-lvl="${ja?1:A.length?3:4}"><div class="k36-h"><span class="h31-i" style="--c:#B45309;--bg:#FEF3C7">${KIC.doc}</span><span class="grow"><b>${head}</b><small>Officiële bron (overheid.nl)${o.at?' · '+evAgo(o.at):''}</small></span></div>
+  ${A.length?'':`<p class="note">Ik vond ${NN.length+B.length} ${plural(NN.length+B.length,'regeling','regelingen')}, maar geen die bij jouw situatie lijkt te passen.</p>`}
+  ${A.map(row).join('')}
+  ${B.length?`<details class="k42-grp"><summary>Voor een bepaalde groep (${B.length})</summary>${B.map(z=>row(z).replace('</b>',`</b><em class="k42-tag">Voor: ${esc(z.groep)}</em>`)).join('')}</details>`:''}
+  ${niet}
+  ${A.length?`<p class="fine">Je hebt hier <b>mogelijk</b> recht op. Ik vond ze op je gemeente, niet op je inkomen. Tik op een regeling en laat hem bestuderen, dan vergelijk ik de voorwaarden met jouw situatie.</p>`:''}
+  ${(()=>{try{return GEMREG.st().srv?'':`<button class="btn sm ghost" data-a="k42-regwatch">Meld nieuwe regelingen</button>`}catch(e){return ''}})()}</div>`};
+/* de bestaande verfijningen blijven: rij = knop naar de uitleg (V52), verborgen regelingen terugzetten (V57) */
+k36Regs=function(){let h=regs64();if(!h)return h;try{const o=K36.regs(),items=(o&&o.items)||[];
+  h=h.replace(/<a class="k36-r k42-reg" href="([^"]*)" target="_blank" rel="noopener">([\s\S]*?)<\/a>/g,(m,href,inner)=>{const x=items.find(i=>esc(i.url)===href&&STUDIE52.ok(i.version));if(!x)return m;
+   const done=STUDIE52.st()[x.version];return `<button type="button" class="k36-r k42-reg x52-reg" data-a="x52-open" data-arg="${esc(x.version)}">${inner.replace('<i class="h4-chev">',`<em class="x52-tag${done?' d':''}">${done?'Bestudeerd':'Laat uitleggen'}</em><i class="h4-chev">`)}</button>`});
+  const n=HIDE57.n();if(n)h=h.replace(/(<p class="fine">Je hebt hier <b>mogelijk<\/b>)/,`<button class="x55-unk" data-a="x57-show">${n} ${n===1?'regeling':'regelingen'} verborgen · toon weer</button>$1`)}catch(e){console.warn('V64 regs',e)}return h};
+/* de melding en de teller volgen dezelfde lijst */
+{const _it=W41.items.bind(W41);W41.items=function(){let L=_it();try{const o=K36.regs();if(o&&o.items.length){const R=reg42List(o.items),n=R.A.length;
+   L=L.filter(x=>!(/^kr:/.test(x.k)&&n===0));L.forEach(x=>{if(/^kr:/.test(x.k))x.t=`${n} ${plural(n,'regeling','regelingen')} van gemeente ${esc(o.g)} ${n===1?'kan':'kunnen'} voor jou zijn`})}
+  L.forEach(x=>{if(/^kj:/.test(x.k)&&typeof x.s==='string'&&!/pensioen/.test(x.s))x.s=x.s.replace(/( netto per maand meer dan nu)/,'$1, vóór pensioenpremie')})}catch(e){}return L}}
+{const _c=K36.count.bind(K36);K36.count=function(){let n=_c();try{const o=K36.regs();if(o&&o.items.length&&reg42List(o.items).A.length===0)n=Math.max(0,n-1)}catch(e){}return n}}
+/* ---------- 3. wat doet de server echt? ---------- */
+const HEALTH64={h:null,at:0,busy:false,
+ get(){if(this.h&&Date.now()-this.at<10*60e3)return this.h;if(!this.busy&&X48.base()){this.busy=true;const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),7000);
+   fetch(X48.base()+'/api/health',{signal:ctl.signal}).then(r=>r.json()).then(j=>{const w=j&&j.watches||{};this.h={ok:true,cron:/^actief/.test(String(w.cron||j.cron||'')),persistent:!!(w.storagePersistent||j.storagePersistent),hours:N(w.watchIntervalHours||j.watchIntervalHours)||12};this.at=Date.now()})
+    .catch(()=>{this.h={ok:false};this.at=Date.now()-9*60e3}).finally(()=>{clearTimeout(tm);this.busy=false;if(route[0]==='kansen')try{refresh()}catch(e){}})}
+  return this.h},
+ /* tekst voor een bron die op de server bewaakt wordt */
+ how(){const h=this.get();if(!h)return {st:'app',t:'Ook op de server ingesteld; ik controleer of dat nu loopt'};
+  if(!h.ok)return {st:'app',t:'De server is nu niet bereikbaar; ik kijk als je WATCHDOG opent'};
+  if(h.cron&&h.persistent)return {st:'auto',t:`Op de server, ongeveer elke ${h.hours} uur, ook als de app dicht is`};
+  return {st:'app',t:'De server controleert nu niet automatisch; ik kijk als je WATCHDOG opent'}}};
+{const _s=w42Sources;w42Sources=function(){const L=_s.apply(this,arguments);try{L.forEach(x=>{
+   if(x.t==='Vacatures'){x.src='Via Google Jobs: vacatures van o.a. Indeed, LinkedIn en werkgevers zelf';if(x.st==='auto'){const w=HEALTH64.how();x.st=w.st;x.how=w.t+' · 1× per dag in de app'+(x.how.match(/ · laatst .*/)||[''])[0]}}
+   else if(x.t==='Regelingen van je gemeente'){if(x.st==='auto'){const w=HEALTH64.how();x.st=w.st;x.how=(w.st==='auto'?'Op de server, 1× per dag, ook als de app dicht is':w.t)+' · 1× per dag in de app'+(x.how.match(/ · laatst .*/)||[''])[0]}}
+   else if(x.t==='Prijzen die je bewaakt'){x.src='Via Google Shopping';if(x.st==='auto'){const w=HEALTH64.how();x.st=w.st;x.how=x.how.replace(/ · elke 3 uur op de server/,'')+' · '+w.t.charAt(0).toLowerCase()+w.t.slice(1)}}})}catch(e){console.warn('V64 src',e)}return L}}
+/* ---------- 5. de pagina ---------- */
+{const _v=V.kansen;V.kansen=function(){let h=_v.apply(this,arguments);
+ try{h=h.replace('per maand, alleen bij een andere baan · nog niet zeker','per maand bij een andere baan · laagste loon uit de vacature, vóór pensioen');
+  h=h.replace(/Niet meegeteld: een andere baan levert tot <b>([^<]*) netto per maand<\/b> meer op\./,'Niet meegeteld: een andere baan kan tot <b>$1 netto per maand</b> meer opleveren (laagste loon uit de vacature, vóór pensioen).');
+  const T=HOME62.tpl(h),R=T.content,q=s=>R.querySelector(s);
+  /* zekerheid: groepen in de lijst */
+  const list=q('.k36-l');if(list){const LAB={1:'Past waarschijnlijk',2:'Mogelijk',3:'Gevonden',4:'Past waarschijnlijk niet'},G={1:[],2:[],3:[],4:[]};
+   [...list.children].forEach(c=>{let l=+c.dataset.lvl||0;if(!l){const t=c.textContent;l=/toeslag/i.test(t)&&!/kwijtschelding/i.test(t)?1:/onder je grens|prijs gehaald|goedkoper/i.test(t)?1:2}G[l].push(c)});
+   list.innerHTML='';[1,2,3,4].forEach(l=>{if(!G[l].length)return;const hd=document.createElement('h3');hd.className='x64-lvl x64-l'+l;hd.textContent=LAB[l];list.appendChild(hd);G[l].forEach(c=>list.appendChild(c))})}
+  /* dubbele vragenbox weg; één regel onderaan */
+  R.querySelectorAll('.ag-box').forEach(e=>e.remove());
+  /* waar ik zoek: ingeklapt */
+  const src=q('.k42-src');if(src){const L=w42Sources(),act=L.filter(x=>x.st==='auto'||x.st==='app').length,need=L.filter(x=>x.st==='nodig').length;
+   const d=document.createElement('details');d.className='x64-fold';d.innerHTML=`<summary>${I('search')}<span class="grow"><b>Ik zoek op ${act} van ${L.length} plekken</b><small>${need?`${need} ${plural(need,'heeft','hebben')} nog iets van je nodig`:'Tik voor wat ik waar zoek en hoe vaak'}</small></span><i class="h4-chev" aria-hidden="true">›</i></summary>`;src.replaceWith(d);d.appendChild(src)}
+  /* zelf checken: ingeklapt */
+  const tools=q('.k36-tools');if(tools){let sc=tools.previousElementSibling;if(!(sc&&sc.classList.contains('sec')&&/Zelf checken/.test(sc.textContent)))sc=null;
+   const d=document.createElement('details');d.className='x64-fold';d.innerHTML=`<summary>${I('pencil')}<span class="grow"><b>Zelf iets checken</b><small>${tools.children.length} rekenhulpen: ${[...tools.querySelectorAll('b')].map(b=>b.textContent).slice(0,4).join(', ').toLowerCase()}…</small></span><i class="h4-chev" aria-hidden="true">›</i></summary>`;tools.replaceWith(d);d.appendChild(tools);if(sc)sc.remove();
+   const a=document.createElement('button');a.className='x64-askl';a.dataset.a='go';a.dataset.arg='ai';a.innerHTML=`${I('sparkle')}<span class="grow"><b>Niet gevonden wat je zoekt?</b><small>Vraag het de waakhond</small></span><i class="h4-chev" aria-hidden="true">›</i>`;d.after(a)}
+  h=T.innerHTML}catch(e){console.warn('V64 kansen',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
