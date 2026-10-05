@@ -2616,18 +2616,23 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x69-fb{margin-top:8px}
 
 /* V70 Vandaag */
-.x70 h3{display:flex;align-items:center;gap:8px}.x70 h3 .i{width:20px;height:20px;color:#0F766E}
-.x70-r{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #EEF2F7}
-.x70-r:first-of-type{border-top:0}
-.x70-i{flex:none;width:32px;height:32px;border-radius:10px;background:#E6F4F1;color:#0F766E;display:flex;align-items:center;justify-content:center}.x70-i .i{width:17px;height:17px}
+.x70 h3{display:flex;align-items:center;gap:8px;margin-bottom:6px}.x70 h3 .i{width:20px;height:20px;color:#0F766E;flex:none}
+.x70-r{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #EEF2F7}
+.x70 h3+.x70-r,.x70-e+.x70-r{border-top:0}
+.x70-i{flex:none;width:36px;height:36px;border-radius:11px;background:#E6F4F1;color:#0F766E;display:flex;align-items:center;justify-content:center}.x70-i .i{width:18px;height:18px}
 .x70-r.warn .x70-i{background:#FFEDD5;color:#C2410C}
-.x70-r b{display:block;color:#0E1B4D;overflow-wrap:anywhere}.x70-r small{display:block;color:#475569;font-size:13.5px;overflow-wrap:anywhere}
-.x70-r .grow{min-width:0}.x70-b{flex:none}.x70-b .btn{white-space:nowrap}
+.x70-c{flex:1;min-width:0;display:block}
+.x70-lab{display:block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#64748B;margin-bottom:2px}
+.x70-r.warn .x70-lab{color:#C2410C}
+.x70-c b{display:block;font-size:16px;line-height:1.3;color:#0E1B4D;overflow-wrap:anywhere}
+.x70-c b.q{font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.x70-c small{display:block;margin-top:2px;color:#475569;font-size:13.5px;line-height:1.4;overflow-wrap:anywhere}
+.x70-a{margin-top:6px}
+.x70-go{display:inline-block;border:0;background:none;padding:6px 0;margin:0;font:inherit;font-size:14.5px;font-weight:700;color:#1E4FD8;text-decoration:none;cursor:pointer;min-height:32px}
 .x70-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .x70-e{color:#64748B;font-size:14px;margin:0 0 6px}
-.x70-more{display:block;margin-top:8px;text-align:left}
+.x70-more{display:block;margin-top:6px;padding:8px 0;text-align:left;font-weight:700}
 .x70-home{margin-top:12px}
-@media(max-width:400px){.x70-r{flex-wrap:wrap}.x70-b{margin-left:42px}}
 </style>
 </head>
 <body>
@@ -4177,7 +4182,7 @@ let NFLT='all';
 const NGROUP={kans:['KANS'],actie:['ACTIE','WAARSCHUWING','BUDGET','AFSCHRIJVING'],prijs:['PRIJS'],result:['SUCCES','DOEL','UPDATE','SCORE']};
 function evCard(e){
  const hidden=e.status==='dismissed',stt=e.findingId?evState(e):'',opp=stt==='new'||stt==='found';
- const meta=e.meta?`<div class="pdrop"><span>Was <s>${E(e.meta.was)}</s></span><span>Nu <b>${E(e.meta.now)}</b></span><b class="pos">${E(e.meta.drop)} goedkoper</b></div>`:'';
+ const meta=e.meta&&e.meta.was!=null?`<div class="pdrop"><span>Was <s>${E(e.meta.was)}</s></span><span>Nu <b>${E(e.meta.now)}</b></span><b class="pos">${E(e.meta.drop)} goedkoper</b></div>`:'';
  const money=e.amountMonthly>0||e.amountYearly>0;
  const amt=money?`<div class="ev-a">${e.category==='SUCCES'?'Gerealiseerd':'Mogelijk voordeel'}: <b>${e.amountMonthly>0?Em(e.amountMonthly)+' p/m · ':''}${Em(e.amountYearly)} per jaar</b></div>`:'';
  return `<article class="nc ${e.read?'':'un'} c-${(CAT[e.category]||CAT.UPDATE).c}" aria-label="${(CAT[e.category]||CAT.UPDATE).n}${e.read?'':', nieuw'}">
@@ -11198,8 +11203,8 @@ WL4.splice(0,4,
    if(!ok||!x||prev==null||x.cur==null)return ok;
    const drop=Math.round((prev-x.cur)*100)/100,goal=x.cur<=x.max&&prev>x.max;
    if(goal||(drop>=Math.max(5,prev*.02)&&x.alert!==false)){
-    const msg=goal?(drop>0?`De ${x.t} die je bewaakt is ${E2g(drop)} goedkoper geworden en heeft je doel bereikt: nu ${E2g(x.cur)} (doel ${E2g(x.max)}).`:`De prijs die je bewaakt heeft je doel bereikt: ${x.t} kost nu ${E2g(x.cur)} (doel ${E2g(x.max)}).`):`De ${x.t} die je bewaakt is ${E2g(drop)} goedkoper geworden: nu ${E2g(x.cur)}${x.shop?' bij '+x.shop:''}.`;
-    emit0({type:'price',title:'Woef! Ik heb iets voor je gevonden.',message:msg,category:'PRIJS',priority:goal?'high':'medium',relatedWatch:'deal',meta:{was:prev,now:x.cur,drop:drop},action:{label:'Bekijk wat ik gevonden heb',kind:'go',target:'watches'},demo:false},goal?{}:{log:{kind:'price',title:`${x.t}: goedkoper`,text:msg,demo:false}});
+    const oth=(()=>{try{return SAME71.other(x)}catch(e){return false}})();const msg=oth?`Ik vond bij je zoekopdracht een ander product voor ${E2g(x.cur)}${x.shop?' bij '+x.shop:''}: “${x.bt}”. Wat je bewaakt (“${x.t}”) zag ik eerder voor ${E2g(prev)}. Controleer of het hetzelfde is.`:goal?(drop>0?`De ${x.t} die je bewaakt is ${E2g(drop)} goedkoper geworden en heeft je doel bereikt: nu ${E2g(x.cur)} (doel ${E2g(x.max)}).`:`De prijs die je bewaakt heeft je doel bereikt: ${x.t} kost nu ${E2g(x.cur)} (doel ${E2g(x.max)}).`):`De ${x.t} die je bewaakt is ${E2g(drop)} goedkoper geworden: nu ${E2g(x.cur)}${x.shop?' bij '+x.shop:''}.`;
+    emit0({type:'price',title:oth?'Woef! Ik vond een goedkoper alternatief.':'Woef! Ik heb iets voor je gevonden.',message:msg,category:'PRIJS',priority:goal&&!oth?'high':'medium',relatedWatch:'deal',meta:oth?null:{was:prev,now:x.cur,drop:drop},action:{label:'Bekijk wat ik gevonden heb',kind:'go',target:'watches'},demo:false},goal?{}:{log:{kind:'price',title:`${x.t}: goedkoper`,text:msg,demo:false}});
     if(!goal){try{watchdogReact('prijs',{text:msg})}catch(e){}}
     toast(`Woef! ${esc(msg)}`,false,true,{a:'go',arg:'notifications',l:'Bekijk wat ik gevonden heb'});
     setTimeout(()=>{try{if(!DOG_AUDIO.busy&&DOG.state!=='barking')setDogState('found');$$('[data-dog-auto]').forEach(b=>{b.innerHTML='<b>Woef!</b>Ik heb iets voor je gevonden.'})}catch(e){}},80);
@@ -12455,7 +12460,7 @@ V.doel=function(id,evId){
  const was=mt.was!=null?mt.was:(x.hist&&x.hist.length>1?x.hist[x.hist.length-2]:null),now=x.cur;
  const why=ev?`<b>Dit is waarom ik je riep.</b>`:`<b>${G?'Dit is je doel.':'Dit bewaak ik voor je.'}</b>`;
  const lines=[];
- if(ev&&was!=null&&now!=null&&was>now)lines.push(`De prijs is gedaald van <b>${E2g(was)}</b> naar <b>${E2g(now)}</b>.`);
+ const oth71=(()=>{try{return SAME71.other(x)}catch(e){return false}})();if(oth71&&now!=null)lines.push(`Ik vond bij je zoekopdracht een <b>ander product</b> voor <b>${E2g(now)}</b>: “${esc(x.bt)}”.${was!=null&&was>now?` Wat je bewaakt zag ik eerder voor <b>${E2g(was)}</b>.`:''} Controleer of het hetzelfde is.`);else if(ev&&was!=null&&now!=null&&was>now)lines.push(`De prijs is gedaald van <b>${E2g(was)}</b> naar <b>${E2g(now)}</b>.`);
  else if(now!=null)lines.push(`De prijs is nu <b>${E2g(now)}</b>.`);
  if(max)lines.push(now!=null&&now<=max?`Dat is binnen je grens van ${E(max)}.`:`Je ingestelde grens is ${E(max)}.`);
  if(s.size)lines.push(`Of maat ${esc(s.size)} beschikbaar is, kan ik niet live zien. Dat check je bij de winkel.`);
@@ -12465,7 +12470,7 @@ V.doel=function(id,evId){
   <p class="dl-why">${lines.join(' ')}</p>
   ${x.hist&&x.hist.length>1?spark(x.hist,max||x.max,'#2563EB'):''}
   <small class="fine">${chk}. Ik controleer als je WATCHDOG opent (hooguit twee keer per dag), niet continu.</small>
-  <div class="btn-row"><button class="btn" data-a="doel-check" data-arg="${x.id}">Ja, controleer het</button>${x.url?`<a class="btn ghost" href="${esc(x.url)}" target="_blank" rel="noopener">Bekijk bij ${esc(x.shop||'de winkel')}</a>`:''}</div></div>
+  <div class="btn-row"><button class="btn" data-a="doel-check" data-arg="${x.id}">Ja, controleer het</button>${x.url?`<a class="btn ghost" href="${esc(LINK71.fix(x.url))}" target="_blank" rel="noopener">${LINK71.isSearch(x.url)?'Zoek dit bij':'Bekijk bij'} ${esc(x.shop||'de winkel')}</a>`:''}</div>${x.url&&LINK71.isSearch(x.url)?'<small class="fine">Ik krijg van Google Shopping geen directe link naar het product. Ik open daarom de zoekpagina van de winkel.</small>':''}</div>
  <div class="card"><h3>Wanneer meld ik me?</h3><div class="seg" role="group" aria-label="Wanneer melden">${TRIG.map(t=>`<button class="${(x.trig||'slim')===t[0]?'on':''}" data-a="doel-trig" data-arg="${x.id}:${t[0]}" aria-pressed="${(x.trig||'slim')===t[0]}">${t[1]}</button>`).join('')}</div>
   <p class="note">${(x.trig||'slim')==='grens'?`Ik meld me alleen als de prijs onder ${E(max)} komt.`:(x.trig||'slim')==='pct10'?'Ik meld me pas bij minstens 10% daling ten opzichte van mijn vorige melding.':'Ik meld me bij een daling van minstens € 5 (of 2%), en als je grens bereikt wordt. Hooguit drie keer per dag.'}</p>
   <div class="btn-row"><button class="btn sm ghost" data-a="doel-bought" data-arg="${x.id}">Ik heb hem gekocht</button><button class="btn sm ghost" data-a="doel-stop" data-arg="${x.id}">Stop met bewaken</button></div></div></div>`;
@@ -17930,7 +17935,7 @@ V.samen=function(){const A=SAMEN69,P=A.page,st=A.st(),g=st.pers||A.persons();if(
    <label class="x69-chk"><input type="checkbox" id="s69-ok"><span>Ik deel deze bedragen, afgerond op €10, samen met de grootte van mijn huishouden. Zonder naam, adres, gemeente of inkomen. Ik kan het altijd intrekken.</span></label>
    <button class="btn" data-a="s69-lasten">${mine?'Werk mijn bedragen bij':'Deel en vergelijk'}</button>${mine?`<button class="btn ghost" data-a="s69-lasten-weg">Trek mijn bedragen in</button>`:''}</div>`;
  const tips=(P.t.tips||[]).slice().sort((a,b)=>b.n-a.n).map(t=>{const on=(P.t.mijn||[]).includes(t.id);return `<div class="x69-tip"><span class="grow"><b>${A.TIPS[t.id]||esc(t.id)}</b><small>${t.n?`${A.n(t.n,'gebruiker deed','gebruikers deden')} dit`:'Nog niemand gaf dit aan'}</small></span><button class="btn sm${on?' on':' ghost'}" data-a="s69-tip" data-arg="${t.id}" aria-pressed="${on}">${on?I('check')+' Gedaan':'Ik ook'}</button></div>`}).join('');
- return top+`<div class="card"><h3>Vaste lasten vergelijken</h3><p class="note">Huishoudens van ${g===4?'4 of meer personen':g===1?'1 persoon':g+' personen'}. Ik laat een bedrag pas zien als minstens ${L.minimum} huishoudens meedoen, zodat niemand te herkennen is.</p>${rows}<details class="x69-d"${mine?'':' open'}><summary>${mine?'Mijn bedragen aanpassen':'Doe mee'}</summary>${form}</details></div>
+ return top+`<div class="card"><h3>Vaste lasten vergelijken</h3><p class="note">Huishoudens van ${g===4?'4 of meer personen':g===1?'1 persoon':g+' personen'}. Ik laat een bedrag pas zien als minstens ${L.minimum} huishoudens meedoen, zodat niemand te herkennen is.</p>${rows}<details class="x69-d"><summary>${mine?'Mijn bedragen aanpassen':'Doe mee'}</summary>${form}</details></div>
   <div class="card"><h3>Dit deden anderen</h3><p class="note">Een vaste lijst. Tik op “Ik ook” als je het zelf gedaan hebt; dan zien anderen dat het vaker gebeurt.</p>${tips}</div>
   <p class="x48-how">Alles hier komt van gebruikers en is niet gecontroleerd. Het is geen advies. Per toestel telt één stem.</p></div>`};
 ACT['s69-reload']=()=>{SAMEN69.page={};render(false)};
@@ -17964,15 +17969,16 @@ const VANDAAG70={d:null,at:0,busy:false,fail:false,
  dt(s){try{return new Date(s+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long'})}catch(e){return ''}},
  regName(id){return String(id||'').replace(/^reg:/,'').replace(/-/g,' ').trim()},
  /* regels, belangrijkste eerst */
- rows(max,maxBron){const d=this.d,L=[],n=SAMEN69.n.bind(SAMEN69);if(!d)return L;
-  (d.nep||[]).forEach(x=>L.push({k:'nep',warn:true,ic:'alert',t:`${esc(x.domein)}`,s:`${n(x.totaal,'gebruiker meldde','gebruikers meldden')} dit als nep${x.vandaag?`, ${x.vandaag} vandaag`:''}. Niet gecontroleerd.`,b:`<button class="btn sm ghost" data-a="v70-check" data-arg="${esc(x.domein)}">Bekijk</button>`}));
-  (d.soorten||[]).forEach(x=>L.push({k:'soort',warn:true,ic:'alert',t:`Nepberichten over ${VANDAAG70.SOORT[x.soort]||'iets anders'}`,s:`${x.n} meldingen van gebruikers deze week.`,b:`<button class="btn sm ghost" data-a="go" data-arg="deel">Check er een</button>`}));
-  const B=d.bron||{items:[]};(B.items||[]).slice(0,maxBron).forEach(x=>L.push({k:'bron',ic:'shield',t:`Valse e-mail: “${esc(x.titel)}”`,s:`Bron: ${esc(B.naam)}${x.datum?', '+this.dt(x.datum):''}.`,b:`<a class="btn sm ghost" href="${esc(x.link)}" target="_blank" rel="noopener">Lees bij de bron</a>`}));
-  if((d.zoek||[]).length)L.push({k:'zoek',ic:'search',t:'Veel gezocht deze week',s:'',x:`<div class="x70-chips">${d.zoek.map(z=>`<button class="chip" data-a="zs-q" data-arg="${esc(z.term)}">${esc(z.term)}</button>`).join('')}</div>`});
-  (d.gelukt||[]).forEach(x=>L.push({k:'gelukt',ic:'check',t:`${x.n} gebruikers kregen deze week toegekend`,s:esc(this.regName(x.id))+'. Dat zegt niets over jouw recht.'}));
-  (d.tips||[]).slice(0,1).forEach(x=>L.push({k:'tip',ic:'users',t:`${x.n} gebruikers: ${esc((SAMEN69.TIPS[x.id]||x.id).toLowerCase())}`,s:'',b:`<button class="btn sm ghost" data-a="go" data-arg="samen">Bekijk tips</button>`}));
+ clean(t){return String(t||'').replace(/\{[^}]*\}/g,' ').replace(/#\*+/g,' ').replace(/\*{2,}/g,' ').replace(/\s+/g,' ').replace(/[\s:;,#-]+$/,'').trim().slice(0,90)},
+ rows(max,maxBron){const d=this.d,L=[],n=SAMEN69.n.bind(SAMEN69);if(!d)return L;const go=(a,arg,t)=>`<button class="x70-go" data-a="${a}" data-arg="${arg}">${t} ›</button>`;
+  (d.nep||[]).forEach(x=>L.push({k:'nep',warn:true,ic:'alert',lab:'Gemeld als nep',t:`${esc(x.domein)}`,s:`${n(x.totaal,'gebruiker meldde','gebruikers meldden')} dit als nep${x.vandaag?`, ${x.vandaag} vandaag`:''}. Niet gecontroleerd.`,b:go('v70-check',esc(x.domein),'Bekijk')}));
+  (d.soorten||[]).forEach(x=>L.push({k:'soort',warn:true,ic:'alert',lab:'Gaat rond',t:`Nepberichten over ${VANDAAG70.SOORT[x.soort]||'iets anders'}`,s:`${x.n} meldingen van gebruikers deze week.`,b:go('go','deel','Check er zelf een')}));
+  const B=d.bron||{items:[]};(B.items||[]).map(x=>Object.assign({},x,{titel:this.clean(x.titel)})).filter(x=>x.titel.length>=3).slice(0,maxBron).forEach(x=>L.push({k:'bron',ic:'shield',lab:'Valse e-mail in omloop',t:`“${esc(x.titel)}”`,q:true,s:`Bron: ${esc(B.naam)}${x.datum?', '+this.dt(x.datum):''}.`,b:`<a class="x70-go" href="${esc(x.link)}" target="_blank" rel="noopener">Lees bij de bron ›</a>`}));
+  if((d.zoek||[]).length)L.push({k:'zoek',ic:'search',lab:'Veel gezocht deze week',t:'',s:'',x:`<div class="x70-chips">${d.zoek.map(z=>`<button class="chip" data-a="zs-q" data-arg="${esc(z.term)}">${esc(z.term)}</button>`).join('')}</div>`});
+  (d.gelukt||[]).forEach(x=>L.push({k:'gelukt',ic:'check',lab:'Gelukt bij anderen',t:`${x.n} gebruikers kregen deze week toegekend`,s:esc(this.regName(x.id))+'. Dat zegt niets over jouw recht.'}));
+  (d.tips||[]).slice(0,1).forEach(x=>L.push({k:'tip',ic:'users',lab:'Deden anderen',t:`${x.n} gebruikers: ${esc((SAMEN69.TIPS[x.id]||x.id).toLowerCase())}`,s:'',b:go('go','samen','Bekijk tips')}));
   return L.slice(0,max)},
- row(r){return `<div class="x70-r${r.warn?' warn':''}"><span class="x70-i">${I(r.ic)}</span><span class="grow"><b>${r.t}</b>${r.s?`<small>${r.s}</small>`:''}${r.x||''}</span>${r.b?`<span class="x70-b">${r.b}</span>`:''}</div>`},
+ row(r){return `<div class="x70-r${r.warn?' warn':''}"><span class="x70-i">${I(r.ic)}</span><div class="x70-c">${r.lab?`<span class="x70-lab">${r.lab}</span>`:''}${r.t?`<b class="${r.q?'q':''}">${r.t}</b>`:''}${r.s?`<small>${r.s}</small>`:''}${r.x||''}${r.b?`<div class="x70-a">${r.b}</div>`:''}</div></div>`},
  card(home){if(!this.on())return '';const d=this.d;
   if(!d)return this.fail?(home?'':`<div class="card x70"><h3>Vandaag bij anderen</h3><p class="note">Ik kan de WATCHDOG-server nu niet bereiken.</p></div>`):(home?'':`<div class="card x70"><h3>Vandaag bij anderen</h3><p class="note x48-busy">${I('search')} Even ophalen…</p></div>`);
   const R=this.rows(home?3:12,home?1:6),users=R.filter(r=>r.k!=='bron').length,B=d.bron||{};
@@ -17988,6 +17994,33 @@ ACT['v70-check']=dom=>{if(!/^[a-z0-9.-]{3,80}$/i.test(String(dom||'')))return;tr
 {const _s=V.samen;V.samen=function(){let h=_s.apply(this,arguments);try{VANDAAG70.load();const c=VANDAAG70.card(false);if(c){const D=HOME62.tpl(h),g=D.content.querySelector('.x53-guide');const t=document.createElement('div');t.innerHTML=c;if(g){g.after(t.firstElementChild);h=D.innerHTML}}}catch(e){console.warn('V70 samen',e)}return h}}
 /* Home: kort, vóór de voetknoppen; vervangt de losse Samen-knop */
 {const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{VANDAAG70.load();const c=VANDAAG70.card(true);const D=HOME62.tpl(h),f=D.content.querySelector('.h62-foot');if(c&&f){const t=document.createElement('div');t.innerHTML=c;f.before(t.firstElementChild);const b=f.querySelector('.x69-fb');if(b)b.remove();h=D.innerHTML}}catch(e){console.warn('V70 home',e)}return h}}
+
+
+/* =====================================================================
+   V71 — EERLIJK OVER EEN ANDER PRODUCT, EN EEN WINKELLINK DIE IETS VINDT
+   - Een bewaakt product wordt gevolgd door opnieuw te zoeken. Vindt de hond daarbij een ander product (ander merk,
+     weinig overlap in de naam), dan zegt hij dat: "Ik vond een ander product voor …", niet "is goedkoper geworden".
+   - Google Shopping geeft geen directe link naar de winkelpagina. De app opent daarom de zoekpagina van de winkel.
+     Met de hele, afgekapte productnaam vond de winkel niets; nu zoekt hij op het begin van de naam (merk en soort).
+   ===================================================================== */
+const SAME71={STOP:new Set(['de','het','een','en','voor','met','van','in','op','the','for','with','and','nieuw','new']),
+ toks(t){return String(t||'').toLowerCase().replace(/…/g,' ').split(/[^a-z0-9à-ÿ]+/).filter(w=>w.length>=2&&!this.STOP.has(w))},
+ same(a,b){const A=this.toks(a),B=this.toks(b);if(!A.length||!B.length)return true;const sb=new Set(B),n=A.filter(w=>sb.has(w)).length,ov=n/Math.min(A.length,B.length);return (A[0]===B[0]&&ov>=0.5)||ov>=0.75},
+ other(x){return !!(x&&!x.goal&&x.bt&&!this.same(x.ref71||x.t,x.bt))}
+};
+const LINK71={
+ short(t){const s=String(t||'').replace(/…/g,' ').replace(/\s+/g,' ').trim(),seg=s.split(/\s+[-–|]\s+|\s*[(\[,]\s*/).map(x=>x.trim()).filter(Boolean);
+  let out=seg[0]||s;if(out.split(' ').length<3&&seg[1])out+=' '+seg[1];
+  const w=out.split(' ').filter(Boolean).slice(0,6);let r=w.join(' ');while(r.length>48&&w.length>2){w.pop();r=w.join(' ')}return r},
+ fix(url){try{const u=String(url||'');for(const s of WD_SHOPS){const pre=s[1];if(u.startsWith(pre)){const rest=u.slice(pre.length),q=decodeURIComponent(rest.split(/[&#]/)[0].replace(/\+/g,' ')),sh=this.short(q);return sh&&sh!==q?pre+encodeURIComponent(sh):u}}
+   if(/^https:\/\/duckduckgo\.com\/\?q=/.test(u))return u;return u}catch(e){return url}},
+ isSearch(url){try{return WD_SHOPS.some(s=>String(url||'').startsWith(s[1]))||/^https:\/\/duckduckgo\.com\/\?q=/.test(String(url||''))}catch(e){return false}}
+};
+{const _w=wdSafeUrl;wdSafeUrl=function(u,shop,title){return LINK71.fix(_w(u,shop,LINK71.short(title)))}}
+/* elke klik op een winkel-zoeklink met een te lange naam: eerst inkorten */
+document.addEventListener('click',e=>{try{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const f=LINK71.fix(a.href);if(f!==a.href)a.href=f}catch(err){}},true);
+/* onthoud welk product bewaakt wordt, vóórdat een controle de gevonden naam overschrijft */
+{const _ldc=liveDealCheck;liveDealCheck=function(x){try{if(x&&!x.goal&&!x.ref71)x.ref71=x.t||x.bt||''}catch(e){}return _ldc.apply(this,arguments)}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
