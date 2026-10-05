@@ -2675,6 +2675,18 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x74-old{margin-top:14px}.x74-old summary{list-style:none;cursor:pointer;text-align:center;font-weight:700;color:#1E4FD8;padding:12px;border:1.5px dashed #C7D2FE;border-radius:16px;background:#fff}
 .x74-old summary::-webkit-details-marker{display:none}.x74-old[open] summary{margin-bottom:10px}
 .x74-none{color:#64748B;text-align:center;margin:8px 0}
+
+/* V75 Check dit bovenaan + drie momenten */
+.x75-box{display:block;margin:8px 0 2px}
+.x72-check.x75{margin:0;border-radius:18px 18px 0 0}
+.x75-ms{background:#fff;border:1.5px solid #DBE4F5;border-top:0;border-radius:0 0 18px 18px;margin:0;overflow:hidden}
+.x75-m{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:6px 14px;border:0;border-top:1px solid #EEF2F7;background:none;font:inherit;text-align:left;color:#0F172A;cursor:pointer}
+.x75-m:first-child{border-top:0}
+.x75-i{flex:none;width:30px;height:30px;border-radius:9px;background:#EEF2FF;color:#1E4FD8;display:flex;align-items:center;justify-content:center}.x75-i .i{width:16px;height:16px}
+.x75-m .grow{min-width:0}.x75-m b{display:block;font-size:14.5px;line-height:1.25}.x75-m small{display:block;font-size:12.5px;line-height:1.3;color:#64748B;overflow-wrap:anywhere}
+.x75-m>i{font-style:normal;font-size:18px;color:#94A3B8}
+.x75-more{margin:0 0 2px}.x75-more summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;font-size:14.5px;color:#1E4FD8}
+.x75-more summary::-webkit-details-marker{display:none}.x75-more summary::after{content:"⌄";font-size:16px}.x75-more[open] summary::after{content:"⌃"}
 </style>
 </head>
 <body>
@@ -18171,6 +18183,27 @@ const N74={DAY:864e5,
 N74.watches=function(){try{const J=JOBS.st();if(J&&Array.isArray(J.watches)){const seen=new Set(),keep=[];J.watches.forEach(w=>{const k=[String(w.q||'').toLowerCase().trim(),String(w.loc||'').toLowerCase().trim(),!!w.remote].join('|');if(seen.has(k))return;seen.add(k);keep.push(w)});if(keep.length!==J.watches.length){J.watches=keep;save()}}}catch(e){}};
 /* de opslag wordt pas in init() geladen: daarna opruimen */
 {const _i=init;init=function(){const r=_i.apply(this,arguments);try{N74.watches()}catch(e){}try{if(N74.tidy()&&typeof render==='function')render()}catch(e){}return r}}
+
+/* =====================================================================
+   V75 — "CHECK DIT" IS DE HOOFDINGANG OP HOME
+   - De knop staat direct onder het typvak, vóór de voorbeelden (was: eronder).
+   - Eronder drie herkenbare momenten: één zin, één handeling. Ze beloven alleen wat de app echt doet.
+   Niets weggehaald: de voorbeelden staan onder de knop, ingeklapt achter "Wat kun je me nog meer vragen?" (Home blijft kort).
+   ===================================================================== */
+const MOM75=[
+ ['energie','bolt','Energiecontract loopt af?','Laat je jaarafrekening zien. Ik zeg wat erin staat.'],
+ ['abo','bell','Abonnement duurder geworden?','Plak de mail. Ik zeg wat je kunt doen.'],
+ ['kopen','tag','Iets kopen boven €50?','Ik kijk eerst of het goedkoper kan.']];
+ACT['x75-m']=(k)=>{if(k==='energie')return go('brief');if(k==='abo')return ACT['h65-plus']();
+ const i=$('#hq');if(i){i.focus();try{i.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}catch(e){}try{toast('Typ wat je wilt kopen.',false,true)}catch(e){}}};
+{const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{const D=HOME62.tpl(h),R=D.content,c=R.querySelector('.x72-check'),lab=R.querySelector('.x72-lab'),sg=R.querySelector('.h62-sug');
+   if(c&&!R.querySelector('.x75-ms')){const first=lab||sg;if(first)first.before(c);
+    c.classList.add('x75');const sm=c.querySelector('small');if(sm)sm.textContent='Foto, screenshot, link of bericht erin. Antwoord eruit.';
+    const m=document.createElement('div');m.className='x75-ms';
+    m.innerHTML=MOM75.map(x=>{let ic='';try{ic=I(x[1])||''}catch(e){}return `<button class="x75-m" data-a="x75-m" data-arg="${x[0]}">${ic?`<span class="x75-i">${ic}</span>`:''}<span class="grow"><b>${x[2]}</b><small>${x[3]}</small></span><i aria-hidden="true">›</i></button>`}).join('');
+    const box=document.createElement('div');box.className='x75-box';c.before(box);box.appendChild(c);box.appendChild(m);
+    if(sg){const d=document.createElement('details');d.className='x75-more';const su=document.createElement('summary');su.textContent='Wat kun je me nog meer vragen?';box.after(d);d.appendChild(su);if(lab)lab.remove();d.appendChild(sg)}}
+   h=D.innerHTML}catch(e){console.warn('V75 home',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
