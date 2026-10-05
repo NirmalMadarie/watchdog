@@ -2659,6 +2659,22 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .wdg-res .wdg-mini,.wdg-res .wdg-adj{margin-top:12px}
 .zs-found+.x73-q,.zs-found+.x67-q{margin-top:14px;position:relative}
 .zs-found{height:auto;min-height:190px;align-items:flex-end;gap:6px}.zs-found .h3-say{position:relative;top:auto;left:auto;right:auto;order:-1;flex:0 1 58%;max-width:58%;margin:10px 0 16px;align-self:flex-start}.zs-found .dogx{flex:0 0 auto;margin-left:auto}
+
+/* V74 meldingen: compact */
+.x74 .nl{display:grid;gap:10px}
+.x74 .nc{position:relative;padding:12px 14px}
+.x74 .nc>b{display:block;font-size:16px;line-height:1.3;padding-right:34px}
+.x74 .nc>p{margin:4px 0 0;font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.x74 .nc .nc-top{margin-bottom:6px}
+.x74 .nc .pdrop{margin-top:6px;font-size:14px}
+.x74 .nc .nc-f{margin-top:10px}
+.x74 .nc .nc-f [data-a="ev-recmp"],.x74 .nc .nc-f .btn.ghost[data-a="ev-hide"]:not(.x61-rm){display:none}
+.x74 .nc .nc-f .x61-rm{position:absolute;top:8px;right:8px;width:34px;height:34px;min-height:0;padding:0;border-radius:50%;font-size:0;background:#F1F5F9;color:#64748B}
+.x74 .nc .nc-f .x61-rm::before{content:"×";font-size:20px;line-height:1}
+.x74 .nc .nc-top em{margin-right:34px}
+.x74-old{margin-top:14px}.x74-old summary{list-style:none;cursor:pointer;text-align:center;font-weight:700;color:#1E4FD8;padding:12px;border:1.5px dashed #C7D2FE;border-radius:16px;background:#fff}
+.x74-old summary::-webkit-details-marker{display:none}.x74-old[open] summary{margin-bottom:10px}
+.x74-none{color:#64748B;text-align:center;margin:8px 0}
 </style>
 </head>
 <body>
@@ -18113,6 +18129,48 @@ const RES73={
    /* gerelateerd: alleen bij een korte zoekopdracht */
    if(String(SEARCH.q||'').trim().split(/\s+/).length>4){const rel=q('.zs-rel');if(rel){const hh=rel.previousElementSibling;if(hh&&hh.classList.contains('zs-h'))hh.remove();rel.remove()}}
    h=D.innerHTML}catch(e){console.warn('V73 zoekresultaat',e)}return h}}
+
+
+/* =====================================================================
+   V74 — MELDINGEN: KORT EN ZONDER HERHALING
+   - Eén melding per onderwerp: een nieuwe melding over dezelfde zoekopdracht of bewaking vervangt de vorige.
+   - Precies dezelfde melding staat er één keer (ook wat er al dubbel stond).
+   - Opruimen: gelezen meldingen na een week; meldingen die alleen iets vertellen (score, doel, update) na drie dagen.
+   - De pagina toont wat nieuw is; wat je al zag staat dichtgeklapt onder "Eerder".
+   - Een kaart heeft de titel, twee regels tekst, één knop en een kruisje.
+   - Een oude prijsmelding die eigenlijk over een ander product ging, krijgt de eerlijke tekst.
+   ===================================================================== */
+const N74={DAY:864e5,
+ key(e){try{if(e.type==='vacature'){const m=String(e.message||'').match(/^Voor "([^"]+)"[^:]*/);return 'vac:'+(m?m[0].toLowerCase():String(e.title).replace(/\d+/g,'#'))}
+   if(e.meta&&e.meta.dealId)return 'deal:'+e.meta.dealId;
+   if(e.category==='SCORE')return 'score';if(e.category==='DOEL')return 'doel:'+String(e.title||'').replace(/\d+/g,'#')}catch(x){}return null},
+ info(e){return ['SCORE','DOEL','UPDATE','SUCCES'].indexOf(e.category)>=0&&!(e.action&&e.action.kind==='do')},
+ fixOld(e){try{if(!/die je bewaakt is .*goedkoper geworden/.test(String(e.message||''))||!e.meta||!e.meta.dealId)return;const d=(S.deals||[]).find(x=>x.id===e.meta.dealId);if(!d||!SAME71.other(d))return;
+   const was=e.meta.was;e.title='Woef! Ik vond een goedkoper alternatief.';e.message=`Ik vond bij je zoekopdracht een ander product${d.cur!=null?' voor '+E2g(d.cur):''}${d.shop?' bij '+d.shop:''}: “${d.bt}”.${was!=null?` Wat je bewaakt (“${d.t}”) zag ik eerder voor ${E2g(was)}.`:''} Controleer of het hetzelfde is.`;
+   e.meta={dealId:e.meta.dealId,max:e.meta.max};return true}catch(x){}},
+ tidy(){try{const L=S.events||[],now=Date.now(),sig=new Set(),keys=new Set(),out=[];let ch=false;
+   L.slice().sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)).forEach(e=>{if(e.demo){out.push(e);return}
+    if(this.fixOld(e))ch=true;
+    const s=[e.type,e.title,e.message].join('|');if(sig.has(s)){ch=true;return}sig.add(s);
+    const k=this.key(e);if(k){if(keys.has(k)){ch=true;return}keys.add(k)}
+    const age=now-(e.timestamp||now);if((e.read&&age>7*this.DAY)||(this.info(e)&&age>3*this.DAY)){ch=true;return}
+    out.push(e)});
+   if(ch||out.length!==L.length){S.events=out;try{save()}catch(x){}return true}}catch(x){console.warn('V74 opruimen',x)}return false}
+};
+{const _e=emit0;emit0=function(){const r=_e.apply(this,arguments);try{N74.tidy()}catch(x){}return r}}
+{const _n=V.notifications;V.notifications=function(){try{N74.tidy()}catch(x){}let h=_n.apply(this,arguments);
+  try{const D=HOME62.tpl(h),R=D.content,nl=R.querySelector('.nl');
+   if(nl&&typeof NFLT!=='undefined'&&NFLT==='all'){const old=[...nl.querySelectorAll('article.nc:not(.un)')];
+    if(old.length){const d=document.createElement('details');d.className='x74-old';const sm=document.createElement('summary');sm.textContent=`Eerder gezien (${old.length})`;d.appendChild(sm);const box=document.createElement('div');box.className='nl';old.forEach(a=>box.appendChild(a));d.appendChild(box);
+     if(!nl.querySelector('article.nc')&&!R.querySelector('.w41-all .w41-it')){const p=document.createElement('p');p.className='x74-none';p.textContent='Geen nieuwe meldingen.';nl.appendChild(p)}
+     nl.after(d)}}
+   const f=R.querySelector('.foot');if(f)f.textContent='Een nieuwe melding over hetzelfde vervangt de vorige. Wat je gelezen hebt, ruim ik na een week op.';
+   const w=R.querySelector('.wrap');if(w)w.classList.add('x74');
+   h=D.innerHTML}catch(e){console.warn('V74 meldingen',e)}return h}}
+/* dubbele vacaturebewakingen op dit toestel samenvoegen (de server doet hetzelfde aan zijn kant) */
+N74.watches=function(){try{const J=JOBS.st();if(J&&Array.isArray(J.watches)){const seen=new Set(),keep=[];J.watches.forEach(w=>{const k=[String(w.q||'').toLowerCase().trim(),String(w.loc||'').toLowerCase().trim(),!!w.remote].join('|');if(seen.has(k))return;seen.add(k);keep.push(w)});if(keep.length!==J.watches.length){J.watches=keep;save()}}}catch(e){}};
+/* de opslag wordt pas in init() geladen: daarna opruimen */
+{const _i=init;init=function(){const r=_i.apply(this,arguments);try{N74.watches()}catch(e){}try{if(N74.tidy()&&typeof render==='function')render()}catch(e){}return r}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
