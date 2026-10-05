@@ -2614,6 +2614,20 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x69-tip{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #EEF2F7}.x69-tip b{display:block;overflow-wrap:anywhere}.x69-tip small{color:#64748B}
 .x69-tip .btn{flex:none}.x69p .btn.on{background:#0F766E;color:#fff}.x69p .btn .i{width:15px;height:15px;margin-right:4px}
 .x69-fb{margin-top:8px}
+
+/* V70 Vandaag */
+.x70 h3{display:flex;align-items:center;gap:8px}.x70 h3 .i{width:20px;height:20px;color:#0F766E}
+.x70-r{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #EEF2F7}
+.x70-r:first-of-type{border-top:0}
+.x70-i{flex:none;width:32px;height:32px;border-radius:10px;background:#E6F4F1;color:#0F766E;display:flex;align-items:center;justify-content:center}.x70-i .i{width:17px;height:17px}
+.x70-r.warn .x70-i{background:#FFEDD5;color:#C2410C}
+.x70-r b{display:block;color:#0E1B4D;overflow-wrap:anywhere}.x70-r small{display:block;color:#475569;font-size:13.5px;overflow-wrap:anywhere}
+.x70-r .grow{min-width:0}.x70-b{flex:none}.x70-b .btn{white-space:nowrap}
+.x70-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.x70-e{color:#64748B;font-size:14px;margin:0 0 6px}
+.x70-more{display:block;margin-top:8px;text-align:left}
+.x70-home{margin-top:12px}
+@media(max-width:400px){.x70-r{flex-wrap:wrap}.x70-b{margin-left:42px}}
 </style>
 </head>
 <body>
@@ -17929,6 +17943,51 @@ document.addEventListener('change',e=>{const t=e.target;if(t&&t.id==='s69-p'&&ro
 /* ---------- ingang: Home en "Alles wat ik kan" ---------- */
 {const _it=HOME62.items.bind(HOME62);HOME62.items=function(){const o=_it();try{o.regelen.push({a:'go',arg:'samen',ic:'users',c:'#0F766E',bg:'#CCFBF1',t:'Samen',s:'Wat anderen melden en delen'})}catch(e){}return o}}
 {const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{const D=HOME62.tpl(h),f=D.content.querySelector('.h62-foot');if(f&&!f.querySelector('[data-arg="samen"]')){const b=document.createElement('button');b.className='h62-fb x69-fb';b.dataset.a='go';b.dataset.arg='samen';b.innerHTML=`${I('users')} Samen: wat anderen melden ›`;f.appendChild(b);h=D.innerHTML}}catch(e){}return h}}
+
+
+/* =====================================================================
+   V70 — VANDAAG: zien wat er bij anderen gebeurt
+   Een kort overzicht op Home en op Samen:
+   - webadressen die gebruikers als nep meldden (pas vanaf de drempel van de server, standaard 5 toestellen);
+   - het soort nepbericht dat rondgaat (bank, pakket, …); de tekst zelf komt nooit op de server;
+   - valse e-mails die de Fraudehelpdesk publiceert (bron, met link naar hun pagina);
+   - veel gezochte korte zoekwoorden, toegekende regelingen en tips die anderen deden.
+   Alleen aantallen, geen oordeel. Is er niets, dan staat dat er.
+   ===================================================================== */
+const VANDAAG70={d:null,at:0,busy:false,fail:false,
+ SOORT:{bank:'je bank',pakket:'een pakket',belasting:'de Belastingdienst',overheid:'de overheid',energie:'je energierekening',webwinkel:'een webwinkel',betaalverzoek:'een betaalverzoek',baan:'een baan',belegging:'beleggen of crypto',anders:'iets anders'},
+ RX:[['bank',/\b(bank|rekening|pinpas|betaalpas|ing|rabobank|abn|sns|bunq|creditcard|ics)\b/],['pakket',/\b(pakket|bezorg\w*|postnl|dhl|dpd|zending|track)\w*/],['belasting',/\b(belasting\w*|toeslag\w*|teruggave|aanslag)\b/],['overheid',/\b(digid|cjib|boete|gemeente|uwv|svb|duo|rdw|overheid)\b/],['energie',/\b(energie\w*|stroom|gas|vattenfall|eneco|essent)\b/],['betaalverzoek',/\b(tikkie|betaalverzoek|betaallink|ideal)\b/],['baan',/\b(vacature|baan|thuiswerk\w*|bijverdien\w*|sollicit\w*)\b/],['belegging',/\b(crypto\w*|bitcoin|beleg\w*|rendement|trading)\b/],['webwinkel',/\b(bestelling|webshop|webwinkel|order|korting|retour)\b/]],
+ soort(t){const lo=String(t||'').toLowerCase();const f=this.RX.find(r=>r[1].test(lo));return f?f[0]:'anders'},
+ on(){return SAMEN69.on()},
+ load(force){if(!this.on()||this.busy||(!force&&this.at&&Date.now()-this.at<10*60e3))return;this.busy=true;
+  SRV.call('/api/samen/vandaag').then(j=>{this.d=j;this.fail=false}).catch(()=>{this.fail=true}).then(()=>{this.busy=false;const first=!this.at;this.at=Date.now();if((route[0]==='home'||!route[0]||route[0]==='samen')&&!document.querySelector('#ov'))render(false)})},
+ dt(s){try{return new Date(s+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long'})}catch(e){return ''}},
+ regName(id){return String(id||'').replace(/^reg:/,'').replace(/-/g,' ').trim()},
+ /* regels, belangrijkste eerst */
+ rows(max,maxBron){const d=this.d,L=[],n=SAMEN69.n.bind(SAMEN69);if(!d)return L;
+  (d.nep||[]).forEach(x=>L.push({k:'nep',warn:true,ic:'alert',t:`${esc(x.domein)}`,s:`${n(x.totaal,'gebruiker meldde','gebruikers meldden')} dit als nep${x.vandaag?`, ${x.vandaag} vandaag`:''}. Niet gecontroleerd.`,b:`<button class="btn sm ghost" data-a="v70-check" data-arg="${esc(x.domein)}">Bekijk</button>`}));
+  (d.soorten||[]).forEach(x=>L.push({k:'soort',warn:true,ic:'alert',t:`Nepberichten over ${VANDAAG70.SOORT[x.soort]||'iets anders'}`,s:`${x.n} meldingen van gebruikers deze week.`,b:`<button class="btn sm ghost" data-a="go" data-arg="deel">Check er een</button>`}));
+  const B=d.bron||{items:[]};(B.items||[]).slice(0,maxBron).forEach(x=>L.push({k:'bron',ic:'shield',t:`Valse e-mail: “${esc(x.titel)}”`,s:`Bron: ${esc(B.naam)}${x.datum?', '+this.dt(x.datum):''}.`,b:`<a class="btn sm ghost" href="${esc(x.link)}" target="_blank" rel="noopener">Lees bij de bron</a>`}));
+  if((d.zoek||[]).length)L.push({k:'zoek',ic:'search',t:'Veel gezocht deze week',s:'',x:`<div class="x70-chips">${d.zoek.map(z=>`<button class="chip" data-a="zs-q" data-arg="${esc(z.term)}">${esc(z.term)}</button>`).join('')}</div>`});
+  (d.gelukt||[]).forEach(x=>L.push({k:'gelukt',ic:'check',t:`${x.n} gebruikers kregen deze week toegekend`,s:esc(this.regName(x.id))+'. Dat zegt niets over jouw recht.'}));
+  (d.tips||[]).slice(0,1).forEach(x=>L.push({k:'tip',ic:'users',t:`${x.n} gebruikers: ${esc((SAMEN69.TIPS[x.id]||x.id).toLowerCase())}`,s:'',b:`<button class="btn sm ghost" data-a="go" data-arg="samen">Bekijk tips</button>`}));
+  return L.slice(0,max)},
+ row(r){return `<div class="x70-r${r.warn?' warn':''}"><span class="x70-i">${I(r.ic)}</span><span class="grow"><b>${r.t}</b>${r.s?`<small>${r.s}</small>`:''}${r.x||''}</span>${r.b?`<span class="x70-b">${r.b}</span>`:''}</div>`},
+ card(home){if(!this.on())return '';const d=this.d;
+  if(!d)return this.fail?(home?'':`<div class="card x70"><h3>Vandaag bij anderen</h3><p class="note">Ik kan de WATCHDOG-server nu niet bereiken.</p></div>`):(home?'':`<div class="card x70"><h3>Vandaag bij anderen</h3><p class="note x48-busy">${I('search')} Even ophalen…</p></div>`);
+  const R=this.rows(home?3:12,home?1:6),users=R.filter(r=>r.k!=='bron').length,B=d.bron||{};
+  const empty=!users?`<p class="x70-e">${d.onderDrempel?`Er zijn vandaag meldingen van gebruikers, maar nog te weinig over hetzelfde om te tonen (minstens ${d.minimum} toestellen).`:'Nog geen meldingen van gebruikers deze week.'}</p>`:'';
+  if(home&&!R.length)return '';
+  return `<div class="card x70${home?' x70-home':''}"><h3>${I('users')} Vandaag bij anderen</h3>${home?'':empty}${R.map(r=>this.row(r)).join('')}${!home&&B.ok===false?'<p class="x70-e">De waarschuwingen van de Fraudehelpdesk zijn nu niet op te halen.</p>':''}
+   ${home?`<button class="link x70-more" data-a="go" data-arg="samen">Alles bekijken ›</button>`:`<p class="fine">Meldingen komen van gebruikers en zijn niet gecontroleerd. Een webadres staat hier pas als minstens ${d.minimum} toestellen het meldden. Valse e-mails komen van de <a href="${esc(B.site||'https://www.fraudehelpdesk.nl')}" target="_blank" rel="noopener">Fraudehelpdesk</a>.</p>`}</div>`}
+};
+/* het soort bericht gaat mee met een melding (nooit de tekst) */
+{const _key=SAMEN69.keys.bind(SAMEN69);SAMEN69.keys=async function(T){const K=await _key(T);try{if(K.t)K.t.soort=VANDAAG70.soort(T.text)}catch(e){}return K}}
+ACT['v70-check']=dom=>{if(!/^[a-z0-9.-]{3,80}$/i.test(String(dom||'')))return;try{DEEL59.reset()}catch(e){}go('deel');setTimeout(()=>DEEL59.run('https://'+dom,'link'),60)};
+/* Samen: bovenaan */
+{const _s=V.samen;V.samen=function(){let h=_s.apply(this,arguments);try{VANDAAG70.load();const c=VANDAAG70.card(false);if(c){const D=HOME62.tpl(h),g=D.content.querySelector('.x53-guide');const t=document.createElement('div');t.innerHTML=c;if(g){g.after(t.firstElementChild);h=D.innerHTML}}}catch(e){console.warn('V70 samen',e)}return h}}
+/* Home: kort, vóór de voetknoppen; vervangt de losse Samen-knop */
+{const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{VANDAAG70.load();const c=VANDAAG70.card(true);const D=HOME62.tpl(h),f=D.content.querySelector('.h62-foot');if(c&&f){const t=document.createElement('div');t.innerHTML=c;f.before(t.firstElementChild);const b=f.querySelector('.x69-fb');if(b)b.remove();h=D.innerHTML}}catch(e){console.warn('V70 home',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
