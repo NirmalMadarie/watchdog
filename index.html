@@ -2633,6 +2633,32 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x70-e{color:#64748B;font-size:14px;margin:0 0 6px}
 .x70-more{display:block;margin-top:6px;padding:8px 0;text-align:left;font-weight:700}
 .x70-home{margin-top:12px}
+
+/* V72 Home laat zien wat kan */
+.x72-lab{display:block;color:#64748B;font-size:12.5px;margin:10px 2px 0}
+.x72-lab+.h62-sug{padding-top:6px}
+.x72-check{display:flex;align-items:center;gap:12px;width:100%;margin:6px 0 14px;padding:14px;border:0;border-radius:18px;background:linear-gradient(135deg,#1E4FD8,#0F766E);color:#fff;font:inherit;text-align:left;box-shadow:0 10px 24px -16px rgba(30,79,216,.8);cursor:pointer}
+.x72-ci{flex:none;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}.x72-ci .i{width:22px;height:22px;color:#fff}
+.x72-check .grow{min-width:0}.x72-check b{display:block;font-size:17px;color:#fff}.x72-check small{display:block;font-size:13.5px;line-height:1.35;color:#fff!important;opacity:.95}
+.x72-check>i{font-style:normal;font-size:22px;opacity:.8}
+.wd-stb small{display:block;font-size:11px;line-height:1.2;color:#64748B;overflow-wrap:anywhere;hyphens:auto}
+
+/* V73 zoekresultaat: naam over de volle breedte, prijs en knoppen eronder */
+.zs-list .zs-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto auto auto;column-gap:10px;row-gap:6px;align-items:center;padding:12px}
+.zs-list .zs-row .zs-main{display:contents}
+.zs-list .zs-row .zs-im{grid-column:1;grid-row:1 / span 2;align-self:start}
+.zs-list .zs-row .zs-main .grow{grid-column:2 / -1;grid-row:1}
+.zs-list .zs-row .zs-t{padding-right:0;font-size:15.5px;-webkit-line-clamp:3}
+.zs-list .zs-row .zs-pr{grid-column:2;grid-row:2;text-align:left;max-width:none}
+.zs-list .zs-row .zs-p{font-size:18px}
+.zs-list .zs-row .zs-wb{grid-row:2}
+.zs-list .zs-row .zs-like,.zs-list .zs-row .zs-rej{position:static;grid-row:2;width:40px;height:40px;margin:0;border:1px solid #EEEDF7;background:#fff;box-shadow:none;font-size:16px}
+.x73-q{padding:12px 14px}.x73-q .wdg-tags{gap:6px}.x73-q .wdg-tags span{white-space:normal;overflow-wrap:anywhere;border-radius:14px;padding:5px 10px}
+.x73-more{margin-top:10px}.x73-more summary{list-style:none;cursor:pointer;text-align:center;font-weight:700;color:#1E4FD8;padding:12px;border:1.5px dashed #C7D2FE;border-radius:16px;background:#fff}
+.x73-more summary::-webkit-details-marker{display:none}.x73-more[open] summary{display:none}.x73-more .zs-list{margin-top:0}
+.wdg-res .wdg-mini,.wdg-res .wdg-adj{margin-top:12px}
+.zs-found+.x73-q,.zs-found+.x67-q{margin-top:14px;position:relative}
+.zs-found{height:auto;min-height:190px;align-items:flex-end;gap:6px}.zs-found .h3-say{position:relative;top:auto;left:auto;right:auto;order:-1;flex:0 1 58%;max-width:58%;margin:10px 0 16px;align-self:flex-start}.zs-found .dogx{flex:0 0 auto;margin-left:auto}
 </style>
 </head>
 <body>
@@ -18021,6 +18047,72 @@ const LINK71={
 document.addEventListener('click',e=>{try{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const f=LINK71.fix(a.href);if(f!==a.href)a.href=f}catch(err){}},true);
 /* onthoud welk product bewaakt wordt, vóórdat een controle de gevonden naam overschrijft */
 {const _ldc=liveDealCheck;liveDealCheck=function(x){try{if(x&&!x.goal&&!x.ref71)x.ref71=x.t||x.bt||''}catch(e){}return _ldc.apply(this,arguments)}}
+
+
+/* =====================================================================
+   V72 — HOME LAAT ZIEN WAT WATCHDOG KAN
+   - Onder het typvak staan voorbeelden, één per onderdeel (checken, kopen, brief, regeling, bewaken). Een tik doet het
+     meteen of zet een voorbeeld in het typvak dat je kunt aanpassen. Elke dag andere voorbeelden.
+   - Direct onder de voorbeelden een eigen ingang "Check dit": link, bericht, screenshot of brief.
+   - De vier tegels zeggen wat de hond doet in plaats van alleen een onderwerp.
+   Er is niets weggehaald: de persoonlijke voorbeelden (startplan, cv, geld-check) staan nog steeds vooraan.
+   ===================================================================== */
+const SHOW72={
+ fill(t){const i=$('#hq');if(!i){go('home');setTimeout(()=>SHOW72.fill(t),250);return}i.value=t;try{i.dispatchEvent(new Event('input',{bubbles:true}))}catch(e){}i.focus();try{i.setSelectionRange(t.length,t.length)}catch(e){}try{toast('Pas het aan of tik op zoeken.',false,true)}catch(e){}},
+ POOL:{
+  check:[['Is dit sms’je echt?',()=>go('deel')],['Klopt wat ik op TikTok zag?',()=>go('deel')],['Is deze webwinkel te vertrouwen?',()=>go('deel')]],
+  kopen:[['Zoek een kinderhorloge onder €60',()=>SHOW72.fill('kinderhorloge onder €60')],['Zoek de laagste prijs voor een stofzuiger',()=>SHOW72.fill('stofzuiger')],['Zoek winterbanden onder €400',()=>SHOW72.fill('winterbanden onder €400')]],
+  brief:[['Wat staat er in deze brief?',()=>go('brief')],['Leg mijn brief uit',()=>go('brief')]],
+  regelen:[['Heb ik recht op een toeslag?',()=>ACT['ai-go']('Heb ik recht op toeslagen?')],['Welke regelingen heeft mijn gemeente?',()=>ACT['wd-start']('regelingen')]],
+  bewaken:[['Houd een prijs voor me in de gaten',()=>{try{ACT['g40-watch']()}catch(e){go('watches')}}],['Kan dit goedkoper?',()=>ACT['wd-start']('besparen')],['Zoek beter betaald werk voor mij',()=>ACT['ai-go']('Zoek beter betaald werk voor mij')]]}
+};
+{const _s=HOME62.sugg.bind(HOME62);HOME62.sugg=function(){let own=[];try{own=_s().filter(x=>/startplan|mijn cv|Waar laat ik geld liggen/.test(x.t)).slice(0,2)}catch(e){}
+  const d=new Date(),day=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(d.getFullYear(),0,0))/864e5),L=own.slice();
+  ['check','kopen','brief','regelen','bewaken'].forEach(k=>{const P=SHOW72.POOL[k],x=P[day%P.length];if(!L.some(o=>o.t===x[0]))L.push({t:x[0],go:x[1],k})});
+  this.cur=L;return L}}
+HOME62.G.kopen[1]='Ik zoek de laagste prijs';HOME62.G.besparen[1]='Ik zoek waar het goedkoper kan';HOME62.G.verdienen[1]='Ik zoek wat meer oplevert';HOME62.G.regelen[1]='Toeslagen, brieven, termijnen';
+{const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{const D=HOME62.tpl(h),R=D.content,st=R.querySelector('.wd-st'),sg=R.querySelector('.h62-sug');
+   if(sg&&!R.querySelector('.x72-lab')){const l=document.createElement('small');l.className='x72-lab';l.textContent='Dit kun je me bijvoorbeeld vragen:';sg.before(l)}
+   if(st&&!R.querySelector('.x72-check')){const b=document.createElement('button');b.className='x72-check';b.dataset.a='h65-plus';b.innerHTML=`<span class="x72-ci">${I('shield')}</span><span class="grow"><b>Check dit</b><small>Link, bericht, screenshot of brief. Ik zeg of het klopt en wat je moet doen.</small></span><i aria-hidden="true">›</i>`;if(sg)sg.after(b);else st.before(b)}
+   h=D.innerHTML}catch(e){console.warn('V72 home',e)}return h}}
+
+
+/* =====================================================================
+   V73 — ZOEKRESULTAAT: EERST HET ANTWOORD EN DE RESULTATEN, DAARNA DE REST
+   Volgorde: hond met één zin die klopt → je zoekopdracht (één keer) → de resultaten → advies en bewaken →
+   pas daarna de budgetvraag, "Zo kun je het betalen" (alleen als er een product gekozen is) en de vraag of ik mag onthouden.
+   - Dubbele aanbiedingen (zelfde naam, winkel en prijs) staan er één keer.
+   - De naam van een product krijgt de volle breedte; prijs en knoppen staan eronder.
+   - De eerste vijf resultaten staan open, de rest achter "Toon nog …".
+   - Zegt de beoordeling "niets goeds" terwijl er wel aanbiedingen binnen het budget zijn, dan zegt de hond wat er echt is.
+   - "Gerelateerde zoekopdrachten" verdwijnt bij een lange zoekopdracht (die herhaalde alleen je hele zin).
+   Er is niets verwijderd; alles staat lager of verschijnt op het moment dat het ertoe doet.
+   ===================================================================== */
+{const _zp=zsPrepare;zsPrepare=function(results,q){try{const seen=new Set();results=(results||[]).filter(r=>{const k=[String(r.title||'').toLowerCase().trim(),String(r.source||'').toLowerCase().trim(),r.attributes&&r.attributes.price].join('|');if(seen.has(k))return false;seen.add(k);return true})}catch(e){}return _zp.call(this,results,q)}}
+const RES73={
+ inBudget(){const C=WDG.c,s=C&&C.slots,L=(SEARCH&&SEARCH.results)||[];if(!s||!s.budget)return [];return L.filter(x=>x.price!=null&&x.price<=s.budget).sort((a,b)=>a.price-b.price)},
+ unsure(){const C=WDG.c;if(!C||!SEARCH||!SEARCH.wdg||!C.slots.budget)return false;const a=(()=>{try{return WDG.advice()}catch(e){return null}})();return !!(a&&a.k==='wacht'&&this.inBudget().length>0)}
+};
+{const _vz=V.zoek;V.zoek=function(){let h=_vz.apply(this,arguments);
+  try{if(!SEARCH||SEARCH.phase!=='found')return h;const wdg=!!(SEARCH.wdg&&WDG.c),C=WDG.c;
+   if(wdg&&RES73.unsure()){const B=RES73.inBudget(),s=C.slots,line=`Ik vond ${B.length} ${B.length===1?'aanbieding':'aanbiedingen'} onder ${E(s.budget)}, vanaf ${E2g(B[0].price)}. Of ze precies passen bij wat je zoekt, weet ik niet zeker.`;
+    h=h.replace(/Onder €[^<]*? vind ik weinig goede [^<]*?opties[^.<]*\./,line).replace('<b>Ik heb gezocht.</b>','<b>Ik heb gezocht.</b> ');
+    h=h.replace(/Ik zou nog even wachten\./g,'Kijk zelf even mee.').replace(/Ik vond niets goeds binnen €[^<]*?\. Als ik het bewaak, laat ik het je weten zodra er iets binnen je budget komt\./g,'Er zijn aanbiedingen binnen je budget, maar ik kan niet zien welke precies is wat je bedoelt. Kies er zelf een, of maak je zoekopdracht korter. Ik kan het ook blijven bewaken.')}
+   const D=HOME62.tpl(h),R=D.content,q=s=>R.querySelector(s),hero=q('.zs-found'),tabs=q('.zs-tabs'),list=q('.zs-list'),res=q('.wdg-res');if(!hero||!tabs)return h;
+   /* je zoekopdracht: één keer, direct onder de hond */
+   if(res){const tags=res.querySelector('.wdg-tags');if(tags){const c=document.createElement('div');c.className='card x73-q';const l=tags.querySelector('small');if(l)l.textContent='Je zocht naar:';c.appendChild(tags);const old=q('.zs-q');if(old)old.replaceWith(c);else hero.after(c)}}
+   /* resultaten: vijf open, de rest achter een knop */
+   if(list){const rows=[...list.children].filter(e=>e.classList.contains('zs-row'));if(rows.length>6){const d=document.createElement('details');d.className='x73-more';const sm=document.createElement('summary');sm.textContent=`Toon nog ${rows.length-5} resultaten`;d.appendChild(sm);const box=document.createElement('div');box.className='zs-list';rows.slice(5).forEach(r=>box.appendChild(r));d.appendChild(box);list.after(d)}}
+   const last=q('.x73-more')||list||q('.zs-best')||tabs;
+   /* advies, bewaken en het gesprek: onder de resultaten; budgetvraag en onthouden onderaan */
+   if(res){const adj=res.querySelector('.wdg-adj'),mini=res.querySelector('.wdg-mini');if(adj)res.appendChild(adj);if(mini)res.appendChild(mini);if(RES73.unsure()&&adj)adj.remove();last.after(res)}
+   /* betalen: alleen als er een product gekozen is, en onder het advies */
+   const spc=q('.spc');if(spc){if(wdg&&!(C.chosen)&&!SEARCH.fin)spc.remove();else (res||last).after(spc)}
+   /* de uitleg-kaart boven de lijst is overbodig als de lijst er direct onder staat */
+   const uns=q('.wdg-uns');if(uns)uns.remove();
+   /* gerelateerd: alleen bij een korte zoekopdracht */
+   if(String(SEARCH.q||'').trim().split(/\s+/).length>4){const rel=q('.zs-rel');if(rel){const hh=rel.previousElementSibling;if(hh&&hh.classList.contains('zs-h'))hh.remove();rel.remove()}}
+   h=D.innerHTML}catch(e){console.warn('V73 zoekresultaat',e)}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
