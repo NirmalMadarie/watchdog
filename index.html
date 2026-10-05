@@ -2591,6 +2591,29 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x67-hint{display:block;color:#64748B;font-size:12.5px;margin:-6px 0 10px}
 .x67-ws{margin:0 0 14px}.x67-wr{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.x67-wr .x67-ta{flex:1;min-width:0}
 .x67-x.lg{width:44px;height:44px;margin:2px 0 0;font-size:22px;background:#EEF2F7;color:#334155}
+
+/* V69 Samen */
+.x69 h3{display:flex;align-items:center;gap:8px}.x69 h3 .i{width:20px;height:20px;color:#0F766E}
+.x69.warn{border:1.5px solid #FDBA74;background:#FFF7ED}.x69.warn h3 .i{color:#C2410C}
+.x69-l{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
+.x69-l li{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:#0F172A}.x69-l li .i{width:18px;height:18px;flex:none;margin-top:2px;color:#0F766E}
+.x69.warn .x69-l li .i{color:#C2410C}.x69-l span{min-width:0;overflow-wrap:anywhere}
+.x69-v small{display:block;color:#64748B;font-size:12.5px;margin-bottom:6px}
+.x69 .btn.on{background:#0F766E;color:#fff}.x69 .btn .i{width:15px;height:15px;margin-right:4px}
+.x69-shop{margin-top:14px;padding-top:12px;border-top:1px solid #E2E8F0}.x69-shop b{display:block}.x69-shop small{display:block;color:#475569;margin:2px 0 8px}
+.x69-f{border:0;padding:0;margin:0 0 14px}.x69-f legend{font-weight:700;margin-bottom:6px;padding:0}
+.x69-o{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #CBD5E1;border-radius:12px;margin-bottom:6px;font-size:16px}
+.x69-o input{width:20px;height:20px;flex:none}
+.x69-pr{display:flex;gap:10px;align-items:flex-start;padding:12px 14px}.x69-pr .i{width:20px;height:20px;color:#1E4FD8;flex:none;margin-top:2px}
+.x69-pr b{display:block;color:#0E1B4D}.x69-pr small{display:block;color:#64748B;font-size:13px}
+.x69-row{padding:10px 0;border-top:1px solid #EEF2F7;display:grid;gap:2px}.x69-row>b{color:#0E1B4D}.x69-row .mut{color:#64748B;font-size:14px}
+.x69-row small{color:#475569}.x69-row small.hi{color:#B45309}.x69-row small.lo{color:#047857}
+.x69-d{margin-top:10px}.x69-d summary{font-weight:700;color:#1E4FD8;padding:10px 0;cursor:pointer}
+.x69-form select{width:100%;font-size:16px;padding:10px 12px;border:1.5px solid #CBD5E1;border-radius:12px;background:#fff}
+.x69-chk{display:flex;gap:10px;align-items:flex-start;margin:6px 0 14px;font-size:14.5px}.x69-chk input{width:22px;height:22px;flex:none;margin-top:1px}
+.x69-tip{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #EEF2F7}.x69-tip b{display:block;overflow-wrap:anywhere}.x69-tip small{color:#64748B}
+.x69-tip .btn{flex:none}.x69p .btn.on{background:#0F766E;color:#fff}.x69p .btn .i{width:15px;height:15px;margin-right:4px}
+.x69-fb{margin-top:8px}
 </style>
 </head>
 <body>
@@ -17782,6 +17805,130 @@ ACT['sq-del-ok']=()=>{const K=DEL67.keys(),D=DEL67.deals(),ids=D.map(d=>d.id);
  toast('Zoekopdracht verwijderd.',false,true);go('home')};
 /* in het gesprek-resultaat: "Verwijder" naast "Aanpassen" */
 {const _rp=wdgResultPanel;wdgResultPanel=function(){let h=_rp.apply(this,arguments);try{h=h.replace(/(<button class="link" data-a="wdg-edit">Aanpassen<\/button>)/,'$1<button class="link x67-dl" data-a="sq-del">Verwijder</button>')}catch(e){}return h}}
+
+
+/* =====================================================================
+   V69 — SAMEN. Gebruikers helpen elkaar zonder iets over zichzelf te delen.
+   - Bij "Deel met WATCHDOG": hoeveel anderen dit webadres of bericht als nep of echt meldden; zelf melden met één tik.
+   - Bij een winkel: ervaringen in vaste keuzes (geleverd ja/nee, retour goed/slecht). Geen vrije tekst.
+   - Bij zoeken: de laagste prijs die eerder bij deze zoekwoorden gezien is.
+   - Bij een regeling: is het anderen gelukt en hoe lang duurde het.
+   - Pagina "Samen": vaste lasten vergelijken (alleen na toestemming, pas zichtbaar vanaf 10 deelnemers) en tips die anderen deden.
+   Niets is gecontroleerd en dat staat erbij. Bij weinig of geen deelnemers zegt de app dat eerlijk; er worden geen aantallen verzonnen.
+   Van een bericht gaat alleen een onleesbare vingerafdruk naar de server, nooit de tekst.
+   ===================================================================== */
+const SAMEN69={reg:{},pr:{},page:{},
+ st(){S.ui.samen=S.ui.samen||{};return S.ui.samen},
+ on(){try{return !!X48.base()}catch(e){return false}},
+ async sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')},
+ norm(t){return String(t).toLowerCase().replace(/https?:\/\/\S+/g,' ').replace(/\d+/g,'#').replace(/[^a-z#à-ÿ ]+/g,' ').replace(/\s+/g,' ').trim()},
+ n(x,een,meer){return `${x} ${x===1?een:meer}`},
+ /* wat hoort bij het gedeelde: een domein en/of een vingerafdruk van de tekst */
+ async keys(T){const u=DEEL59.urls(T.text)[0]||(T.meta&&T.meta.url)||'',dom=u?DEEL59.host(u):'',nt=this.norm(T.text),out={};
+  if(dom)out.d={url:'https://'+dom};
+  if(nt.length>=30&&T.from!=='link'){try{out.t={vinger:await this.sha(nt)}}catch(e){}}
+  return out},
+ async look(text){const T=DEEL59.T;if(!this.on()||!T.text)return;const K=await this.keys(T);if(!K.d&&!K.t){T.samen=null;return}
+  T.samen={K,busy:true};
+  const one=async b=>{try{return await SRV.call('/api/samen/zie',{method:'POST',body:b})}catch(e){return null}};
+  const [d,t]=await Promise.all([K.d?one(K.d):null,K.t?one(K.t):null]);if(DEEL59.T.text!==text)return;
+  T.samen={K,d,t,fail:!!((K.d&&!d)||(K.t&&!t))&&!d&&!t};DEEL59.paint()},
+ card(){const T=DEEL59.T,X=T.samen;if(!X||X.busy||X.fail)return '';const d=X.d,t=X.t,dom=d&&d.domein?esc(d.domein):'',L=[];
+  const oth=(r)=>{const mn=r.mijn==='nep'?1:0,me=r.mijn==='echt'?1:0;return {nep:Math.max(0,(r.nep||0)-mn),echt:Math.max(0,(r.echt||0)-me)}};
+  let warn=false;
+  if(d){const o=oth(d);if(d.bekend)L.push(`<li>${I('check')}<span><b>${dom}</b> is het echte adres van een bekende organisatie. Let op: een bericht kan daar wel naar lijken te verwijzen en toch nep zijn.</span></li>`);
+   else if(o.nep||o.echt){if(o.nep>=1&&o.nep>=o.echt)warn=true;L.push(`<li>${I(o.nep>=o.echt?'alert':'check')}<span><b>${this.n(o.nep,'andere gebruiker meldde','andere gebruikers meldden')} ${dom} als nep.</b>${o.echt?` ${this.n(o.echt,'gebruiker zegt','gebruikers zeggen')}: echt.`:''}</span></li>`)}
+   else L.push(`<li>${I('users')}<span>Nog niemand heeft <b>${dom}</b> gemeld. Dat zegt niets over of het veilig is.</span></li>`)}
+  if(t){const o=oth(t);if(o.nep||o.echt){if(o.nep>=1&&o.nep>=o.echt)warn=true;L.push(`<li>${I(o.nep>=o.echt?'alert':'check')}<span><b>${this.n(o.nep,'andere gebruiker meldde','andere gebruikers meldden')} ditzelfde bericht als nep.</b>${o.echt?` ${this.n(o.echt,'gebruiker zegt','gebruikers zeggen')}: echt.`:''}</span></li>`)}
+   else L.push(`<li>${I('users')}<span>Dit bericht is nog door niemand anders gemeld.</span></li>`)}
+  const mine=(t&&t.mijn)||(d&&d.mijn)||null;
+  let shop='';
+  if(d&&!d.bekend&&T.kind==='product'){const w=d.winkel||{n:0},m=d.mijnWinkel;
+   shop=`<div class="x69-shop"><b>Ervaringen met deze winkel</b>${w.n>=3?`<small>${w['geleverd:ja']||0} van ${w.n} kregen hun bestelling.${(w['retour:goed']||0)+(w['retour:slecht']||0)?` Terugsturen: ${w['retour:goed']||0} keer goed, ${w['retour:slecht']||0} keer slecht.`:''}</small>`:`<small>${w.n?`${this.n(w.n,'gebruiker deelde','gebruikers deelden')} een ervaring. Vanaf 3 laat ik de uitkomst zien.`:'Nog geen ervaringen gedeeld.'}</small>`}
+    <button class="btn sm ghost" data-a="s69-shop">${m?'Mijn ervaring aanpassen':'Ik heb hier gekocht'}</button></div>`}
+  return `<div class="card x69${warn?' warn':''}"><h3>${I('users')} Samen waakzaam</h3><ul class="x69-l">${L.join('')}</ul>
+   <div class="x69-v"><small>Wat denk jij?</small><div class="btn-row"><button class="btn sm${mine==='nep'?' on':' ghost'}" data-a="s69-meld" data-arg="nep">${I('alert')} ${mine==='nep'?'Jij meldde: nep':'Dit is nep'}</button><button class="btn sm${mine==='echt'?' on':' ghost'}" data-a="s69-meld" data-arg="echt">${I('check')} ${mine==='echt'?'Jij meldde: echt':'Dit is echt'}</button></div></div>${shop}
+   <p class="fine">Meldingen van gebruikers zijn niet gecontroleerd. ${t?'Van je bericht gaat alleen een onleesbare vingerafdruk naar de server, niet de tekst. ':''}Er gaat niets over jou mee. <button class="link" data-a="go" data-arg="samen">Meer over Samen</button></p></div>`},
+ /* regelingen */
+ regId(v){return 'reg:'+String(v||'').toLowerCase().replace(/[^a-z0-9:_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70)},
+ async regLoad(v){const id=this.regId(v);if(!this.on()||this.reg[id])return;this.reg[id]={busy:true};
+  try{const j=await SRV.call('/api/samen/ervaring?soort=regeling&ids='+encodeURIComponent(id));this.reg[id]=(j.items&&j.items[id])||{som:{n:0},mijn:null}}catch(e){this.reg[id]={fail:true}}
+  if(route[0]==='studie')render(false)},
+ regCard(v){const id=this.regId(v),r=this.reg[id];if(!this.on()||!r||r.busy||r.fail)return '';const s=r.som||{n:0},m=r.mijn;
+  const D={'<2w':'binnen 2 weken','2-6w':'2 tot 6 weken','>6w':'langer dan 6 weken'},top=Object.keys(D).sort((a,b)=>(s['duur:'+b]||0)-(s['duur:'+a]||0))[0];
+  return `<div class="card x69"><h3>${I('users')} Ervaringen van anderen</h3>${s.n>=3?`<p><b>${s['uitkomst:gelukt']||0} van ${s.n}</b> zeggen: toegekend. ${s['uitkomst:afgewezen']||0} afgewezen, ${s['uitkomst:loopt']||0} wachten nog.${(s['duur:'+top]||0)?` Meestal duurde het ${D[top]}.`:''}</p>`:`<p>${s.n?`${this.n(s.n,'gebruiker deelde','gebruikers deelden')} een ervaring. Vanaf 3 laat ik de uitkomst zien.`:'Nog niemand heeft hier een ervaring gedeeld.'}</p>`}
+   <button class="btn sm ghost" data-a="s69-reg" data-arg="${esc(v)}">${m?'Mijn ervaring aanpassen':'Ik heb dit aangevraagd'}</button>
+   <p class="fine">Ervaringen zijn niet gecontroleerd en zeggen niets over jouw recht. Alleen je keuze wordt bewaard, niets over jou.</p></div>`},
+ /* prijzen die eerder gezien zijn */
+ async prLoad(){const S_=SEARCH;if(!this.on()||!S_||S_.phase!=='found'||S_.s69)return;S_.s69={busy:true};const id=S_.id;
+  try{const j=await SRV.call('/api/samen/prijs?q='+encodeURIComponent(S_.q));if(!SEARCH||SEARCH.id!==id)return;S_.s69={d:j};if(route[0]==='zoek'&&this.prLine())render(false)}catch(e){S_.s69={fail:true}}},
+ prLine(){const S_=SEARCH,x=S_&&S_.s69&&S_.s69.d;if(!x||!x.laagste)return '';const today=new Date().toISOString().slice(0,10),prev=(x.dagen||[]).filter(d=>d.dag<today);if(!prev.length)return '';
+  const low=prev.slice().sort((a,b)=>a.min-b.min)[0],now=(S_.results||[]).map(r=>r.price).filter(p=>p>0).sort((a,b)=>a-b)[0],dt=new Date(low.dag+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  const cmp=!now?'':now<low.min-0.005?' Vandaag is het lager dan toen.':now>low.min+0.005?` Vandaag is de laagste ${E2(now)}.`:' Vandaag is het hetzelfde.';
+  return `<div class="card x69-pr">${I('chart')}<span><b>Eerder gezien: vanaf ${E2(low.min)} op ${dt}.</b><small>Dat is de laagste prijs die WATCHDOG de afgelopen 60 dagen bij deze zoekwoorden vond (${this.n(prev.length,'dag','dagen')} gemeten).${cmp} Het kan een ander product zijn geweest.</small></span></div>`},
+ /* pagina Samen */
+ TIPS:{'energie-vergeleken':'Energiecontract vergeleken','zorg-vergeleken':'Zorgverzekering vergeleken','abonnement-opgezegd':'Een abonnement opgezegd dat ik weinig gebruikte','toeslag-aangevraagd':'Een toeslag aangevraagd','gemeente-regeling':'Een regeling van de gemeente aangevraagd','internet-heronderhandeld':'Gebeld over een lagere prijs voor internet of mobiel','belasting-teruggevraagd':'Belasting teruggevraagd','tweedehands-gekocht':'Iets tweedehands gekocht in plaats van nieuw','prijs-laten-bewaken':'Een prijs laten bewaken en gewacht','kwijtschelding-aangevraagd':'Kwijtschelding van gemeentebelasting aangevraagd'},
+ CATS:{energie:'Energie',zorg:'Zorgverzekering',internet:'Internet en tv',mobiel:'Mobiel',boodschappen:'Boodschappen'},
+ persons(){try{const a=(S.hh.adults||[]).length||1,k=(S.hh.kids||S.hh.children||[]).length||0;return Math.min(4,Math.max(1,a+k))}catch(e){return 1}},
+ async load(){const P=this.page;if(!this.on()){P.off=true;return}if(P.busy)return;P.busy=true;const g=this.st().pers||this.persons();
+  try{const [l,t]=await Promise.all([SRV.call('/api/samen/lasten?personen='+g),SRV.call('/api/samen/tips')]);P.l=l;P.t=t;P.fail=false}catch(e){P.fail=true}
+  P.busy=false;P.at=Date.now();if(route[0]==='samen')render(false)}
+};
+/* ---------- Deel: opzoeken na het lezen, kaart in het resultaat ---------- */
+{const _run=DEEL59.run.bind(DEEL59);DEEL59.run=async function(text,from){DEEL59.T.samen=null;await _run(text,from);try{if(DEEL59.T.text&&!DEEL59.T.err)SAMEN69.look(DEEL59.T.text)}catch(e){console.warn('V69 look',e)}}}
+{const _reset=DEEL59.reset.bind(DEEL59);DEEL59.reset=function(){_reset();this.T.samen=null}}
+{const _res=d59Result;d59Result=function(){let h=_res.apply(this,arguments);try{const c=DEEL59.T.choose?'':SAMEN69.card();if(c){const D=HOME62.tpl(h),R=D.content,t=document.createElement('div');t.innerHTML=c;const card=t.firstElementChild,
+   steps=R.querySelector('.x66-steps'),anchor=R.querySelector('.x66-share')||R.querySelector('.x59-new')||R.querySelector('.x48-how');
+   if(card.classList.contains('warn')&&steps)steps.before(card);else if(anchor)anchor.before(card);else R.appendChild(card);h=D.innerHTML}}catch(e){console.warn('V69 kaart',e)}return h}}
+ACT['s69-meld']=async o=>{const T=DEEL59.T,X=T.samen;if(!X||X.busy)return;const cur=(X.t&&X.t.mijn)||(X.d&&X.d.mijn)||null,send=cur===o?'weg':o;let okAny=false,msg='';
+ for(const k of ['t','d']){if(!X.K[k]||!X[k])continue;if(k==='d'&&X.d.bekend&&send==='nep')continue;
+  try{const j=await SRV.call('/api/samen/meld',{method:'POST',body:Object.assign({oordeel:send},X.K[k])});X[k].nep=j.nep;X[k].echt=j.echt;X[k].mijn=j.mijn;okAny=true}catch(e){msg=e&&e.message||''}}
+ if(okAny){toast(send==='weg'?'Je melding is ingetrokken.':send==='nep'?'Dank je. Je melding helpt anderen.':'Dank je. Dat helpt anderen.',false,true)}else toast(msg||'Melden lukte nu niet.');
+ DEEL59.paint()};
+ACT['s69-shop']=()=>{const X=DEEL59.T.samen;if(!X||!X.d)return;const m=X.d.mijnWinkel||{};
+ const row=(nm,lab,opts)=>`<fieldset class="x69-f"><legend>${lab}</legend>${opts.map(o=>`<label class="x69-o"><input type="radio" name="${nm}" value="${o[0]}"${m[nm]===o[0]?' checked':''}><span>${o[1]}</span></label>`).join('')}</fieldset>`;
+ sheet('Jouw ervaring',`<p>Je kocht bij <b>${esc(X.d.domein)}</b>. Hoe ging het?</p>${row('geleverd','Heb je je bestelling gekregen?',[['ja','Ja'],['nee','Nee']])}${row('retour','Heb je iets teruggestuurd?',[['nvt','Nee'],['goed','Ja, dat ging goed'],['slecht','Ja, dat ging slecht']])}
+  <p class="note">Alleen deze twee keuzes worden bewaard, bij de naam van de winkel. Niets over jou of je bestelling.</p><button class="btn" data-a="s69-shop-ok">Deel mijn ervaring</button>`)};
+ACT['s69-shop-ok']=async()=>{const X=DEEL59.T.samen,v=n=>(($(`input[name="${n}"]:checked`)||{}).value)||'';const g=v('geleverd'),r=v('retour');if(!g||!r){toast('Kies bij allebei een antwoord');return}
+ try{const j=await SRV.call('/api/samen/ervaring',{method:'POST',body:{soort:'winkel',id:X.d.domein,geleverd:g,retour:r}});X.d.winkel=j.som;X.d.mijnWinkel=j.mijn;closeSheet();toast('Dank je. Je ervaring is gedeeld.',false,true);DEEL59.paint()}catch(e){toast('Delen lukte niet: '+(e&&e.message||''))}};
+/* ---------- regeling ---------- */
+{const _st=V.studie;V.studie=function(v){let h=_st.apply(this,arguments);try{SAMEN69.regLoad(v);const c=SAMEN69.regCard(v);if(c){const D=HOME62.tpl(h),w=D.content.querySelector('.wrap')||D.content;const t=document.createElement('div');t.innerHTML=c;w.appendChild(t.firstElementChild);h=D.innerHTML}}catch(e){console.warn('V69 regeling',e)}return h}}
+ACT['s69-reg']=v=>{const m=(SAMEN69.reg[SAMEN69.regId(v)]||{}).mijn||{};
+ const row=(nm,lab,opts)=>`<fieldset class="x69-f"><legend>${lab}</legend>${opts.map(o=>`<label class="x69-o"><input type="radio" name="${nm}" value="${o[0]}"${m[nm]===o[0]?' checked':''}><span>${o[1]}</span></label>`).join('')}</fieldset>`;
+ sheet('Jouw ervaring',`${row('uitkomst','Hoe liep het af?',[['gelukt','Toegekend'],['afgewezen','Afgewezen'],['loopt','Ik wacht nog']])}${row('duur','Hoe lang duurde het tot je antwoord kreeg?',[['<2w','Binnen 2 weken'],['2-6w','2 tot 6 weken'],['>6w','Langer dan 6 weken'],['nvt','Nog geen antwoord']])}
+  <p class="note">Alleen deze twee keuzes worden bewaard, bij de naam van de regeling. Niets over jou, je inkomen of je aanvraag.</p><button class="btn" data-a="s69-reg-ok" data-arg="${esc(v)}">Deel mijn ervaring</button>`)};
+ACT['s69-reg-ok']=async v=>{const id=SAMEN69.regId(v),g=n=>(($(`input[name="${n}"]:checked`)||{}).value)||'';const u=g('uitkomst'),d=g('duur');if(!u||!d){toast('Kies bij allebei een antwoord');return}
+ try{const j=await SRV.call('/api/samen/ervaring',{method:'POST',body:{soort:'regeling',id,uitkomst:u,duur:d}});SAMEN69.reg[id]={som:j.som,mijn:j.mijn};closeSheet();toast('Dank je. Je ervaring is gedeeld.',false,true);render(false)}catch(e){toast('Delen lukte niet: '+(e&&e.message||''))}};
+/* ---------- zoeken: eerder geziene prijs ---------- */
+{const _vz=V.zoek;V.zoek=function(){let h=_vz.apply(this,arguments);try{if(SEARCH&&SEARCH.phase==='found'){SAMEN69.prLoad();const l=SAMEN69.prLine();if(l){const D=HOME62.tpl(h),R=D.content,t=document.createElement('div');t.innerHTML=l;const a=R.querySelector('.zs-tabs');if(a){a.before(t.firstElementChild);h=D.innerHTML}}}}catch(e){console.warn('V69 prijs',e)}return h}}
+/* ---------- pagina Samen ---------- */
+V.samen=function(){const A=SAMEN69,P=A.page,st=A.st(),g=st.pers||A.persons();if(!P.at&&!P.busy&&!P.off)setTimeout(()=>A.load(),0);
+ const top=`<div class="wrap x48 x53 x69p">${topbar('Samen',{back:1,sub:'Gebruikers helpen elkaar'})}${guide53('Samen zien we meer.','Wat jij meldt of deelt helpt de volgende. Je deelt nooit je naam, adres of inkomen.')}
+  <div class="card"><h3>Wat er samen gebeurt</h3><ul class="x48-ul"><li><b>Oplichting melden.</b> Bij “Deel met WATCHDOG” zie je of anderen een webadres of bericht als nep meldden, en kun je dat zelf doen.</li><li><b>Ervaringen met winkels en regelingen.</b> In vaste keuzes, zonder vrije tekst.</li><li><b>Eerder geziene prijzen.</b> Bij het zoeken zie je de laagste prijs van de afgelopen 60 dagen.</li><li><b>Vaste lasten vergelijken</b> en <b>tips</b>: hieronder.</li></ul><button class="btn sm" data-a="go" data-arg="deel">${I('search')} Laat iets checken</button></div>`;
+ if(!A.on()||P.off)return top+`<div class="card"><p class="note">Samen werkt via de WATCHDOG-server. Die is nu niet ingesteld, dus er is hier niets te zien. De rest van de app werkt gewoon.</p></div></div>`;
+ if(P.fail)return top+`<div class="card"><p class="note">Ik kan de WATCHDOG-server nu niet bereiken, dus ik kan niet laten zien wat anderen deelden.</p><button class="btn sm" data-a="s69-reload">Probeer opnieuw</button></div></div>`;
+ if(!P.l||!P.t)return top+`<div class="card"><p class="note x48-busy">${I('search')} Even ophalen wat anderen deelden…</p></div></div>`;
+ const L=P.l,mine=L.mijn,pre={energie:N(S.profile.energy)||'',zorg:N(S.profile.health)||''};
+ const rows=Object.keys(A.CATS).map(c=>{const m=L.cats[c]||{n:0},my=mine&&mine.bedragen[c];
+  return `<div class="x69-row"><b>${A.CATS[c]}</b>${m.mediaan!=null?`<span>Middelste bedrag: <b>${E(m.mediaan)}</b> per maand <small>(${m.n} huishoudens)</small></span>${my?`<small class="${my>m.mediaan?'hi':'lo'}">Jij: ${E(my)}. ${my>m.mediaan+10?`Dat is ${E(my-m.mediaan)} meer.`:my<m.mediaan-10?`Dat is ${E(m.mediaan-my)} minder.`:'Dat is ongeveer hetzelfde.'}</small>`:''}`:`<span class="mut">Nog te weinig deelnemers: ${m.n} van de ${L.minimum} die nodig zijn.</span>${my?`<small>Jij deelde: ${E(my)}.</small>`:''}`}</div>`}).join('');
+ const form=`<div class="x69-form"><label class="f"><span>Hoeveel mensen wonen er in je huis?</span><select id="s69-p">${[1,2,3,4].map(i=>`<option value="${i}"${i===g?' selected':''}>${i===4?'4 of meer':i}</option>`).join('')}</select></label>
+   ${Object.keys(A.CATS).map(c=>`<label class="f"><span>${A.CATS[c]} per maand (€)</span><input class="s69-b" data-c="${c}" type="number" inputmode="decimal" min="0" value="${(mine&&mine.bedragen[c])||pre[c]||''}" placeholder="Mag leeg blijven"></label>`).join('')}
+   <label class="x69-chk"><input type="checkbox" id="s69-ok"><span>Ik deel deze bedragen, afgerond op €10, samen met de grootte van mijn huishouden. Zonder naam, adres, gemeente of inkomen. Ik kan het altijd intrekken.</span></label>
+   <button class="btn" data-a="s69-lasten">${mine?'Werk mijn bedragen bij':'Deel en vergelijk'}</button>${mine?`<button class="btn ghost" data-a="s69-lasten-weg">Trek mijn bedragen in</button>`:''}</div>`;
+ const tips=(P.t.tips||[]).slice().sort((a,b)=>b.n-a.n).map(t=>{const on=(P.t.mijn||[]).includes(t.id);return `<div class="x69-tip"><span class="grow"><b>${A.TIPS[t.id]||esc(t.id)}</b><small>${t.n?`${A.n(t.n,'gebruiker deed','gebruikers deden')} dit`:'Nog niemand gaf dit aan'}</small></span><button class="btn sm${on?' on':' ghost'}" data-a="s69-tip" data-arg="${t.id}" aria-pressed="${on}">${on?I('check')+' Gedaan':'Ik ook'}</button></div>`}).join('');
+ return top+`<div class="card"><h3>Vaste lasten vergelijken</h3><p class="note">Huishoudens van ${g===4?'4 of meer personen':g===1?'1 persoon':g+' personen'}. Ik laat een bedrag pas zien als minstens ${L.minimum} huishoudens meedoen, zodat niemand te herkennen is.</p>${rows}<details class="x69-d"${mine?'':' open'}><summary>${mine?'Mijn bedragen aanpassen':'Doe mee'}</summary>${form}</details></div>
+  <div class="card"><h3>Dit deden anderen</h3><p class="note">Een vaste lijst. Tik op “Ik ook” als je het zelf gedaan hebt; dan zien anderen dat het vaker gebeurt.</p>${tips}</div>
+  <p class="x48-how">Alles hier komt van gebruikers en is niet gecontroleerd. Het is geen advies. Per toestel telt één stem.</p></div>`};
+ACT['s69-reload']=()=>{SAMEN69.page={};render(false)};
+ACT['s69-lasten']=async()=>{if(!($('#s69-ok')||{}).checked){toast('Vink eerst aan dat je deze bedragen wilt delen');return}
+ const g=+(($('#s69-p')||{}).value)||1,b={};$$('.s69-b').forEach(i=>{const v=N(String(i.value).replace(',','.'));if(v>0)b[i.dataset.c]=v});if(!Object.keys(b).length){toast('Vul minstens één bedrag in');return}
+ try{await SRV.call('/api/samen/lasten',{method:'POST',body:{toestemming:true,personen:g,bedragen:b}});SAMEN69.st().pers=g;save();toast('Dank je. Je bedragen tellen mee.',false,true);SAMEN69.page={};render(false)}catch(e){toast('Delen lukte niet: '+(e&&e.message||''))}};
+ACT['s69-lasten-weg']=async()=>{try{await SRV.call('/api/samen/lasten',{method:'POST',body:{weg:true}});toast('Je bedragen zijn ingetrokken.',false,true);SAMEN69.page={};render(false)}catch(e){toast('Intrekken lukte niet: '+(e&&e.message||''))}};
+ACT['s69-tip']=async id=>{const P=SAMEN69.page,on=(P.t.mijn||[]).includes(id);try{const j=await SRV.call('/api/samen/tips',{method:'POST',body:{id,gedaan:!on}});const t=P.t.tips.find(x=>x.id===id);if(t)t.n=j.n;P.t.mijn=j.mijn;render(false)}catch(e){toast('Bewaren lukte niet: '+(e&&e.message||''))}};
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.id==='s69-p'&&route[0]==='samen'){SAMEN69.st().pers=+t.value||1;save();SAMEN69.page={};render(false)}});
+/* ---------- ingang: Home en "Alles wat ik kan" ---------- */
+{const _it=HOME62.items.bind(HOME62);HOME62.items=function(){const o=_it();try{o.regelen.push({a:'go',arg:'samen',ic:'users',c:'#0F766E',bg:'#CCFBF1',t:'Samen',s:'Wat anderen melden en delen'})}catch(e){}return o}}
+{const _h=V.home;V.home=function(){let h=_h.apply(this,arguments);try{const D=HOME62.tpl(h),f=D.content.querySelector('.h62-foot');if(f&&!f.querySelector('[data-arg="samen"]')){const b=document.createElement('button');b.className='h62-fb x69-fb';b.dataset.a='go';b.dataset.arg='samen';b.innerHTML=`${I('users')} Samen: wat anderen melden ›`;f.appendChild(b);h=D.innerHTML}}catch(e){}return h}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
