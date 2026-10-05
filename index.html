@@ -18186,7 +18186,7 @@ N74.watches=function(){try{const J=JOBS.st();if(J&&Array.isArray(J.watches)){con
 
 /* =====================================================================
    V75 — "CHECK DIT" IS DE HOOFDINGANG OP HOME
-   - De knop staat direct onder het typvak, vóór de voorbeelden (was: eronder).
+   - De knop staat onder "WATCHDOG meldt" (V76; in V75 direct onder het typvak).
    - Eronder drie herkenbare momenten: één zin, één handeling. Ze beloven alleen wat de app echt doet.
    Niets weggehaald: de voorbeelden staan onder de knop, ingeklapt achter "Wat kun je me nog meer vragen?" (Home blijft kort).
    ===================================================================== */
@@ -18202,6 +18202,7 @@ ACT['x75-m']=(k)=>{if(k==='energie')return go('brief');if(k==='abo')return ACT['
     const m=document.createElement('div');m.className='x75-ms';
     m.innerHTML=MOM75.map(x=>{let ic='';try{ic=I(x[1])||''}catch(e){}return `<button class="x75-m" data-a="x75-m" data-arg="${x[0]}">${ic?`<span class="x75-i">${ic}</span>`:''}<span class="grow"><b>${x[2]}</b><small>${x[3]}</small></span><i aria-hidden="true">›</i></button>`}).join('');
     const box=document.createElement('div');box.className='x75-box';c.before(box);box.appendChild(c);box.appendChild(m);
+    const rad=R.querySelector('.w41-radar');if(rad)rad.after(box);/* V76: onder WATCHDOG meldt */
     if(sg){const d=document.createElement('details');d.className='x75-more';const su=document.createElement('summary');su.textContent='Wat kun je me nog meer vragen?';box.after(d);d.appendChild(su);if(lab)lab.remove();d.appendChild(sg)}}
    h=D.innerHTML}catch(e){console.warn('V75 home',e)}return h}}
 
