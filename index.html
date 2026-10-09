@@ -18842,6 +18842,16 @@ ACT['x79-when']=()=>sheet('Wanneer kijk ik?',`<p>${esc(CHK79.all())}</p><ul clas
    <details class="card x79-ap"><summary>Apart gezet (${ap.length})</summary><p class="note">Deze passen niet bij wat je vroeg.</p>${ap.slice(0,12).map(x=>`<div class="row"><span class="grow"><b>${esc(String(x.title||'').slice(0,70))}</b><small>${esc(x.shop||'')} · ${esc(x.apart79)}</small></span><b>${x.price!=null?E2g(x.price):''}</b></div>`).join('')}</details>`;
   if(card)card.outerHTML=h;else ($('#main .wrap')||$('#main')).insertAdjacentHTML('beforeend',h)}}catch(e){console.warn('V79 leeg',e)}return r}}
 
+/* =====================================================================
+   V80 — DE HOND ZONDER FLIKKEREN
+   Het rust-filmpje draaide na 3 à 4 seconden snel zijn kop (en aan het eind zat een overvloeier met een
+   dubbele hond). Op een telefoon zag dat er flikkerend uit. Nieuw: pup-rust2.mp4/.webm, het rustige deel
+   waarin hij je aankijkt, heen en terug afgespeeld (naadloos, geen sprong). Rondkijken doet hij alleen nog
+   in het zoek-filmpje, als hij echt zoekt. De reserve-hond (foto) draait zijn kop niet meer.
+   ===================================================================== */
+try{if(typeof VIDDOG!=='undefined'&&!VIDDOG.v)VIDDOG.src='pup-rust2.mp4'}catch(e){}
+{const _lp=lifePose;lifePose=function(I,P,st,t,tSt){_lp(I,P,st,t,tSt);P.yw=0}}
+
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
 try{WD.boot()}catch(e){console.error('WATCHDOG boot-check mislukt:',e)}
