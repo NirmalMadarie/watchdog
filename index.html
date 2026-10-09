@@ -2727,6 +2727,16 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x77-cvw.pan .x77-cv{touch-action:auto;cursor:grab}
 .x77-more{margin-top:6px}.x77-more summary{cursor:pointer;font-weight:700;color:#1E4FD8;min-height:44px;display:flex;align-items:center;font-size:14px}
 .x77-do .btn.sm{margin-top:10px}
+
+/* V79 */
+.x79-src{background:#EEF2F7;color:#475569;font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px}
+.x79-br .br-n{grid-template-columns:1fr 1fr}
+.x79-max{color:#64748B;font-weight:500}
+.x79-k .x79-kc b{display:block;font-size:15.5px}.x79-kc p{margin:4px 0 10px;font-size:14px;color:#334155}
+.x79-ap summary{cursor:pointer;font-weight:700;color:#B45309;min-height:44px;display:flex;align-items:center}
+.x79-ap .row small{display:block;color:#64748B}
+.x79-wh p{margin:6px 0 0;font-size:13.5px;color:#334155;line-height:1.45}
+.x79-when{display:flex;gap:6px;align-items:center;margin:4px 2px 10px;font-size:14px}.x79-when .i{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -6207,7 +6217,7 @@ function scanRun(){
   if(!SC||!SC.run)return;
   if(i<items.length){items[i].classList.add('ok');i++;setTimeout(tick,RM()?120:520);return}
   applyScan(SC.D);S.ui.prof={done:mode==='quick'?[]:[3,4,5,6],mode:mode};save();scanClose();Object.keys(CUV).forEach(k=>delete CUV[k]);UI.auto=false;go('home');render(true);
-  const A=agg();toast(mode==='quick'?`Klaar: ${E(A.found)} per jaar gevonden (demo). Vertel later meer voor nauwkeuriger zoeken.`:`Klaar: ${E(A.found)} per jaar gevonden (demo)`);
+  try{SCAN79.toast(mode)}catch(e){}
  };
  setTimeout(tick,300);
 }
@@ -12222,7 +12232,7 @@ document.addEventListener('visibilitychange',()=>{try{if(document.hidden)return;
  if(route[0]!=='zoek'&&SEARCH)go('zoek');
  setTimeout(()=>{WDG.say(`<b>Welkom terug!</b>Heb je ${C.opened.title?'de '+esc(C.opened.title.slice(0,50)):'hem'} gekocht?`);WDG.chips(['Ja, gekocht','Nee, nog niet','Ik twijfel'])},300)}catch(e){}});
 /* wat de gebruiker aanklikt, begrijpt WATCHDOG binnen de taak */
-{const _t=ACT['zs-tab'];ACT['zs-tab']=function(t){const r=_t.apply(this,arguments);try{if(WDG.c&&SEARCH&&SEARCH.wdg){if(t==='cmp')WDG.say('<b>Van laag naar hoog.</b>Let op: dit zijn verschillende modellen, niet steeds dezelfde jurk of schoen.',{speak:false});else if(t==='hist')WDG.say('<b>Prijsgeschiedenis</b>heb ik pas als ik iets voor je bewaak. Zeg “blijf hiernaar zoeken”, dan begin ik.',{speak:false})}}catch(e){}return r}}
+{const _t=ACT['zs-tab'];ACT['zs-tab']=function(t){const r=_t.apply(this,arguments);try{if(WDG.c&&SEARCH&&SEARCH.wdg){if(t==='cmp')WDG.say('<b>Van laag naar hoog.</b>Let op: dit zijn niet altijd precies dezelfde producten. Kijk naar de uitvoering en de verkoper.',{speak:false});else if(t==='hist')WDG.say('<b>Prijsgeschiedenis</b>heb ik pas als ik iets voor je bewaak. Zeg “blijf hiernaar zoeken”, dan begin ik.',{speak:false})}}catch(e){}return r}}
 
 /* =====================================================================
    2. COMMANDO'S: stil, praten, pauze — gelden overal (tekst en spraak)
@@ -12897,7 +12907,7 @@ WDG.intent=function(){
  const st=C.pm,E_=C.eval,s=C.slots,nu=Object.values(st.uit).reduce((a,b)=>a+b,0);
  const why=Object.keys(st.uit).sort((a,b)=>st.uit[b]-st.uit[a]).slice(0,2).join(' of ');
  const parts=[`Ik heb ${st.n} resultaten bekeken.`];
- const d=[];if(nu)d.push(`${nu} ${nu===1?'was':'waren'} geen ${esc(C.intent.label.replace(', nieuw',''))} (${why})`);if(st.apart)d.push(`${st.apart} ${st.apart===1?'is':'zijn'} een bundel, refurbished of niet zeker welke versie; die zet ik apart`);if(st.unconf)d.push(`${st.unconf} ${st.unconf===1?'prijs kon':'prijzen konden'} ik niet betrouwbaar bevestigen`);
+ const d=[];if(nu)d.push(`${nu} ${nu===1?'was':'waren'} geen ${esc(C.intent.label.replace(', nieuw',''))} (${why})`);if(st.apart)d.push(`${st.apart} ${st.apart===1?'past':'passen'} niet precies bij wat je vroeg (bundel, tweedehands, refurbished, buitenlandse verkoper of versie niet zeker); die zet ik apart`);if(st.unconf)d.push(`${st.unconf} ${st.unconf===1?'prijs kon':'prijzen konden'} ik niet betrouwbaar bevestigen`);
  if(d.length)parts.push(wdgCap(d.join('; '))+'.');
  const tp=E_.top,lo=E_.lowest;let head,m1;
  if(tp){head='Woef! Ik heb iets voor je gevonden.';m1=`Van de vergelijkbare aanbiedingen die ik nu kon vinden, is deze het interessantst: ${E2g(tp.price)}${tp.shop?' bij '+esc(tp.shop):''}.`}
@@ -18685,6 +18695,152 @@ try{MOM75[0][3]='Laat je jaarafrekening of energierapport zien. Ik vergelijk je 
 try{const F=SBQ.energie[0].f,ee=()=>S.profile.energie||{},set=(k,fn)=>{const x=F.find(f=>f.k===k);if(x){const d=x.def;x.def=()=>{const v=fn();return v!=null&&v>0?v:(typeof d==='function'?d():d)}}};
  set('kwhT',()=>ee().pkwh);set('gasT',()=>ee().pm3);set('kwh',()=>ee().jaar);set('m3',()=>ee().gasjaar!=null?ee().gasjaar:(ee().jaar>0&&!(ee().m3>0)?null:null));
  const s0=SBQ.energie[0];s0.why=s0.why.replace('Weet je het niet? Laat 0 staan.','Weet je het niet? Laat 0 staan, of lees je energierekening in: dan vul ik het voor je in.')}catch(e){console.warn('V78 vergelijking',e)}
+
+/* =====================================================================
+   V79 — BETROUWBAAR EN SAMENHANGEND (na de gebruikerstest van ChatGPT)
+   1. Fraude vóór shopping: een verdacht bericht krijgt alleen veiligheidsadvies. Er gaat geen tekst naar de zoekserver.
+      Vanaf Home wordt je bericht meteen gecontroleerd. Sterker oordeel bij "betaal + gegevens via een link".
+   2. Money Scan: geen vaste €9 bankkosten en €60 overig meer; je bedrag voor boodschappen en overig blijft staan;
+      geen "(demo)"-melding; de melding gebruikt hetzelfde getal als Home; gebruik van abonnementen is "onbekend"
+      tot jij het zegt; de Abonnementen-watch gaat aan als je abonnementen opgaf.
+   3. Herkomst: budget zonder bijgehouden uitgaven toont alleen de begroting; toeslagbedragen heten "bovengrens";
+      onbekend spaargeld is "onbekend", niet €0. Besparen splitst telecom niet meer zelf en toont geen €0-regels.
+   4. Zoeken: "alleen nieuw / geen tweedehands" blijft een harde eis; tweedehands, refurbished en buitenlandse of
+      onbekende verkopers staan apart, met reden; eerlijk over links en welke winkels in de resultaten zaten.
+   5. Eén waarheid over wanneer WATCHDOG kijkt; een klaar zoekproces stuurt je niet meer terug; Kansen toont
+      de toeslagkansen die Home al telt.
+   ===================================================================== */
+/* ---------- 1. FRAUDE VÓÓR SHOPPING ---------- */
+C48.RULES.push([/bankgegevens|rekeninggegevens|betaalgegevens|creditcardgegevens|kaartgegevens|(vul|voer)\s+(uw|je)\s+.{0,30}(gegevens|in)\b|via de (onderstaande |volgende )?link|klik op (de|deze|onderstaande) link|log ?in via/i,30,'gegevens','Vraagt je gegevens in te vullen via een link']);
+{const _l=C48.local.bind(C48);C48.local=function(t){const L=_l(t);const has=id=>L.some(x=>x.id===id);
+ if(has('pakket')&&has('betaal'))L.push({id:'pakketbetaal',w:20,t:'Bekend patroon: een klein bedrag betalen om een pakket te krijgen',src:'regel'});
+ if(/\bvandaag\b|\bnu\b/i.test(t)&&has('betaal')&&!has('tijd'))L.push({id:'tijd',w:10,t:'Kunstmatige tijdsdruk',src:'regel'});return L}}
+{const _lv=C48.level.bind(C48);C48.level=function(sig){const s=(sig||[]).reduce((a,x)=>a+x.w,0);
+ if(s>=70)return ['veel','Grote kans op oplichting','Doe niets: niet klikken, niet betalen en geen gegevens invullen.','#B91C1C','#FEE2E2',['Hoog','rd']];return _lv(sig)}}
+{const _st=C48.steps.bind(C48);C48.steps=function(sig,urls){const L=_st(sig,urls),has=id=>(sig||[]).some(x=>x.id===id),add=[];
+ if(has('gegevens'))add.push('Vul nergens je bankgegevens of inloggegevens in via een link uit een bericht.');
+ if(has('pakket'))add.push('Verwacht je een pakket? Kijk in de app of op de website van de vervoerder zelf, met de track-and-trace uit je bestelling.');
+ L.splice(Math.max(0,L.length-1),0,...add.filter(a=>!L.includes(a)));return L}}
+/* Home → "Is dit betrouwbaar?": je bericht staat er al in én wordt meteen gecontroleerd */
+{const _o=route48Open;route48Open=function(text,c){const r=_o.apply(this,arguments);try{if(r&&c&&c.route==='betrouwbaar'&&String(C48.pre||'').trim()){C48.cur=null;setTimeout(()=>{if(route[0]==='check'&&!C48.cur)c48Run(C48.pre)},350)}}catch(e){}return r}}
+/* Check dit: verdacht = geen productroute */
+const FR79={Q:/\b(betrouwbaar|te vertrouwen|oplicht\w*|phishing|nep\w*|scam|fraude|verdacht|is dit (wel )?(echt|veilig|legit))\b/i,
+ suspect(text,sig){const lv=C48.level(sig||[]);return lv[0]==='veel'||(lv[0]==='enkele'&&this.Q.test(String(text||'')))}};
+{const _k=DEEL59.kind.bind(DEEL59);DEEL59.kind=function(text,meta,sig){const k=_k(text,meta,sig);try{if(k==='product'&&FR79.suspect([text,meta&&meta.titel].join(' '),sig))return 'check'}catch(e){}return k}}
+/* prijzen vergelijken alleen bij een gewoon product, en dan alleen een korte zoekterm (geen hele berichten) */
+{const _sh=GUIDE66.shop.bind(GUIDE66);GUIDE66.shop=function(text){try{const T=DEEL59.T;if(!T||T.kind!=='product'||C48.level(T.sig||[])[0]!=='geen'||FR79.Q.test(String(text||'')))return Promise.resolve(null);
+  return _sh(text)}catch(e){return Promise.resolve(null)}}}
+/* de zoekterm is de productnaam (max. 90 tekens), zonder telefoonnummers, rekeningnummers of e-mailadressen */
+{const _nm=DEEL59.name.bind(DEEL59);DEEL59.name=function(){const n=_nm.apply(this,arguments);try{return n?X48.mask(String(n)).replace(/https?:\/\/\S+/g,' ').replace(/\s+/g,' ').trim():n}catch(e){return n}}}
+/* een klaar zoekproces stuurt je niet terug als je al ergens anders bent */
+{const _r=DEEL59.run.bind(DEEL59);DEEL59.run=function(){DEEL59._from=location.hash;return _r.apply(this,arguments)}}
+DEEL59.paint=function(){if(route[0]==='deel'){refresh();return}const h=location.hash;if(!this._from||h===this._from||h==='#/'||h===''){go('deel');return}
+ if(!this._told){this._told=1;try{toast('Klaar. Je vindt het resultaat bij Check dit.',false,true)}catch(e){}setTimeout(()=>{this._told=0},4000)}};
+{const _v=V.deel;V.deel=function(){let h=_v.apply(this,arguments);return h.replace('Alleen het webadres gaat naar de WATCHDOG-server. Een screenshot lees ik op je telefoon.','Alleen het webadres gaat naar de WATCHDOG-server. Lijkt het een gewoon product, dan stuur ik ook een korte zoekterm om prijzen te vergelijken; bij een verdacht bericht nooit. Een screenshot lees ik op je telefoon.')}}
+
+/* ---------- 2. MONEY SCAN: EÉN KEER INVOEREN, ONBEKEND BLIJFT ONBEKEND ---------- */
+{const _a=applyScan;applyScan=function(D){const bufKnown=D&&D.buffer!==''&&D.buffer!=null,otherIn=D?D.other:'';const r=_a.apply(this,arguments);try{if(LEEG()){const p=S.profile;
+  p.bank=0;p.fixedOther=0;
+  if(N(otherIn)>0){S.bud=S.bud||{cats:{}};S.bud.cats=S.bud.cats||{};const others=VARK.filter(x=>x!=='overige').reduce((a,x)=>a+N((S.bud.cats[x]||{}).b),0);
+   S.bud.cats.overige=Object.assign({a:0},S.bud.cats.overige||{},{b:Math.max(0,Math.round(N(otherIn))-others)});KNOW63.st().variabel=1}
+  if(bufKnown)KNOW63.st().buffer=1;else if(KNOW63.st().buffer&&!(N(p.buffer)>0))delete KNOW63.st().buffer;
+  (S.subs||[]).forEach(s=>{s.use='onbekend';s._scan=1});
+  if((S.subs||[]).length&&S.w&&S.w.subs){S.w.subs.on=true;S.w.subs.added=Date.now();S.w.subs.st='active'}
+  syncAll();save()}}catch(e){console.warn('V79 scan',e)}return r}}
+const SCAN79={toast(mode){let j=0;try{j=Math.round(MONEY52.pot().jaar||0)}catch(e){}
+ toast(j>0?`Klaar. Ik vond iets waar je mogelijk recht op hebt: tot ${E(j)} per jaar (bovengrens). Kijk bij Kansen.`:'Klaar. Ik heb je gegevens bewaard. Wat je niet invulde, blijft leeg.',true,true)}};
+
+/* ---------- 3. HERKOMST VAN BEDRAGEN ---------- */
+const B79={noData(){try{return VARK.every(k=>!N((S.bud.cats[k]||{}).add))}catch(e){return false}}};
+{const _bs=LIVE.budsum;LIVE.budsum=function(){if(!B79.noData())return _bs.apply(this,arguments);const B=budTotals();
+ return `<div class="tri sm"><div><small>Begroting</small><b>${E(B.b)}</b></div><div><small>Uitgegeven</small><b>onbekend</b></div><div><small>Prognose</small><b>—</b></div></div><p class="note">Je hebt deze maand nog geen uitgaven bijgehouden. Daarom zeg ik niet of je op koers ligt. Voeg hieronder een uitgave toe, of lees je bankafschrift in.</p>`}}
+{const _rh=budRowHTML;budRowHTML=function(r){if(!B79.noData())return _rh.apply(this,arguments);if(!(r.b>0))return '';
+ return `<div class="br x79-br"><div class="br-h"><span class="ico" style="--c:#0C3159;--bg:#E5ECF4">${I(r.i)}</span><b class="grow">${r.n}</b><span class="st x79-src">${r.v?'begroting':'vaste last'}</span></div>
+ <div class="br-n"><span><small>${r.v?'Begroot':'Per maand'}</small><b>${E(r.b)}</b></span><span><small>Uitgegeven</small><b>onbekend</b></span></div>
+ <small class="fine">${r.v?(r.k==='overige'&&KNOW63.st().variabel?'Wat je invulde bij boodschappen en andere uitgaven. ':'Jouw begroting. '):'Uit wat je invulde. '}Geen trend: ik heb nog geen uitgaven van vorige maand.</small></div>`}}
+{const _pb=PV.budget;PV.budget=function(){let h=_pb.apply(this,arguments);if(!B79.noData())return h;const B=budTotals();
+ return h.replace(/<small> prognose<\/small>/,'<small> begroot per maand</small>').replace(/· (alles op koers|\d+ boven budget)/,'· uitgaven nog niet bijgehouden').replace(new RegExp(E(B.proj).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'<small> begroot'),E(B.b)+'<small> begroot')}}
+/* toeslagen: onbekend spaargeld is onbekend; bedragen zijn een bovengrens */
+const VERM79={unknown(){try{return LEEG()&&!KNOW63.has('buffer')&&!(S.tc&&S.tc.verm!=null&&S.tc.verm!=='')}catch(e){return false}}};
+{const _all=AUTO42.all.bind(AUTO42);AUTO42.all=function(){const L=_all();try{if(VERM79.unknown())L.forEach(x=>{if(!/^(zorgt|huurt|kwijt|kgb)$/.test(x.id))return;
+   x.detail=String(x.detail||'').replace(/Jouw vermogen: €\s?0\. Grens: ([^<]+?)\./,'Jouw vermogen: <b>onbekend</b>. Grens: $1. Heb je meer spaargeld of vermogen, dan kom je niet in aanmerking.');
+   x.s=String(x.s).replace(/je inkomen en vermogen lijken binnen de grenzen te vallen/,'je inkomen lijkt binnen de grens te vallen');if(!/spaargeld nog niet/.test(x.s))x.s+=' Ik weet je spaargeld nog niet.';x.vermOnb=true});
+  L.forEach(x=>{if(x.eurMax&&!/bovengrens/.test(x.s))x.s+=` Dat is een bovengrens; je echte bedrag is vaak lager.`})}catch(e){}return L}}
+{const _r=w41Radar;w41Radar=function(){let h=_r.apply(this,arguments);return h.replace(/Hier ligt mogelijk <b>([^<]+) per jaar<\/b> voor je klaar\./,'Mogelijk tot <b>$1 per jaar</b> <small class="x79-max">(bovengrens, vaak lager)</small>')}}
+{const _k=V.kansen;V.kansen=function(){let h=_k.apply(this,arguments);try{
+  h=h.replace(/(<small>Mogelijk nog te halen<\/small><b>[^<]+<\/b><span>)per jaar, uit (wat ik vond|jouw checks)/,'$1per jaar, bovengrens');
+  const L=AUTO42.all();const miss=L.filter(x=>!h.includes(esc(x.t)));
+  if(L.length&&miss.length){const D=HOME62.tpl(h),R=D.content,anchor=R.querySelector('.k32-tot')||R.querySelector('.k36-ask');
+   const box=document.createElement('div');box.className='x79-k';box.innerHTML=`${sec('Waar je mogelijk recht op hebt')}${miss.map(x=>`<div class="card x79-kc"><b>${esc(x.t)}</b><p>${esc(String(x.s||'').replace(/<[^>]+>/g,''))}</p><button class="btn sm" data-a="k42-open" data-arg="${x.id}">Waarom en wat moet ik doen?</button></div>`).join('')}`;
+   if(anchor)anchor.after(box);else R.prepend(box);
+   const say=R.querySelector('[data-dog-say]');if(say&&/nog niets gevonden/i.test(say.textContent))say.innerHTML='<b>Ik vond iets waar je mogelijk recht op hebt.</b>Kijk hieronder. Vertel me ook je werk en woonplaats, dan zoek ik verder.';
+   R.querySelectorAll('.k36-none').forEach(n=>n.remove());h=D.innerHTML}}catch(e){console.warn('V79 kansen',e)}return h}}
+/* Besparen: telecom niet zelf splitsen; geen regels met €0 die je nooit invulde */
+{const _sm=savModules;savModules=function(){const M=_sm.apply(this,arguments);try{const p=S.profile,i=M.findIndex(m=>m.k==='internet'),t=M.findIndex(m=>m.k==='telefoon');
+  if(i>=0&&t>=0){const a=M[i],b=M[t];M[i]=Object.assign({},a,{k:'telecom',n:'Telecom',cur:N(p.telecom),pot:(a.pot||0)+(b.pot||0),real:(a.real||0)+(b.real||0),t:'Mobiel, internet en tv samen'});M.splice(t,1)}
+  if(LEEG())return M.filter(m=>m.cur>0||m.has&&m.k!=='abonnementen'||m.k==='abonnementen'&&(S.subs||[]).length)}catch(e){}return M}}
+
+/* ---------- 4. ZOEKVOORWAARDEN VASTHOUDEN ---------- */
+const COND79={NEG:/\b(geen|niet|zonder)\s+(\w+\s+){0,2}(tweedehands|gebruikt|gebruikte|refurbished|refurb|2e[\s-]?hands|occasion)/,
+ NEW:/\balleen\s+nieuw|\bnieuw\s+in\s+(de\s+)?doos|\bmoet\s+nieuw|\bfabrieksnieuw|\bgeseald|\bsealed\b|\bniet\s+gebruikt\b/,
+ OK:/(tweedehands|gebruikt|refurbished|refurb)\s+(mag|is\s+(ok|oké|goed|prima)|ook\s+(goed|prima))|mag\s+(ook\s+)?(tweedehands|gebruikt|refurbished)|(tweedehands|refurbished)\s+of\s+nieuw|nieuw\s+of\s+(tweedehands|refurbished)/,
+ of(t){t=String(t||'').toLowerCase();if(this.OK.test(t))return 'refurbished';if(this.NEG.test(t)||this.NEW.test(t))return 'nieuw';if(/tweedehands|gebruikt|refurbished|2e[\s-]?hands/.test(t))return 'refurbished';return null}};
+{const _p=wdgParse;wdgParse=function(text){const s=_p.apply(this,arguments);try{const c=COND79.of(text);if(c)s.cond=c}catch(e){}return s}}
+const SHOP79={USED:/\b(used products|rebuy|tradera|stockx|marktplaats|2dehands|vinted|ebay|back ?market|swappie|refurbed|forza refurbished|leapp|refurbished\.nl|mobiel\.nl refurbished|gamemania tweedehands|tweedehands|occasion)\b/i,
+ FOREIGN:/\b(ubuy|b ?mart|microless|desertcart|joom|aliexpress|wish\.com|fruugo|temu|banggood|dhgate|schnaeppchen|tradera|stockx)\b/i,
+ REFURB:/refurb|renewed|gereviseerd|zo goed als nieuw|als nieuw|tweedehands|2e hands|gebruikt|nette staat|netjes|goede staat|\bused\b|b-?grade|nieuwstaat|occasion|pre-?owned|marktplaats/i,
+ NL:[['bol.com',/\bbol(\.com)?\b/i],['Coolblue',/coolblue/i],['MediaMarkt',/media ?markt/i],['Amazon.nl',/amazon/i]],
+ why(x,cond){const sh=String(x.shop||x.source||''),t=[x.title,x.note,sh].join(' ');
+  if(cond==='nieuw'&&(this.REFURB.test(t)||this.USED.test(sh)))return 'tweedehands of refurbished';
+  if(this.FOREIGN.test(sh)||/[^\u0000-\u024F\s|.,&'’()+-]/.test(sh))return 'buitenlandse of onbekende verkoper';return null}};
+{const _ev=WDG.evaluate;WDG.evaluate=function(L){const out=_ev.apply(this,arguments);try{const C=this.c;if(!C||!Array.isArray(out))return out;
+  const cond=(C.intent&&C.intent.cond)||(C.slots&&C.slots.cond)||null,ap=[],keep=[];
+  out.forEach(x=>{const w=SHOP79.why(x,cond);if(w){x.apart79=w;ap.push(x)}else keep.push(x)});
+  C.apart79=ap;if(!ap.length)return out;
+  if(C.pm)C.pm.apart=(C.pm.apart||0)+ap.filter(x=>!(x.pm&&x.pm.v==='apart')).length;
+  const within=keep.filter(x=>x.rel&&x.price!=null&&!x.over),lowest=keep.filter(x=>x.rel&&x.price!=null)[0]||null;keep.forEach(x=>{x.best=false});if(within[0]&&(C.pm?C.pm.match:2)>=2)within[0].best=true;
+  if(C.eval)Object.assign(C.eval,{within:within.length,top:within[0]||null,low:lowest?lowest.price:null,lowest:lowest,shops:new Set(keep.map(x=>x.shop)).size});
+  return keep}catch(e){console.warn('V79 filter',e);return out}}}
+/* resultatenpagina: wat apart staat, waar ik zocht, en wat een link is */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{if(route[0]==='zoek'&&typeof SEARCH!=='undefined'&&SEARCH&&(SEARCH.results||[]).length&&!$('#main .x79-src-card')){
+  const cap=$('#main .h3-cap');const C=typeof WDG!=='undefined'&&WDG.c,ap=(C&&C.apart79)||[];
+  const shops=[...new Set((SEARCH.results||[]).map(x=>x.shop||x.source).filter(Boolean))];
+  const nl=SHOP79.NL.map(([n,re])=>[n,shops.some(s=>re.test(s))]);
+  const d=document.createElement('div');d.className='x79-src-card';
+  d.innerHTML=`${ap.length?`<details class="card x79-ap"><summary>Apart gezet (${ap.length})</summary><p class="note">Deze passen niet bij wat je vroeg. Ik toon ze niet bij de beste deals.</p>${ap.slice(0,12).map(x=>`<div class="row"><span class="grow"><b>${esc(String(x.title||'').slice(0,70))}</b><small>${esc(x.shop||'')} · ${esc(x.apart79)}</small></span><b>${x.price!=null?E2g(x.price):''}</b></div>`).join('')}</details>`:''}
+   <div class="card x79-wh"><b>Waar ik zocht</b><p>Via Google Shopping. In deze resultaten: ${nl.filter(x=>x[1]).map(x=>x[0]).join(', ')||'geen van de grote Nederlandse winkels'}${nl.some(x=>!x[1])?`; niet: ${nl.filter(x=>!x[1]).map(x=>x[0]).join(', ')} (Google toonde ze nu niet)`:''}.</p><p>Een tik op een aanbieding opent een <b>zoekopdracht</b> bij die winkel of via DuckDuckGo, geen productpagina. Google geeft geen directe winkellinks door. Controleer daar de prijs, verzendkosten en de verkoper.</p></div>`;
+  if(cap)cap.before(d);else $('#main .wrap').appendChild(d)}}catch(e){console.warn('V79 zoek',e)}return r}}
+
+/* ---------- 5. EÉN WAARHEID OVER WANNEER IK KIJK ---------- */
+const CHK79={h(){try{return (SRV.h&&SRV.h.watchIntervalHours)||12}catch(e){return 12}},
+ srv(){return `De WATCHDOG-server kijkt ongeveer elke ${this.h()} uur, ook als de app dicht is. Een melding krijg je alleen als meldingen aan staan.`},
+ all(){return `Wat je laat bewaken (prijzen, vacatures, regelingen, termijnen) kijkt de WATCHDOG-server ongeveer elke ${this.h()} uur na, ook als de app dicht is. Een melding krijg je alleen als meldingen aan staan; op een iPhone moet WATCHDOG dan op je beginscherm staan. Al het andere bekijk ik als je de app opent.`},
+ R(){const h=this.h(),two=h>=10&&h<=14?'ongeveer twee keer per dag':`ongeveer elke ${h} uur`;return [
+  [/Ik controleer als je WATCHDOG opent \(hooguit twee keer per dag\), niet continu\./g,this.srv()],
+  [/Ik controleer dit als je WATCHDOG opent \(hooguit twee keer per dag\)\. Een controle op de achtergrond komt later\./g,this.srv()],
+  [/Ik kijk opnieuw elke keer dat je WATCHDOG opent \(hooguit twee keer per dag\)\./g,this.srv()],
+  [/WATCHDOG zoekt de prijs opnieuw op als je de app opent \(maximaal twee keer per dag\) en laat het weten als hij onder je grens komt\./g,`${this.srv()} Ik laat het weten als de prijs onder je grens komt.`],
+  [/en controleert die opnieuw als je de app opent, maximaal twee keer per dag\./g,`en de WATCHDOG-server controleert die ongeveer elke ${h} uur opnieuw, ook als de app dicht is.`],
+  [/Op de server, 1× per dag, ook als de app dicht is/g,`Op de server, ongeveer elke ${h} uur, ook als de app dicht is`],
+  [/Prijzen die “live” zijn, check ik ook als de app dicht is\. De rest zodra je de app opent\./g,`Prijzen die “live” zijn, checkt de server ongeveer elke ${h} uur, ook als de app dicht is. De rest zodra je de app opent.`],
+  [/zoek ik elke dag naar vacatures/g,`zoek ik ${two} naar vacatures`],[/Ik zoek dagelijks naar vacatures/g,`Ik zoek ${two} naar vacatures`],[/Ik zoek dagelijks naar nieuwe vacatures/g,`Ik zoek ${two} naar nieuwe vacatures`],
+  [/zoek ik dagelijks naar vacatures/g,`zoek ik ${two} naar vacatures`],[/Ik zoek elke dag naar vergelijkbare vacatures/g,`Ik zoek ${two} naar vergelijkbare vacatures`],[/zoek elke dag naar vacatures/g,`zoek ${two} naar vacatures`]]},
+ fix(root){if(!root)return;const R=this.R(),w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const L=[];while((n=w.nextNode()))L.push(n);
+  L.forEach(t=>{let v=t.nodeValue;if(!/twee keer per dag|dagelijks|elke dag|1× per dag|“live”/.test(v))return;R.forEach(([re,s])=>{v=v.replace(re,s)});if(v!==t.nodeValue)t.nodeValue=v})}};
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{CHK79.fix($('#main'));
+  if(route[0]==='watches'&&!$('#main .x79-when')){const top=$('#main .top')||($('#main .wrap')||$('#main')).firstElementChild;if(top)top.insertAdjacentHTML('afterend',`<button class="link x79-when" data-a="x79-when">${I('clock')} Wanneer kijk ik, ook als de app dicht is?</button>`)}}catch(e){}return r}}
+{const _sh=sheet;sheet=function(){const r=_sh.apply(this,arguments);try{CHK79.fix($('#ov'))}catch(e){}return r}}
+ACT['x79-when']=()=>sheet('Wanneer kijk ik?',`<p>${esc(CHK79.all())}</p><ul class="x48-ul"><li><b>Op de server, ook als de app dicht is:</b> prijzen die je bewaakt, vacatures, regelingen van je gemeente en termijnen.</li><li><b>Als je de app opent:</b> je situatie, budget, kansen uit je gegevens en de meldingen op Home.</li><li><b>Nooit:</b> ik koop, betaal of zeg niets op. Dat doe jij.</li></ul><button class="btn" data-a="close">Begrepen</button>`);
+
+/* alles apart gezet? Dan een eerlijk resultaat en een logische volgende stap: bewaken */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{const C=typeof WDG!=='undefined'&&WDG.c,ap=(C&&C.apart79)||[];
+ if(route[0]==='zoek'&&ap.length&&!$('#main .x79-none')&&/Ik heb niets gevonden/.test(($('#main')||{}).innerText||'')){
+  const s=C.slots||{},lab=(C.intent&&C.intent.label)||s.product||'dit product',why=[...new Set(ap.map(x=>x.apart79))].join(' of ');
+  const say=$('#main [data-dog-say], #main .h3-say');if(say)say.innerHTML=`<b>Geen passende aanbieding gevonden.</b>${ap.length} ${plural(ap.length,'aanbieding','aanbiedingen')} heb ik apart gezet (${esc(why)}).`;
+  const card=[...$$('#main .card')].find(c=>/Probeer andere woorden/.test(c.innerText));
+  const h=`<div class="card x79-none"><p>Ik vond nu geen ${C.intent&&C.intent.cond==='nieuw'?'nieuwe ':''}${esc(lab.replace(', nieuw',''))} bij een winkel die past bij wat je vroeg${s.budget?`, binnen ${E(s.budget)}`:''}.</p><p class="note">Zal ik het bewaken? Dan kijkt de WATCHDOG-server ongeveer elke ${CHK79.h()} uur en meld ik het zodra er een passende aanbieding is.</p><div class="btn-row"><button class="btn" data-a="wdg-goal">${I('eye')} Bewaak het voor mij</button><button class="btn ghost" data-a="zs-edit">Zoekopdracht aanpassen</button></div></div>
+   <details class="card x79-ap"><summary>Apart gezet (${ap.length})</summary><p class="note">Deze passen niet bij wat je vroeg.</p>${ap.slice(0,12).map(x=>`<div class="row"><span class="grow"><b>${esc(String(x.title||'').slice(0,70))}</b><small>${esc(x.shop||'')} · ${esc(x.apart79)}</small></span><b>${x.price!=null?E2g(x.price):''}</b></div>`).join('')}</details>`;
+  if(card)card.outerHTML=h;else ($('#main .wrap')||$('#main')).insertAdjacentHTML('beforeend',h)}}catch(e){console.warn('V79 leeg',e)}return r}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
