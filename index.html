@@ -2737,6 +2737,9 @@ button.x52-reg{width:100%;background:transparent;border:0;border-top:1px solid #
 .x79-ap .row small{display:block;color:#64748B}
 .x79-wh p{margin:6px 0 0;font-size:13.5px;color:#334155;line-height:1.45}
 .x79-when{display:flex;gap:6px;align-items:center;margin:4px 2px 10px;font-size:14px}.x79-when .i{width:16px;height:16px}
+.x81-pr b{color:#475569}
+.x82-later{border:0;background:none;color:#475569;font:inherit;font-size:14px;text-decoration:underline;padding:10px 6px;cursor:pointer;min-height:44px}
+.x82-used{margin-top:8px}
 </style>
 </head>
 <body>
@@ -18851,6 +18854,113 @@ ACT['x79-when']=()=>sheet('Wanneer kijk ik?',`<p>${esc(CHK79.all())}</p><ul clas
    ===================================================================== */
 try{if(typeof VIDDOG!=='undefined'&&!VIDDOG.v)VIDDOG.src='pup-rust2.mp4'}catch(e){}
 {const _lp=lifePose;lifePose=function(I,P,st,t,tSt){_lp(I,P,st,t,tSt);P.yw=0}}
+
+/* =====================================================================
+   V81 — EERLIJKE PRIJSGESCHIEDENIS EN ZOEKTERM
+   1. "Eerder gezien": de server onthoudt per dag het laagste bedrag van álle resultaten (ook hoezen, accessoires,
+      andere versies). Ligt dat bedrag veel lager dan de goedkoopste passende aanbieding van vandaag, dan zeg ik
+      eerlijk dat het waarschijnlijk een ander product was, in plaats van "Eerder gezien: vanaf €34,50".
+      "Vandaag is de laagste" telt alleen aanbiedingen die bij je zoekopdracht passen.
+   2. Woorden als "alleen", "nieuw", "geen tweedehands", "maximaal" horen niet in de productnaam/zoekterm.
+   3. Alles boven je budget? Dan stel ik een budget voor waarbij je echt iets vindt (de goedkoopste, naar boven
+      afgerond), niet zomaar 20% meer.
+   ===================================================================== */
+const PR81={
+ relLow(){try{const L=(SEARCH&&SEARCH.results)||[],ok=L.filter(r=>r&&r.price>0&&r.rel!==false&&!r.apart79&&!(r.pm&&r.pm.v==='uit'));const P=(ok.length?ok:L.filter(r=>r&&r.price>0)).map(r=>r.price).sort((a,b)=>a-b);return P[0]||null}catch(e){return null}}};
+{const _pl=SAMEN69.prLine.bind(SAMEN69);SAMEN69.prLine=function(){const h=_pl();try{if(!h)return h;const S_=SEARCH,x=S_&&S_.s69&&S_.s69.d;const today=new Date().toISOString().slice(0,10),prev=(x.dagen||[]).filter(d=>d.dag<today);
+  const low=prev.slice().sort((a,b)=>a.min-b.min)[0],now=PR81.relLow();if(!low||!now)return h;
+  const dt=new Date(low.dag+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  if(low.min<now*0.75)return `<div class="card x69-pr x81-pr">${I('chart')}<span><b>Prijsgeschiedenis: niet goed te vergelijken.</b><small>Bij deze zoekwoorden zag WATCHDOG op ${dt} ook bedragen vanaf ${E2(low.min)}. Dat was waarschijnlijk een ander product, zoals een hoes of accessoire. De goedkoopste passende aanbieding vandaag is ${E2(now)}.</small></span></div>`;
+  const cmp=now<low.min-0.005?' Vandaag is het lager dan toen.':now>low.min+0.005?` Vandaag is de goedkoopste passende aanbieding ${E2(now)}.`:' Vandaag is het hetzelfde.';
+  return h.replace(/ Vandaag is (het lager dan toen|de laagste [^.]+|het hetzelfde)\./,cmp)}catch(e){return h}}}
+{const _p=wdgParse;wdgParse=function(text){const s=_p.apply(this,arguments);try{if(s.product){const c=String(s.product).replace(/\b(alleen|uitsluitend|geen|niet|nieuw|nieuwe|tweedehands|gebruikt|gebruikte|refurbished|maximaal|max|hooguit|euro|graag|aub|svp)\b/gi,' ').replace(/\s+/g,' ').trim();if(c.length>=3)s.product=c}}catch(e){}return s}}
+{const _r=wdgResultPanel;wdgResultPanel=function(){let h=_r.apply(this,arguments);try{const C=WDG.c,s=C&&C.slots,lo=(C&&C.eval&&((C.eval.lowest&&C.eval.lowest.price)||C.eval.low))||PR81.relLow();
+  if(s&&s.budget&&lo&&lo>s.budget){const old=Math.round(s.budget*1.2/5)*5;if(lo>old){const nw=Math.ceil(lo/10)*10,eo=E(old),en=E(nw);
+   h=h.split('Zal ik tot '+eo+' kijken').join(`De goedkoopste passende aanbieding is ${E2(lo)}. Zal ik tot ${en} kijken`).split('data-arg="'+old+'"').join('data-arg="'+nw+'"').split('>Tot '+eo+'<').join('>Tot '+en+'<')}}}catch(e){}return h}}
+
+/* =====================================================================
+   V82 — ZOEKEN KLOPT OVERAL, EN DE HOND VRAAGT VAKER OF JE IETS ZOEKT
+   Zoeken
+   1. Een productvraag (met een bedrag, "nieuw", "tweedehands" of "cadeau") gaat altijd naar zoeken, ook als
+      de zin lang is. Voorheen kwam "wc bril met verwarming tot €50, nieuw" op de AI-pagina terecht.
+   2. Op de AI-pagina gaat "zoek een koelkast tot 700 euro" naar dezelfde zoekpagina (met dezelfde filters).
+   3. Standaard nieuw: zeg je niets over de staat, dan staan tweedehands en refurbished apart, met de knop
+      "Toon ook tweedehands".
+   4. "mag", "ook", "prima" horen niet in de zoekterm.
+   5. Abonnementen (sim-only, internet, verzekering) zoek ik niet in Google Shopping: eerlijke uitleg en wat
+      ik wél kan. Energie gaat naar de bestaande vergelijking met de marktprijs.
+   Home
+   6. Als er niets dringends is, vraagt de hond of je iets zoekt (wisselende zinnen, ook per seizoen en met je
+      aantal bewakingen). Meldingen, termijnen en een gezakte prijs gaan altijd voor. "Nu niet" = 3 dagen stil.
+   ===================================================================== */
+const SH82={
+ PRICE:/(€\s?\d|\b\d+[.,]?\d*\s?(euro|eur)\b|\b(tot|max|maximaal|maximum|onder|hooguit|budget)\s*(van\s*)?€?\s?\d)/i,
+ COND:/\b(nieuw|nieuwe|tweedehands|refurbished|gebruikt|gebruikte)\b/i,
+ SUBS:/\b(sim[\s-]?only|simonly|mobiel abonnement|telefoonabonnement|belbundel|internet[\s-]?abonnement|glasvezel|tv[\s-]?abonnement|zorgverzekering|autoverzekering|inboedelverzekering|reisverzekering|opstalverzekering|aansprakelijkheidsverzekering|energiecontract|energieleverancier|stroom en gas)\b/i,
+ Q:/^(hoe|wat|waarom|wanneer|welke|wie|hoeveel|kan ik|moet ik|heb ik|mag ik|is het|is dit|klopt)\b/i,
+ isProduct(v){const t=String(v||'').trim(),lo=t.toLowerCase();if(t.split(/\s+/).length<2||this.Q.test(lo)||this.SUBS.test(lo))return false;
+  try{if(ROUTE48.classify(lo).route)return false}catch(e){}
+  return this.PRICE.test(lo)||this.COND.test(lo)||/\bcadeau\w*\b/.test(lo)},
+ subKind(v){const lo=String(v||'').toLowerCase();if(!this.SUBS.test(lo))return null;if(/energie|stroom en gas/.test(lo))return 'energie';if(/verzekering/.test(lo))return 'verzekering';return 'telecom'}
+};
+/* 1. lange productzin: niet naar de AI-pagina maar naar zoeken (zelfde route als "Ik zoek …") */
+{const _g=go;go=function(x){try{if(x==='ai'&&window.__p82&&window.__aiq===window.__p82&&SH82.isProduct(window.__p82)){const v=window.__p82;window.__p82=null;window.__aiq=null;setTimeout(()=>submitFromEntry('Ik zoek '+v.replace(/^\s*(een|de|het)\s+/i,'')),0);return}}catch(e){}return _g.apply(this,arguments)}}
+{const _se=submitFromEntry;submitFromEntry=function(v){const k=SH82.subKind(v);if(k){SUB82.open(k,v);return}window.__p82=String(v||'').trim();try{return _se.apply(this,arguments)}finally{setTimeout(()=>{window.__p82=null},0)}}}
+/* 2. op de AI-pagina: een productvraag gaat naar de zoekpagina */
+{const _hm=handleUserMessage;handleUserMessage=function(text,src,opt){try{const t=String(text||'').trim();
+  if(route[0]==='ai'&&src!=='stem'&&!(opt&&opt.noLegacy)&&!window.__h82){let busy=false;try{busy=!!(CONV&&CONV.asking)||!!(WDG.c&&WDG.c.stage&&WDG.c.stage!=='done'&&WDG.c.stage!=='search')}catch(e){}
+   const m=t.match(/^\s*(ik\s+)?zoek\s+(.+)$/i);
+   if(!busy&&(m||SH82.isProduct(t))){const k=SH82.subKind(t);if(k){SUB82.open(k,t);return true}window.__h82=1;try{submitFromEntry('Ik zoek '+(m?m[2]:t))}finally{window.__h82=0}return true}}}catch(e){}return _hm.apply(this,arguments)}}
+/* 3. standaard nieuw: tweedehands/refurbished apart als je er niets over zei */
+{const _w=SHOP79.why.bind(SHOP79);SHOP79.why=function(x,cond){const r=_w(x,cond);if(r)return r;try{const C=WDG.c,c=cond||(C&&C.slots&&C.slots.cond)||null;
+  if(!c||c==='nieuw'){const sh=String(x.shop||x.source||''),t=[x.title,x.note,sh].join(' ');if(this.REFURB.test(t)||this.USED.test(sh))return 'tweedehands of refurbished (je vroeg niet om tweedehands)'}}catch(e){}return null}}
+ACT['h82-used']=()=>{try{const C=WDG.c;if(!C)return;C.slots=C.slots||{};C.slots.cond='refurbished';if(C.intent)C.intent.cond=null;
+  const back=(C.apart79||[]).filter(x=>/tweedehands/.test(x.apart79));C.apart79=(C.apart79||[]).filter(x=>!/tweedehands/.test(x.apart79));
+  back.forEach(x=>{delete x.apart79;x.rel=x.rel!==false});SEARCH.results=(SEARCH.results||[]).concat(back).sort((a,b)=>(a.price==null)-(b.price==null)||(a.price||0)-(b.price||0));
+  render(false);toast(`${back.length} tweedehands of refurbished ${back.length===1?'aanbieding staat':'aanbiedingen staan'} nu ook in de lijst.`,false,true)}catch(e){console.warn('V82 used',e)}};
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{if(route[0]==='zoek'){const d=$('#main .x79-ap');const C=WDG.c;
+  if(d&&C&&(C.apart79||[]).some(x=>/tweedehands/.test(x.apart79))&&!d.querySelector('.x82-used')){const c=C.slots&&C.slots.cond;if(c!=='nieuw')d.insertAdjacentHTML('beforeend',`<button class="btn sm ghost x82-used" data-a="h82-used">Toon ook tweedehands en refurbished</button>`)}}}catch(e){}return r}}
+/* 4. geen "mag", "ook", "prima" in de productnaam */
+{const _p=wdgParse;wdgParse=function(text){const s=_p.apply(this,arguments);try{if(s.product){const c=String(s.product).replace(/\b(mag|ook|prima|oké|ok|is goed)\b/gi,' ').replace(/\s+/g,' ').trim();if(c.length>=3)s.product=c}}catch(e){}return s}}
+/* 5. abonnementen: eerlijk */
+const SUB82={T:{telecom:'Mobiel en internet',verzekering:'Verzekeringen'},
+ open(k,v){if(k==='energie'){try{ACT['sb-go']('energie')}catch(e){go('kies/energie')}return}
+  const tel=k==='telecom';
+  sheet(this.T[k],`<p class="note">${tel?'Abonnementen voor mobiel, internet en tv':'Verzekeringen'} vergelijk ik nog niet zelf. Google Shopping toont alleen losse producten${tel?' (zoals simkaarten of toestellen)':''}, geen ${tel?'abonnementsprijzen':'premies'}.</p>
+   <p><b>Wat ik wel kan</b></p><ul class="x48-ul"><li>De einddatum van je ${tel?'abonnement':'verzekering'} bewaken, zodat je op tijd kunt overstappen.</li><li>Je huidige kosten bijhouden bij je vaste lasten.</li></ul>
+   <p><b>Zelf vergelijken?</b> Gebruik een onafhankelijke vergelijker. Let op de totale kosten over de hele looptijd, niet alleen de eerste maanden${tel?', en op hoeveel data en bellen je echt gebruikt':', en op het eigen risico en wat er precies gedekt is'}.</p>
+   <div class="btn-row"><button class="btn" data-a="go" data-arg="plan">Naar mijn vaste lasten</button>${tel?`<button class="btn ghost" data-a="h82-prod" data-arg="${esc(String(v||'').slice(0,80))}">Zoek toch een toestel of simkaart</button>`:''}</div>`)}};
+ACT['h82-prod']=v=>{closeSheet();window.__noSub82=1;try{const _k=SH82.subKind;SH82.subKind=()=>null;try{submitFromEntry(String(v||'').replace(SH82.SUBS,m=>m.replace(/abonnement/i,'').trim()||m))}finally{SH82.subKind=_k}}finally{window.__noSub82=0}};
+
+/* 6. HOME: de hond vraagt vaker of je iets zoekt */
+const HOME82={
+ st(){S.ui=S.ui||{};S.ui.h82=S.ui.h82||{opens:0,until:0};return S.ui.h82},
+ season(){const m=new Date().getMonth()+1;return m===10||m===11?'Winterbanden of een warme jas nodig? Ik zoek de beste prijs en bewaak hem voor je.':m===12?'Cadeaus voor de feestdagen? Zeg wat en tot welk bedrag, dan zoek en bewaak ik het voor je.':m===1?'Uitverkoop! Staat er iets op je lijstje? Ik kijk of het echt goedkoper is.':m>=3&&m<=5?'Een fiets of iets voor de tuin nodig? Ik zoek de beste prijs en bewaak hem voor je.':m===6||m===7?'Op vakantie? Een koffer of zonnebril nodig? Ik zoek en bewaak het voor je.':m===8||m===9?'Terug naar school of werk? Laptop of tas nodig? Ik zoek en bewaak het voor je.':null},
+ lines(){const n=(S.deals||[]).filter(d=>d.active).length,L=['Wil je iets kopen? Zeg wat en tot welk bedrag. Ik zoek de beste prijs en houd hem voor je in de gaten.','Iets nodig? Ik zoek het voor je op, en blaf als de prijs onder je budget zakt.','Waar ben je naar op zoek? Ik vergelijk de winkels en bewaak het voor je.'];
+  const s=this.season();if(s)L.push(s);if(n)L.push(`Ik bewaak nu ${n} ${n===1?'ding':'dingen'} voor je. Nog iets op je lijstje?`);return L},
+ line(){const L=this.lines();return L[this.st().opens%L.length]},
+ card(){return {t:'Zoek je iets?',s:this.line(),b:['Zoek iets','h82-zoek',''],k:'h82:zoek',h82:true}},
+ /* wanneer: niet bij iets dringends; geld-check alleen de eerste keer en daarna om de beurt; meldingen-vraag 1 op 3 */
+ urgent(items){try{if((items||[]).some(x=>x&&(x.p>=2||/^ev:|^imp:dbl|^dl:|^tm:/.test(x.k||''))))return true;
+  return (S.events||[]).some(e=>e&&!e.read&&!e.demo&&e.status!=='dismissed'&&e.timestamp>Date.now()-3*864e5&&/PRIJS|DEAL|WAARSCHUW|FRAUDE/i.test(e.category||''))}catch(e){return false}},
+ want(n){const st=this.st();if(Date.now()<st.until)return false;if(!n)return true;
+  if(n.t==='Alles is rustig.'||n.calm)return true;
+  if(n.step==='geld')return st.opens>1&&st.opens%2===0;
+  if(n.step==='werk'||n.step==='watch')return st.opens%2===0;
+  if(n.k==='push'||n.id==='push'||/meldingen aan|beginscherm/.test(String(n.s||n.t||'')))return st.opens%3!==0;
+  return false}};
+{const _i=init;init=function(){const r=_i.apply(this,arguments);try{const st=HOME82.st();st.opens=(st.opens||0)+1;save();if(route[0]==='home')render(false)}catch(e){}return r}}
+{const _n=G40.next.bind(G40);G40.next=function(items){const n=_n(items);try{if(LEEG()&&!HOME82.urgent(items)&&HOME82.want(n))return Object.assign({},n||{},HOME82.card())}catch(e){}return n}}
+ACT['h82-zoek']=()=>{const i=$('#hq');if(i){try{i.placeholder='Bijv. winterbanden tot €400, of een airfryer'}catch(e){}i.scrollIntoView({block:'center',behavior:RM()?'auto':'smooth'});setTimeout(()=>i.focus(),RM()?0:300)}};
+ACT['h82-later']=()=>{const st=HOME82.st();st.until=Date.now()+3*864e5;save();toast('Prima. Ik vraag het een paar dagen niet.',false,true);refresh()};
+{const _sh=DTIP.show.bind(DTIP);DTIP.show=function(){const r=_sh.apply(this,arguments);try{const n=W41.cur||{};if(n.h82){const h=$('.h4-say .dt-h');if(h)h.textContent='Zoek je iets?';const g=$('.h4-say .dt-go');
+   if(g&&!$('.h4-say .x82-later'))g.insertAdjacentHTML('afterend','<button class="x82-later" data-a="h82-later">Nu niet</button>')}}catch(e){}return r}}
+/* "Nu niet" naast de knop, waar de ballon ook staat */
+{const _ar=afterRender;afterRender=function(){const r=_ar.apply(this,arguments);try{if(route[0]==='home'&&W41.cur&&W41.cur.h82){const g=$('#main [data-a="h82-zoek"]')||$('#main .w41-next');if(g&&!$('#main .x82-later'))g.insertAdjacentHTML('afterend','<button class="x82-later" data-a="h82-later">Nu niet</button>')}}catch(e){}return r}}
+/* label: zeg je "tweedehands", dan staat er "tweedehands mag" (niet alleen "refurbished") */
+{const _r=wdgResultPanel;wdgResultPanel=function(){let h=_r.apply(this,arguments);try{h=h.replace(/(<div class="wdg-tags">[\s\S]*?>)refurbished(<)/,'$1tweedehands mag$2')}catch(e){}return h}}
+/* V82: koopvraag houdt "Sinds HH:MM uur niets nieuws." ervoor, zodat je ziet dat er niets gemist is */
+{const _n=W41.next.bind(W41);W41.next=function(){const n=_n();try{if(n&&n.h82&&!/^Sinds /.test(n.s||'')){const v=VISIT65.info();if(v&&!v.fresh.length){const w=VISIT65.when(v.at),sinds=/^\d\d:\d\d$/.test(w)?`Sinds ${w} uur`:`Sinds ${w}`;return Object.assign({},n,{s:`${sinds} niets nieuws. ${n.s}`})}}}catch(e){}return n}}
 
 try{init()}catch(e){WD.errors.push('INIT: '+e.message);console.error('WATCHDOG init mislukt:',e);WD.debug=WD.debug;WD.log('INIT FAILED',e.message)}
 try{REG.boot()}catch(e){console.error('WATCHDOG regelingen-boot mislukt:',e)}
